@@ -1,0 +1,13 @@
+fastapi
+uvicorn[standard]
+psycopg2-binary
+sqlalchemy
+alembic
+python-dotenv
+pydantic-settings
+requests
+httpx
+beautifulsoup4
+lxml
+bcrypt
+deep-translator

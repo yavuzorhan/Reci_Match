@@ -1,0 +1,227 @@
+.ingredient-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.picker-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.search-bar {
+  position: relative;
+  width: 100%;
+}
+
+.search-bar svg {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-color);
+  opacity: 0.5;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 18px 18px 18px 55px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--background-elevated);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.search-bar input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 25px rgba(108, 92, 231, 0.1);
+  background: color-mix(in srgb, var(--background-elevated) 90%, white 10%);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.layout-shell[data-theme="dark"] .search-bar input {
+  background: rgba(17, 20, 38, 0.86);
+  color: #f8fafc;
+  border-color: rgba(233, 225, 255, 0.18);
+}
+
+.layout-shell[data-theme="dark"] .search-bar input:focus {
+  background: rgba(22, 26, 48, 0.96);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+.layout-shell[data-theme="dark"] .search-bar input::placeholder {
+  color: rgba(245, 243, 255, 0.66);
+}
+
+.category-nav {
+  display: flex;
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.category-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.category-btn {
+  padding: 12px 24px;
+  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.category-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 16px rgba(108, 92, 231, 0.2);
+}
+
+.category-btn:hover:not(.active) {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: rgba(108, 92, 231, 0.05);
+  transform: translateY(-2px);
+}
+
+.selected-area {
+  background: var(--background-elevated);
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+}
+
+.selected-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  animation: scaleIn 0.2s ease-out;
+  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+}
+
+.selected-chip button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.selected-chip button:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.ingredients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.25rem;
+}
+
+.ingredient-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ingredient-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-color);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.ingredient-card.selected {
+  background: rgba(108, 92, 231, 0.05);
+  border-color: var(--primary-color);
+  border-width: 2px;
+}
+
+.checkbox-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.selected .checkbox-circle {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.ingredient-name {
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selected .ingredient-name {
+  color: var(--primary-color);
+  font-weight: 850;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  font-weight: 800;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
