@@ -326,9 +326,9 @@ const RecipeDetailDb = () => {
 
                 <div
                   style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1.25fr 1fr 1fr',
-                    gap: '1.2rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
                     padding: '1.2rem',
                     borderRadius: '18px',
                     border: `1px dashed ${healthTone.chip}`,
@@ -344,26 +344,28 @@ const RecipeDetailDb = () => {
                     </p>
                   </div>
 
-                  <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.1rem' }}>
-                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#86efac', fontSize: '0.95rem', fontWeight: '900' }}>
-                      <CheckCircle2 size={18} /> Olumlu Yönler
-                    </h4>
-                    <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
-                      {qualityPoints.positives.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  <div className="quality-point-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <div style={{ padding: '1rem', borderRadius: '18px', background: 'rgba(255,255,255,0.025)', border: '1px solid var(--border-color)' }}>
+                      <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#86efac', fontSize: '0.95rem', fontWeight: '900' }}>
+                        <CheckCircle2 size={18} /> Olumlu Yönler
+                      </h4>
+                      <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
+                        {qualityPoints.positives.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.1rem' }}>
-                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#fb7185', fontSize: '0.95rem', fontWeight: '900' }}>
-                      <AlertCircle size={18} /> Dikkat Edilmesi Gerekenler
-                    </h4>
-                    <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
-                      {qualityPoints.cautions.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
+                    <div style={{ padding: '1rem', borderRadius: '18px', background: 'rgba(255,255,255,0.025)', border: '1px solid var(--border-color)' }}>
+                      <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#fb7185', fontSize: '0.95rem', fontWeight: '900' }}>
+                        <AlertCircle size={18} /> Dikkat Edilmesi Gerekenler
+                      </h4>
+                      <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
+                        {qualityPoints.cautions.map((point) => (
+                          <li key={point}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -469,12 +471,8 @@ const RecipeDetailDb = () => {
         .spin-slow { animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @media (max-width: 900px) {
-          .quality-insight-card > div:last-child {
+          .quality-point-grid {
             grid-template-columns: 1fr !important;
-          }
-          .quality-insight-card > div:last-child > div {
-            border-left: none !important;
-            padding-left: 0 !important;
           }
         }
       ` }} />
