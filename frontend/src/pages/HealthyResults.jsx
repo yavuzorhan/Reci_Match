@@ -13,7 +13,13 @@ import {
 
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
-import { RECIPE_FILTER_OPTIONS, applyRecipeFilters, getHealthGrade, getHealthTone } from '../utils/recipeInsights';
+import {
+  RECIPE_FILTER_OPTIONS,
+  applyRecipeFilters,
+  buildRecipeShortSummary,
+  getHealthGrade,
+  getHealthTone,
+} from '../utils/recipeInsights';
 
 const HealthyResults = () => {
   const { fetchHealthyRecipes, fetchRecommendedRecipes } = useApp();
@@ -276,7 +282,7 @@ const HealthyResults = () => {
                     </h3>
 
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: '1.55', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {recipe.explanation || 'Saglik odakli bir tarif onerisi.'}
+                      {buildRecipeShortSummary(recipe, 'Sağlık odaklı bir tarif önerisi.')}
                     </p>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '1.4rem', marginTop: 'auto' }}>

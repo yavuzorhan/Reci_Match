@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { ChefHat, Heart, Search, Trash2 } from 'lucide-react';
+import { buildRecipeShortSummary } from '../utils/recipeInsights';
 
 const FavoritesDb = () => {
   const { favorites, toggleFavorite, fetchRecipesByIds } = useApp();
@@ -130,7 +131,7 @@ const FavoritesDb = () => {
             <div style={{ padding: '1.5rem' }}>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '10px' }}>{recipe.name}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', height: '40px', overflow: 'hidden' }}>
-                {recipe.explanation}
+                {buildRecipeShortSummary(recipe)}
               </p>
               <button className="primary-btn" style={{ width: '100%', padding: '10px' }}>
                 Pişirmeye Başla

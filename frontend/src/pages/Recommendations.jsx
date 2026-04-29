@@ -12,7 +12,13 @@ import {
 
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
-import { RECIPE_FILTER_OPTIONS, applyRecipeFilters, getHealthGrade, getHealthTone } from '../utils/recipeInsights';
+import {
+  RECIPE_FILTER_OPTIONS,
+  applyRecipeFilters,
+  buildRecipeShortSummary,
+  getHealthGrade,
+  getHealthTone,
+} from '../utils/recipeInsights';
 
 const Recommendations = () => {
   const { fetchRecommendedRecipes, selectedIngredients } = useApp();
@@ -247,18 +253,6 @@ const Recommendations = () => {
                       {recipe.cooking_type || 'Kişiye Özel'}
                     </div>
 
-                    <div
-                      style={{
-                        background: tone.bg,
-                        color: tone.text,
-                        padding: '8px 16px',
-                        borderRadius: '14px',
-                        fontSize: '0.8rem',
-                        fontWeight: '900',
-                      }}
-                    >
-                      {recipe.health_summary}
-                    </div>
                   </div>
 
                   {recipe.score !== undefined && (
@@ -310,7 +304,7 @@ const Recommendations = () => {
                       overflow: 'hidden',
                     }}
                   >
-                    {recipe.explanation || 'Seçtiğiniz malzemelerle hazırlayabileceğiniz özel bir tarif önerisi.'}
+                    {buildRecipeShortSummary(recipe, 'Seçtiğiniz malzemelerle hazırlayabileceğiniz özel bir tarif önerisi.')}
                   </p>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '2.2rem', marginTop: 'auto' }}>

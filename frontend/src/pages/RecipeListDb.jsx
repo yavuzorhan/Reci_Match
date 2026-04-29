@@ -17,7 +17,13 @@ import {
 import Layout from '../components/Layout';
 import AddRecipeForm from '../components/AddRecipeForm';
 import { useApp } from '../context/AppContext';
-import { RECIPE_FILTER_OPTIONS, applyRecipeFilters, getHealthGrade, getHealthTone } from '../utils/recipeInsights';
+import {
+  RECIPE_FILTER_OPTIONS,
+  applyRecipeFilters,
+  buildRecipeShortSummary,
+  getHealthGrade,
+  getHealthTone,
+} from '../utils/recipeInsights';
 
 const RecipeListDb = () => {
   const { fetchAllRecipes, fetchRecipeById, deleteCustomRecipe, user, dislikedIngredients } = useApp();
@@ -297,7 +303,7 @@ const RecipeListDb = () => {
                       </div>
 
                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: '1.55', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {recipe.explanation || 'Lezzetli ve pratik bir tarif seçeneği.'}
+                        {buildRecipeShortSummary(recipe)}
                       </p>
 
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginTop: 'auto', marginBottom: '1.5rem' }}>

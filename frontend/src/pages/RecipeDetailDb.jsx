@@ -2,11 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
+  AlertCircle,
   CheckCircle,
+  CheckCircle2,
   ChefHat,
   Flame,
   Heart,
   Leaf,
+  LineChart,
   Minus,
   Plus,
   Users,
@@ -69,6 +72,51 @@ const getHealthLabels = (recipe) => {
   return labels;
 };
 
+const getQualityLabel = (grade) => ({
+  A: 'Çok iyi seçenek',
+  B: 'İyi bir seçenek',
+  C: 'Dengeli tüketilmeli',
+  D: 'Dikkatli tüketilmeli',
+}[grade] || 'Kalite bilgisi');
+
+const getQualityRationale = (recipe, grade) => {
+  const summary = stripHtml(recipe?.health_summary || recipe?.health_explanation || '');
+  const cleaned = summary
+    .replace(/^[ABCD]\s*kalite\s*\(\d+\/100\)\.?\s*/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleaned) return cleaned;
+
+  return `${recipe?.name || 'Bu tarif'} besin değerleri, kalori miktarı ve makro dağılımı birlikte değerlendirilerek ${grade} kalite aldı.`;
+};
+
+const getQualityPoints = (recipe, grade) => {
+  const calorie = Number(recipe?.calorie || 0);
+  const protein = Number(recipe?.protein || 0);
+  const carbs = Number(recipe?.carbohydrate || 0);
+  const fat = Number(recipe?.fat || 0);
+
+  const positives = [];
+  const cautions = [];
+
+  if (protein >= 25) positives.push('Protein oranı yüksek');
+  else if (protein >= 12) positives.push('Protein desteği var');
+
+  if (calorie > 0 && calorie <= 550) positives.push('Kalori değeri kontrollü');
+  if (recipe?.cooking_type) positives.push(`${recipe.cooking_type} yöntemiyle hazırlanır`);
+
+  if (calorie >= 700) cautions.push('Kalori değeri yüksek');
+  if (carbs >= 75) cautions.push('Karbonhidrat miktarı yüksek olabilir');
+  if (fat >= 35) cautions.push('Yağ miktarı yüksek olabilir');
+  if (['C', 'D'].includes(grade)) cautions.push('Porsiyon kontrolü önerilir');
+
+  return {
+    positives: positives.slice(0, 3).length ? positives.slice(0, 3) : ['Tarif ölçülü porsiyonla öğüne uyarlanabilir'],
+    cautions: cautions.slice(0, 3).length ? cautions.slice(0, 3) : ['Belirgin bir risk görünmüyor'],
+  };
+};
+
 const RecipeDetailDb = () => {
   const { id } = useParams();
   const location = useLocation();
@@ -110,6 +158,8 @@ const RecipeDetailDb = () => {
   const nutritionEstimated = Boolean(recipe?.nutrition_is_estimated);
   const healthTone = getHealthTone(recipe?.health_score ?? 0);
   const healthGrade = recipe?.health_grade || getHealthGrade(recipe?.health_score ?? 0).split(' ')[0];
+  const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
+  const qualityPoints = useMemo(() => getQualityPoints(recipe, healthGrade), [recipe, healthGrade]);
 
   // Ingredients are now normalized in AppContext.fetchRecipeById
   const displayIngredients = useMemo(() => {
@@ -251,9 +301,72 @@ const RecipeDetailDb = () => {
                 </div>
               </div>
 
-              <div className="description" style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '3.5rem', lineHeight: '1.8' }}>
-                {stripHtml(recipe.explanation)}
-              </div>
+              <section
+                className="quality-insight-card"
+                style={{
+                  marginBottom: '3.5rem',
+                  padding: '1.2rem',
+                  borderRadius: '24px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border-color)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                  <span style={{ padding: '10px 16px', borderRadius: '16px', background: 'var(--background-elevated)', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: '900' }}>
+                    KALITE
+                  </span>
+                  <span style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: `${healthTone.bg}`, color: healthTone.text, border: `2px solid ${healthTone.chip}`, fontSize: '1.35rem', fontWeight: '950' }}>
+                    {healthGrade}
+                  </span>
+                  <strong style={{ color: healthTone.chip, fontSize: '1rem', fontWeight: '900' }}>
+                    {getQualityLabel(healthGrade)}
+                  </strong>
+                </div>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.25fr 1fr 1fr',
+                    gap: '1.2rem',
+                    padding: '1.2rem',
+                    borderRadius: '18px',
+                    border: `1px dashed ${healthTone.chip}`,
+                    background: 'rgba(255,255,255,0.025)',
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', color: healthTone.chip, fontSize: '1.05rem', fontWeight: '950' }}>
+                      <LineChart size={20} /> Neden {healthGrade} Kalite?
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: 1.7, fontWeight: '650' }}>
+                      {qualityRationale}
+                    </p>
+                  </div>
+
+                  <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.1rem' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#86efac', fontSize: '0.95rem', fontWeight: '900' }}>
+                      <CheckCircle2 size={18} /> Olumlu Yönler
+                    </h4>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
+                      {qualityPoints.positives.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '1.1rem' }}>
+                    <h4 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', color: '#fb7185', fontSize: '0.95rem', fontWeight: '900' }}>
+                      <AlertCircle size={18} /> Dikkat Edilmesi Gerekenler
+                    </h4>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.95rem', fontWeight: '650' }}>
+                      {qualityPoints.cautions.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </section>
 
               <h3 style={{ fontSize: '1.6rem', fontWeight: '900', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Utensils size={24} color="var(--primary-color)" /> Nasıl Hazırlanır?
@@ -355,6 +468,15 @@ const RecipeDetailDb = () => {
         }
         .spin-slow { animation: spin 4s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (max-width: 900px) {
+          .quality-insight-card > div:last-child {
+            grid-template-columns: 1fr !important;
+          }
+          .quality-insight-card > div:last-child > div {
+            border-left: none !important;
+            padding-left: 0 !important;
+          }
+        }
       ` }} />
     </Layout>
   );

@@ -4,7 +4,7 @@ import sys
 from sqlalchemy import text
 
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
 
 from app.db.database import SessionLocal

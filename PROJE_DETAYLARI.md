@@ -1,68 +1,54 @@
-# Akilli Tarif ve Beslenme Sistemi - Teknik Proje Ozeti
+# Reci Match - Teknik Proje Detaylari
 
-Bu dokuman, projeyi baska bir AI asistani veya gelistirici hizlica anlayabilsin diye guncel teknik durumu aciklar. Proje; malzemeye gore tarif onerisi, kullanici profili, gunluk kalori takibi, tarif detaylari ve makro/malzeme bazli saglik derecelendirmesi iceren React + FastAPI + PostgreSQL uygulamasidir.
+Bu dokuman, Reci Match projesinde gelistirilen tum ana modulleri, teknik kararlari ve mevcut uygulama durumunu toplu olarak aciklar. Amaci; projeyi inceleyen bir gelistiricinin, danismanin veya yeni bir AI asistaninin sistemi haftalik is planina bagli kalmadan dogrudan teknik urun olarak anlayabilmesidir.
 
----
+Proje; kullanicinin profil bilgileri, beslenme hedefleri, sevdigi/sevmedigi malzemeler, kilerindeki urunler ve tarif verileri uzerinden tarif onerisi yapan full-stack bir web uygulamasidir. Backend FastAPI, frontend React/Vite, veri katmani SQLAlchemy tabanlidir.
 
-## 1. Genel Amac
-
-Uygulama kullanicinin elindeki malzemelere, kiler/dolap listesine, sevmedigi malzemelere ve beslenme profiline gore tarif onerir. Tarifler detay ekraninda malzeme listesi, hazirlanis, besin degerleri ve `A/B/C/D` kalite bilgisiyle gosterilir.
-
-Temel hedefler:
-
-- Malzeme secimine gore tarif onerisi uretmek.
-- Kullanicinin gunluk kalori ve makro takibini yapmak.
-- Tarifleri kalori, makro denge ve malzeme risklerine gore yaklasik saglik derecesine ayirmak.
-- Orijinal tarif verisini kaybetmeden olcu birimlerini gram cinsine normalize edebilmek.
-- Frontend tarafinda acik/koyu tema, tarif listeleri, detay sayfalari ve kiler yonetimini saglamak.
-
-Bu sistem tibbi teshis veya kesin diyet onerisi degildir. Health score yalnizca tarifleri yaklasik olarak siniflandirmak icindir.
-
----
-
-## 2. Proje Takvimi ve Mevcut Durum
-
-Proje su an 12 haftalik genisletilmis takvime gore ilerlemektedir. Eski plan daha kisa sureliydi; sure uzadigi icin proje artik 12 haftalik teslim akisiyle degerlendirilmelidir.
-
-Guncel durum:
-
-- Toplam proje suresi: 12 hafta
-- Bulunulan hafta: 10. hafta
-- Kalan sure: 2 hafta
-- 10. hafta odagi: gram donusumu, health score algoritmasi, tarif detay dogrulugu, frontend kalite gosterimi ve dokumantasyon stabilizasyonu
-- 11. hafta odagi: sistem testi, hata duzeltmeleri, backfill sonuclari, UI/UX son kontrolleri ve rapor/tez icerigi
-- 12. hafta odagi: final demo, sunum hazirligi, kurulum adimlari, son veri dogrulamasi ve teslim paketi
-
-### 2.1 12 Haftalik Genel Plan
+GitHub reposu:
 
 ```text
-1. hafta  -> Proje konusu, kapsam ve temel gereksinimler
-2. hafta  -> Veritabani tasarimi, temel backend mimarisi
-3. hafta  -> FastAPI endpointleri, auth ve kullanici modeli
-4. hafta  -> React frontend iskeleti, routing ve temel sayfalar
-5. hafta  -> Tarif listeleme, detay sayfasi ve malzeme secimi
-6. hafta  -> Kullanici profili, kalori hedefi ve gunluk log sistemi
-7. hafta  -> Kiler/dolap sistemi ve tarif onerisi algoritmasi
-8. hafta  -> USDA/ingredient nutrition entegrasyonu ve veri eslestirme
-9. hafta  -> Olcu birimi normalizasyonu, gram donusumu ve backfill altyapisi
-10. hafta -> Health score revizyonu, malzeme risk analizi, frontend kalite gosterimi
-11. hafta -> Entegrasyon testleri, hata duzeltmeleri, performans ve dokumantasyon
-12. hafta -> Final demo, sunum, rapor tamamlama ve teslim
+https://github.com/yavuzorhan/Reci_Match.git
 ```
 
-### 2.2 10. Hafta Sonu Teknik Durum
+---
 
-10. hafta itibariyla sistemin ana islevleri calisir durumdadir:
+## 1. Projenin Amaci
 
-- Tarif onerisi, tarif detaylari ve kullanici profili akisi mevcut.
-- `recipe_ingredients` icin gram normalizasyon sistemi eklendi.
-- Orijinal `miktar` ve `birim` alanlari korunuyor; gram sonucu `miktar_gram` alanina yaziliyor.
-- Health score sistemi sadece makro degil, malzeme bazli seker/rafine karbonhidrat/yag risklerini de hesaba katiyor.
-- `health_score`, `health_grade` ve `health_explanation` alanlari backend ve frontend akisi icinde kullaniliyor.
-- Frontend detay ekraninda kalite bilgisi gosteriliyor.
-- Tavuk Pilav, Ali Nazik, Balli Tarcinli Elma Cipsi ve Sutlac testleriyle algoritma kalibre edildi.
+Reci Match, kullanicinin elindeki malzemelere ve beslenme profiline gore uygun tarifler oneren, tariflerin kalori ve makro degerlerini gosteren, gunluk/haftalik beslenme takibini destekleyen bir akilli tarif ve beslenme uygulamasidir.
 
-11. ve 12. haftalarda yeni buyuk ozellik eklemek yerine stabilizasyon, test, raporlama ve demo hazirligi onceliklidir.
+Ana hedefler:
+
+- Kullanicinin sectigi malzemelere gore tarif onermek.
+- Kiler/dolap malzemelerini onerilerde dikkate almak.
+- Kullanicinin sevmedigi malzemeleri tarif seciminden cikarmak veya cezalandirmak.
+- Kullanici profiline gore gunluk kalori hedefi olusturmak.
+- Gunluk ve haftalik beslenme kayitlarini takip etmek.
+- Tarif detaylarinda kalori, protein, karbonhidrat, yag ve kalite bilgisini gostermek.
+- Tarifleri makro degerler ve malzeme riskleriyle A/B/C/D kalite seviyesine ayirmak.
+- Tarif miktar ve birimlerini orijinal haliyle koruyup gram karsiliklarini ayri alanda hesaplamak.
+- USDA ve manuel nutrition verileriyle malzeme besin degeri altyapisini desteklemek.
+
+Bu sistem tibbi teshis, tedavi veya kesin diyet onerisi amaciyla tasarlanmamistir. Health score ve kalite siniflandirmasi, tarifleri yaklasik olarak karsilastirmak icin kullanilir.
+
+---
+
+## 2. Mevcut Urun Durumu
+
+Proje artik haftalik plan dokumani degil, calisan bir uygulama ozeti olarak ele alinmalidir. Gelistirilen ana kisimlar:
+
+- Backend API iskeleti kuruldu.
+- Kullanici kaydi, giris, e-posta dogrulama ve sifre sifirlama akislari eklendi.
+- Kullanici profil bilgileri ve kalori hedefi altyapisi olusturuldu.
+- Malzeme, kategori, kiler, sevilmeyen malzeme ve favori tarif yapilari gelistirildi.
+- Tarif listeleme, detay ve oneriler endpointleri olusturuldu.
+- Tarif import/scraper scriptleri eklendi.
+- USDA tabanli malzeme besin degeri import ve eslestirme altyapisi gelistirildi.
+- Malzeme alias, unmatched ingredient ve canonical ingredient eslestirme yapilari kuruldu.
+- Tarif malzemeleri icin gram donusum sistemi eklendi.
+- Health score algoritmasi makro ve malzeme risklerine gore genisletildi.
+- React frontend tarafinda sayfalar, routing, context state yonetimi ve tema sistemi kuruldu.
+- Dashboard, profil, tarif listesi, tarif detayi, favoriler, kiler, sevilmeyen malzemeler, gunluk/haftalik log ekranlari eklendi.
+- Git repo hazirlandi, gereksiz dosyalar `.gitignore` ile dislandi ve proje GitHub'a push edildi.
 
 ---
 
@@ -73,32 +59,40 @@ Backend:
 - Python
 - FastAPI
 - SQLAlchemy ORM
-- PostgreSQL
+- Pydantic schema yapisi
+- PostgreSQL hedefli veritabani tasarimi
+- SQLite gelistirme dosyasi destegi
 - Bcrypt ile sifre hashleme
-- SMTP tabanli OTP/e-posta dogrulama
+- SMTP tabanli e-posta/OTP islemleri
+- Alembic-style migration dosyalari
 
 Frontend:
 
 - React
 - Vite
 - React Router
-- React Context API (`frontend/src/context/AppContext.jsx`)
-- CSS tabanli tema ve layout sistemi
-- `lucide-react` ikonlari
+- React Context API
+- CSS tabanli tema ve responsive layout
+- `lucide-react` ikon kutuphanesi
 
-Veri/yardimci scriptler:
+Veri ve yardimci araclar:
 
-- Alembic-style migration dosyalari: `backend/alembic/versions/`
-- Backfill scriptleri: `backend/scripts/`
-- USDA nutrition destek tablolari ve import servisleri
+- USDA food/nutrition eslestirme servisleri
+- Yemek.com, BBC Good Food, EatingWell ve Skinnytaste scraper/import scriptleri
+- Backfill scriptleri
+- Alias ve unmatched ingredient denetim scriptleri
 
 ---
 
-## 4. Ana Klasorler
+## 4. Proje Klasor Yapisi
 
 ```text
 backend/
+  main.py
+  requirements.txt
   app/
+    config/
+      settings.py
     db/
       database.py
       models.py
@@ -107,48 +101,132 @@ backend/
       ingredients.py
       recipes.py
       users.py
+    schemas/
+      auth.py
+      ingredient.py
+      recipe.py
+      user.py
+    repositories/
+      ingredient_repository.py
+      recipe_repository.py
     services/
-      recipe_service.py
-      ingredient_service.py
-      unit_conversion_service.py
+      auth_service.py
+      healthy_recipe_service.py
+      ingredient_matching_service.py
       ingredient_nutrition_service.py
-      ...
+      ingredient_resolver_service.py
+      ingredient_service.py
+      nutrition_mapper.py
+      recipe_import_service.py
+      recipe_service.py
+      unit_conversion_service.py
+      usda_client.py
+      usda_mapping_service.py
+      user_service.py
     utils/
-      recipe_health.py
       helpers.py
       mailer.py
-  alembic/versions/
+      nutrition_fetcher.py
+      recipe_health.py
+      recipe_translation.py
+      usda_food_data.py
+    data/
+      usda_seed_mappings.json
+  alembic/
+    versions/
+  scraper/
   scripts/
-    backfill_recipe_ingredient_grams.py
-    backfill_health_scores.py
 
 frontend/
+  package.json
+  vite.config.js
   src/
-    context/AppContext.jsx
+    App.jsx
+    App.css
+    index.css
+    main.jsx
+    context/
+      AppContext.jsx
+    components/
+      AddRecipeForm.jsx
+      IngredientPicker.jsx
+      Layout.jsx
+      ManualIngredientNutritionModal.jsx
+      ProgressCircle.jsx
     pages/
       Dashboard.jsx
+      DailyLogs.jsx
+      DislikedIngredients.jsx
+      Favorites.jsx
+      FavoritesDb.jsx
+      ForgotPassword.jsx
+      HealthyMenu.jsx
+      HealthyResults.jsx
       IngredientSelection.jsx
-      Recommendations.jsx
+      Login.jsx
+      Pantry.jsx
+      ProfileEdit.jsx
+      ProfileSetup.jsx
+      RecipeDetail.jsx
       RecipeDetailDb.jsx
+      RecipeList.jsx
       RecipeListDb.jsx
-      ...
-    components/
-      IngredientPicker.jsx
-      IngredientPicker.css
-      Layout.jsx
+      Recommendations.jsx
+      Register.jsx
+      ResetPassword.jsx
+      VerifyEmail.jsx
+      WeeklyLogs.jsx
     utils/
       recipeInsights.js
 ```
 
 ---
 
-## 5. Veritabani Semasi
+## 5. Backend Mimarisi
 
-### 5.1 users
+Backend FastAPI uzerine kuruludur. `backend/main.py`, uygulamayi baslatir, CORS ayarlarini yapar ve router modullerini dahil eder.
 
-Kullanici hesabi ve profil bilgileri.
+Ana router modulleri:
 
-Onemli alanlar:
+- `auth.py`: Kayit, giris, e-posta dogrulama, sifre sifirlama.
+- `ingredients.py`: Malzeme ve kategori islemleri.
+- `recipes.py`: Tarif listeleme, detay, oneriler ve custom tarif akislari.
+- `users.py`: Profil, kiler, favoriler, sevilmeyen malzemeler ve log islemleri.
+
+Servis katmani is mantigini routerlardan ayirir:
+
+- `auth_service.py`: Kimlik dogrulama, sifre hashleme, OTP ve mail akislarini yonetir.
+- `user_service.py`: Profil, kalori hedefi, log, favori ve kullanici iliskili islemleri yonetir.
+- `recipe_service.py`: Tarif listeleme, detay, serialization, oneriler ve health score entegrasyonunu yonetir.
+- `ingredient_service.py`: Malzeme ve kategori islemleri.
+- `ingredient_matching_service.py`: Malzeme adlarini normalize edip tarif importlarinda eslestirme yapar.
+- `ingredient_resolver_service.py`: Alias/canonical ingredient yaklasimiyla malzeme cozme katmanidir.
+- `ingredient_nutrition_service.py`: Malzeme bazli besin degeri islemleri.
+- `unit_conversion_service.py`: Miktar ve birimlerden gram karsiligi hesaplar.
+- `usda_client.py` ve `usda_mapping_service.py`: USDA veri entegrasyonunu destekler.
+
+Repository katmani:
+
+- `ingredient_repository.py`
+- `recipe_repository.py`
+
+Bu katmanlar veritabani erisimini servis mantigindan ayirmak icin kullanilir.
+
+---
+
+## 6. Veritabani Tasarimi
+
+Temel model kaynagi:
+
+```text
+backend/app/db/models.py
+```
+
+### 6.1 Kullanici ve Profil
+
+`users` tablosu kullanici hesap ve profil bilgilerini tutar.
+
+Baslica alanlar:
 
 - `user_id`
 - `name_surname`
@@ -164,11 +242,13 @@ Onemli alanlar:
 - `daily_calorie`
 - `is_verified`
 
-### 5.2 ingredients
+Profil bilgileri frontend onboarding ve profil duzenleme ekranlarindan yonetilir. Gunluk kalori hedefi kullanici bilgilerine gore hesaplanir ve dashboard tarafinda kullanilir.
 
-Global veya kullaniciya ozel malzemeler.
+### 6.2 Malzemeler
 
-Onemli alanlar:
+`ingredients` tablosu global ve kullaniciya ozel malzemeleri destekler.
+
+Baslica alanlar:
 
 - `ingredient_id`
 - `ingredient_name`
@@ -176,20 +256,13 @@ Onemli alanlar:
 - `category_id`
 - `user_id`
 
-### 5.3 ingredient_categories
+`ingredient_categories`, malzemeleri sebze, meyve, et, sut urunu, tahil gibi kategorilerle iliskilendirir.
 
-Malzeme kategorileri.
+### 6.3 Tarifler
 
-Onemli alanlar:
+`recipes` tablosu tarif ana kaydidir.
 
-- `category_id`
-- `category_name`
-
-### 5.4 recipes
-
-Tarif ana kaydi.
-
-Onemli alanlar:
+Baslica alanlar:
 
 - `recipe_id`
 - `recipe_name`
@@ -212,13 +285,13 @@ Onemli alanlar:
 - `source_url`
 - `user_id`
 
-Not: `health_score`, `health_grade`, `health_explanation` alanlari sonradan eklendi. Migration: `backend/alembic/versions/20260427_02_add_recipe_health_score_fields.py`.
+Tarifler hem import edilen kaynaklardan hem de kullanici/custom akislarindan gelebilecek sekilde tasarlanmistir.
 
-### 5.5 recipe_ingredients
+### 6.4 Tarif Malzemeleri
 
-Tarif-malzemeler many-to-many iliskisi.
+`recipe_ingredients`, tarif ile malzemeler arasindaki many-to-many yapidir.
 
-Orijinal tarif verisi:
+Orijinal veri alanlari:
 
 - `recipe_ingredient_id`
 - `recipe_id`
@@ -226,43 +299,21 @@ Orijinal tarif verisi:
 - `amount`
 - `unit`
 
-Gram normalize alanlari:
+Gram normalizasyon alanlari:
 
 - `miktar_gram`
 - `donusum_kaynagi`
 - `donusum_guveni`
 - `donusum_notu`
 
-Kritik not: `amount` ve `unit` orijinal tarif verisi olarak kalir. Bunlar silinmez, ezilmez, dogrudan grama cevrilmez. Gram karsiligi varsa `miktar_gram` alanina yazilir.
+Kritik teknik karar: `amount` ve `unit` alanlari orijinal tarif verisi olarak korunur. Gram hesaplama sonucu bu alanlara yazilmaz, ayrica `miktar_gram` alanina kaydedilir.
 
-Migration: `backend/alembic/versions/20260427_01_add_recipe_ingredient_gram_conversions.py`.
+### 6.5 Nutrition Tablolari
 
-### 5.6 ingredient_unit_conversions
+`ingredient_nutrition_values`, malzeme bazli 100 gramlik besin degerlerini tutar.
 
-Malzeme ve birim bazli gram/ml/density donusum tablosu.
+Baslica alanlar:
 
-Alanlar:
-
-- `conversion_id`
-- `ingredient_id`
-- `unit_key`
-- `unit_aliases`
-- `grams_per_unit`
-- `ml_per_unit`
-- `density_g_per_ml`
-- `source`
-- `confidence`
-- `note`
-
-Bu tablo, `recipe_ingredients.miktar_gram` backfill islemi icin kullanilir.
-
-### 5.7 ingredient_nutrition_values
-
-USDA veya baska kaynaklardan gelen 100 gram bazli nutrition bilgileri.
-
-Onemli alanlar:
-
-- `ingredient_id`
 - `calories_per_100g`
 - `protein_per_100g`
 - `carbs_per_100g`
@@ -273,35 +324,159 @@ Onemli alanlar:
 - `sodium_mg_per_100g`
 - `confidence_score`
 
-Health score su an esas olarak recipe makrolari ve malzeme riskleriyle hesaplanir. Ingredient nutrition gelecekte daha detayli hesap icin destek verisi olarak kullanilabilir.
+`ingredient_unit_conversions`, malzeme ve birim bazli gram/ml/density donusumlerini tutar.
 
-### 5.8 Iliski ve Kullanici Tablolari
+### 6.6 Kullanici Iliski Tablolari
 
-- `owned_ingredients`: Kullanici dolabi/kileri.
-- `disliked_ingredients`: Kullanici sevilmeyen malzemeleri.
+- `owned_ingredients`: Kullanicinin kiler/dolap malzemeleri.
+- `disliked_ingredients`: Kullanicinin sevmedigi malzemeler.
 - `favorites`: Favori tarifler.
-- `daily_logs`: Gunluk/haftalik yemek kayitlari.
-- `email_verification_codes`: Kayit, dogrulama, sifre/e-posta islemleri icin OTP kodlari.
+- `daily_logs`: Gunluk/haftalik beslenme kayitlari.
+- `email_verification_codes`: OTP ve dogrulama kodlari.
 - `ingredient_aliases`: Malzeme alias eslestirmeleri.
 - `unmatched_ingredients`: Import sirasinda eslesmeyen malzemeler.
-- `healthy_recipes`: Fit/saglikli tarif secimleri icin yardimci tablo.
+- `healthy_recipes`: Saglikli tarif import ve ayrim islemleri icin yardimci yapi.
 
 ---
 
-## 6. Olcu Birimi ve Gram Donusum Sistemi
+## 7. Kimlik Dogrulama ve Kullanici Akislari
 
-Dosya: `backend/app/services/unit_conversion_service.py`
+Gelistirilen auth akislari:
 
-Amac: Tariflerdeki `amount` + `unit` bilgisinden, orijinal veriyi bozmadan `miktar_gram` hesaplamak.
+- Kullanici kaydi.
+- E-posta dogrulama.
+- Kullanici girisi.
+- Sifre sifirlama.
+- OTP/e-posta kodu gonderimi.
+- Profil olusturma ve profil guncelleme.
 
-### 6.1 Unit normalizer
+Backend tarafinda sifreler hashlenerek saklanir. E-posta dogrulama ve sifre sifirlama akislarinda `email_verification_codes` tablosu ve mailer yardimci modulu kullanilir.
 
-Birimler Turkce karakter, buyuk/kucuk harf, nokta, fazla bosluk, typo ve kisaltmalardan arindirilir.
+Frontend tarafinda ilgili sayfalar:
+
+- `Register.jsx`
+- `Login.jsx`
+- `VerifyEmail.jsx`
+- `ForgotPassword.jsx`
+- `ResetPassword.jsx`
+- `ProfileSetup.jsx`
+- `ProfileEdit.jsx`
+
+---
+
+## 8. Tarif Oneri Sistemi
+
+Ana endpoint:
+
+```text
+POST /api/recipes/recommendations
+```
+
+Ana servis:
+
+```text
+backend/app/services/recipe_service.py
+```
+
+Oneri sistemi su girdileri dikkate alir:
+
+- Secili malzemeler.
+- Kiler/dolap malzemeleri.
+- Sevmedigi malzemeler.
+- Pisirme tipi veya tarif tipi filtreleri.
+- Healthy-only gibi saglik odakli filtreler.
+- Tarif kaynagi.
+- Kullanici bilgisi.
+
+Oneri skoru ile health score farklidir:
+
+- `score`: Kullanicinin elindeki malzemelerle tarifin uyum puani.
+- `health_score`: Tarifin kalori, makro ve malzeme risklerine gore kalite puani.
+
+Oneri mantigi:
+
+- Secili malzemeler ve kiler malzemeleri birlestirilir.
+- Tarif malzemeleri normalize edilmis isimlerle karsilastirilir.
+- Secili malzeme eslesmesi daha yuksek agirlik alir.
+- Kiler eslesmeleri ek avantaj saglar.
+- Eksik malzemeler response icinde gosterilir.
+- Sevilmeyen malzemeler filtrelenebilir veya skor dusurmede kullanilir.
+- Sonuc tarif uyum skoruna gore siralanir.
+
+---
+
+## 9. Malzeme Esleme, Alias ve Import Altyapisi
+
+Tarif importlarinda en kritik sorun, farkli kaynaklardan gelen malzeme adlarinin ayni malzemeye baglanmasidir. Bunun icin su yapi gelistirildi:
+
+- Malzeme adlari normalize edilir.
+- Turkce karakter, buyuk/kucuk harf, fazla bosluk ve basit yazim farklari temizlenir.
+- Alias tablosu ile farkli isimler canonical ingredient kaydina baglanabilir.
+- Eslesmeyen malzemeler `unmatched_ingredients` ile raporlanir.
+- Denetim ve merge scriptleri ile malzeme havuzu temizlenebilir.
+
+Ilgili dosyalar:
+
+```text
+backend/app/services/ingredient_matching_service.py
+backend/app/services/ingredient_resolver_service.py
+backend/aliases.json
+backend/audit_ingredient_matching.py
+backend/merge_canonical_ingredients.py
+backend/normalize_healthy_recipe_ingredients.py
+backend/refresh_yemekcom_ingredients.py
+```
+
+---
+
+## 10. USDA ve Besin Degeri Entegrasyonu
+
+USDA entegrasyonu, malzemelerin 100 gram bazli besin degerlerini sisteme kazandirmak icin gelistirildi.
+
+Ilgili dosyalar:
+
+```text
+backend/app/services/usda_client.py
+backend/app/services/usda_mapping_service.py
+backend/app/services/nutrition_mapper.py
+backend/app/scripts/import_usda_nutrition.py
+backend/app/data/usda_seed_mappings.json
+backend/sync_ingredient_nutrition_from_usda.py
+```
+
+Gelistirilen yaklasim:
+
+- Ingredient kayitlari USDA food datasiyla eslestirilir.
+- USDA nutrient alanlari uygulamanin `calories/protein/carbs/fat/fiber/sugar/sodium` modeline map edilir.
+- Confidence score ile eslestirme kalitesi takip edilir.
+- Manuel veya inline nutrition girisi desteklenir.
+- Custom ingredient nutrition degerleri daha sonra hesaplamalarda kullanilabilecek sekilde saklanir.
+
+---
+
+## 11. Olcu Birimi ve Gram Donusum Sistemi
+
+Ana dosya:
+
+```text
+backend/app/services/unit_conversion_service.py
+```
+
+Amac, tariflerdeki `amount` ve `unit` bilgisinden orijinal veriyi bozmadan gram karsiligi uretmektir.
+
+Desteklenen birim aileleri:
+
+- Gram, kilogram.
+- Mililitre, litre.
+- Yemek kasigi, tatli kasigi, cay kasigi.
+- Su bardagi, cay bardagi, cup.
+- Adet/tane/parca.
+- Tutam, biraz, goz karari gibi belirsiz birimler.
 
 Ornek aliaslar:
 
 ```text
-yemek kasigi, yemek kasigi varyantlari, y.k., yk, tbsp, tablespoon -> tablespoon
+yemek kasigi, y.k., yk, tbsp, tablespoon -> tablespoon
 tatli kasigi, t.k., tk, dessert spoon -> dessert_spoon
 cay kasigi, tsp, teaspoon -> teaspoon
 su bardagi, bardak, cup -> cup
@@ -311,93 +486,34 @@ gram, gr, g -> gram
 kilogram, kg -> kilogram
 ml, mililitre -> ml
 litre, l -> liter
-tutam, biraz, goz karari -> uncertain
 ```
 
-### 6.2 Profil destekleri
-
-Volume profile secilebilir:
+Volume profile destegi:
 
 ```text
-yemek_com_profile:
-  tablespoon=15 ml
-  dessert_spoon=5 ml
-  teaspoon=5 ml
-  cup=200 ml
-
-tr_200ml_profile:
-  tablespoon=10 ml
-  dessert_spoon=5 ml
-  teaspoon=5 ml
-  cup=200 ml
-
-us_fda_profile:
-  tablespoon=15 ml
-  teaspoon=5 ml
-  cup=240 ml
+yemek_com_profile
+tr_200ml_profile
+us_fda_profile
 ```
 
-### 6.3 Seed conversion ornekleri
-
-Ornek gram karsiliklari:
-
-```text
-su: cup=200 g, tablespoon=15 g
-sut: yaklasik 1 ml = 1 g
-zeytinyagi/sivi yag: tablespoon=13.5 g, teaspoon=4.5 g
-un: tablespoon=9 g, cup=130 g
-toz seker: tablespoon=13 g, cup=200 g
-yogurt: tablespoon=15 g, cup=230 g
-bal/pekmez: tablespoon=20 g
-pirinc: cup=190 g
-bulgur: cup=170 g
-yumurta: piece=50 g
-domates: piece=115 g
-sogan: piece=100 g
-patates: piece=150 g
-tereyagi: tablespoon=14 g
-tuz: teaspoon/dessert_spoon=6 g
-karabiber: teaspoon=2.3 g
-```
-
-### 6.4 Gram backfill script
-
-Dosya:
+Backfill scripti:
 
 ```text
 backend/scripts/backfill_recipe_ingredient_grams.py
 ```
 
-Komutlar:
+Kullanim:
 
 ```bash
 python backend/scripts/backfill_recipe_ingredient_grams.py --dry-run
 python backend/scripts/backfill_recipe_ingredient_grams.py --apply
 ```
 
-Opsiyonel:
-
-```bash
---unit-profile yemek_com_profile
---unit-profile tr_200ml_profile
---unit-profile us_fda_profile
---cup-ml 200
---cup-ml 240
-```
-
-Rapor:
-
-- Toplam recipe_ingredients kaydi
-- Grama cevrilen kayit sayisi
-- High/medium/low confidence sayilari
-- Donusturulemeyen kayit sayisi
-- En cok donusturulemeyen birimler
-
-`--apply` olmadan recipe_ingredients satirlari kalici guncellenmez.
+`--dry-run`, veritabanina kalici yazmadan donusum raporu uretir. `--apply` gercek guncelleme yapar.
 
 ---
 
-## 7. Health Score Sistemi
+## 12. Health Score ve Tarif Kalite Sistemi
 
 Ana dosya:
 
@@ -411,7 +527,9 @@ Frontend yardimci:
 frontend/src/utils/recipeInsights.js
 ```
 
-### 7.1 Derecelendirme
+Health score, tarifleri sadece kaloriye gore degil, makro dagilimi ve malzeme risklerine gore degerlendirir.
+
+Kalite esikleri:
 
 ```text
 80-100 -> A
@@ -420,115 +538,41 @@ frontend/src/utils/recipeInsights.js
 0-49   -> D
 ```
 
-Frontend renkleri:
+Makro tabanli skor bilesenleri:
 
-```text
-A -> yesil
-B -> turkuaz/acik yesil
-C -> sari/turuncu
-D -> kirmizi
-```
+- Kalori skoru.
+- Protein skoru.
+- Yag skoru.
+- Karbonhidrat skoru.
+- Makro denge skoru.
 
-### 7.2 Makro tabanli temel skor
+Hard cap kurallari:
 
-Reusable fonksiyon:
+- Cok yuksek kalorili tarifler otomatik olarak A/B bandina cikamaz.
+- Cok yuksek yag iceren tariflerde skor sinirlanir.
+- Protein yuksekligi tek basina asiri kalori veya yag riskini kapatamaz.
+- Eklenmis seker ve rafine karbonhidrat iceren tariflere ek ceza uygulanir.
 
-```python
-calculate_health_score(
-    calories,
-    protein,
-    carbs,
-    fat,
-    recipe_name=None,
-    category=None,
-    servings=1,
-    values_are_per_serving=True,
-)
-```
+Malzeme riskleri:
 
-Eger `values_are_per_serving=False` verilirse `calories/protein/carbs/fat`, `servings` degerine bolunur. Normal API akisinda recipe makrolari genelde porsiyon basina cozumlenmis kaynak olarak kullanilir.
+- Eklenmis seker.
+- Bal, pekmez, recel, surup gibi seker kaynaklari.
+- Rafine karbonhidrat.
+- Beyaz pirinc, beyaz un, nisasta, makarna, yufka gibi kaynaklar.
+- Tereyagi, krema ve yuksek yag sinyalleri.
+- Kizartma sinyalleri.
 
-Makro kalorileri:
+Pozitif sinyaller:
 
-```text
-protein_kcal = protein * 4
-carb_kcal = carbs * 4
-fat_kcal = fat * 9
-macro_total = protein_kcal + carb_kcal + fat_kcal
-```
+- Sebze.
+- Bakliyat.
+- Yogurt.
+- Yagsiz protein.
+- Tam tahil.
+- Yulaf.
+- Bulgur.
 
-Yuzdeler:
-
-```text
-protein_pct = protein_kcal / macro_total * 100
-carb_pct = carb_kcal / macro_total * 100
-fat_pct = fat_kcal / macro_total * 100
-```
-
-Alt skorlar:
-
-```text
-calorie_score  weight 0.30
-protein_score  weight 0.25
-fat_score      weight 0.25
-carb_score     weight 0.10
-balance_score  weight 0.10
-```
-
-Final makro skoru:
-
-```text
-raw_score =
-  calorie_score * 0.30 +
-  protein_score * 0.25 +
-  fat_score * 0.25 +
-  carb_score * 0.10 +
-  balance_score * 0.10
-```
-
-Protein tek basina yuksek kalori ve yuksek yag cezasini telafi edemez. Bu nedenle hard cap kurallari vardir.
-
-### 7.3 Makro hard cap kurallari
-
-Ornekler:
-
-```text
-calories >= 1000 -> max 59
-fat >= 70 -> max 59
-fat_pct >= 55 -> max 59
-calories >= 1000 and fat_pct >= 55 -> max 55
-calories >= 1000 and fat >= 70 -> max 55
-calories >= 850 and fat >= 50 -> max 65
-```
-
-Ali Nazik gibi 1156 kcal, 76 g protein, 80 g yag olan tarifler protein yuksek olsa bile B olamaz. Beklenen skor C bandidir.
-
-### 7.4 Malzeme bazli risk katmani
-
-Yeni sistem sadece makroya bakmaz. `build_recipe_health_profile(recipe)` icinde once makro skor hesaplanir, sonra `recipe_ingredients` uzerinden malzeme riskleri uygulanir.
-
-Riskler:
-
-- Eklenmis seker
-- Rafine karbonhidrat
-- Yuksek yag / krema / tereyagi gibi riskli icerikler
-- Kizartma sinyalleri
-
-Bonuslar:
-
-- Sebze
-- Bakliyat
-- Yogurt
-- Yagsiz protein
-- Tam tahil
-- Yulaf
-- Bulgur
-
-Bonus toplami en fazla 12 puandir ve asiri seker/yag cezasini kapatamaz.
-
-### 7.5 Eklenmis seker tespiti
-
-USDA eslesmesi olmasa bile su malzemeler added sugar sayilir:
+Eklenmis seker ornekleri:
 
 ```text
 seker
@@ -546,370 +590,190 @@ agave
 maple syrup
 ```
 
-Seker gram donusumleri:
+Onemli test senaryolari:
 
 ```text
-1 su bardagi seker = 200 g
-1 yemek kasigi seker = 13 g
-1 tatli kasigi seker = 8 g
-1 cay kasigi seker = 4 g
+Tavuk Pilav -> 79 / B
+Ali Nazik -> 54 / C
+Balli Tarcinli Elma Cipsi -> 72 / B
+Sutlac -> 54 / C
 ```
 
-Bal/pekmez/recel/surup:
+Sutlac senaryosunda 1 su bardagi seker 200 gram kabul edilmis, 6 porsiyonda porsiyon basina yaklasik 33.33 gram eklenmis seker hesaplanmis ve tarif C bandinda tutulmustur. Bu, sekerli tariflerin sadece dusuk porsiyon kalorisi nedeniyle fazla iyi puan almamasini saglar.
 
-```text
-bal: added_sugar = gram * 0.82
-pekmez: gram * 0.60
-recel: gram * 0.60
-surup: gram * 0.70
-```
-
-Eklenmis seker cezasi:
-
-```text
-added_sugar_per_serving >= 50 -> +35 penalty
->= 35 -> +28
->= 25 -> +22
->= 15 -> +14
->= 10 -> +8
->= 5  -> +4
-```
-
-Eklenmis seker cap:
-
-```text
->= 50 g -> max 49
->= 35 g -> max 54
->= 25 g -> max 59
->= 15 g -> max 69
->= 10 g -> max 79
-```
-
-### 7.6 Rafine karbonhidrat tespiti
-
-Kaynaklar:
-
-```text
-pirinc
-beyaz pirinc
-nisasta
-beyaz un
-un
-makarna
-yufka
-milfoy
-irmik
-galeta unu
-```
-
-Ceza:
-
-```text
-refined_carb_per_serving >= 80 -> +12 penalty
->= 50 -> +8
->= 30 -> +5
-```
-
-Eklenmis seker ve rafine karbonhidrat birlikte yuksekse:
-
-```text
-added_sugar_per_serving >= 15 and refined_carb_per_serving >= 30:
-  +6 penalty
-  max_score <= 59
-```
-
-### 7.7 SUTLAC test senaryosu
-
-Sutlac malzemeleri:
-
-```text
-1 litre sut
-1 su bardagi seker
-1/2 su bardagi pirinc
-2 yemek kasigi nisasta
-tarcin
-porsiyon: 6
-```
-
-Hesap:
-
-```text
-1 su bardagi seker = 200 g
-added_sugar_per_serving = 200 / 6 = 33.33 g
-```
-
-Beklenen:
-
-```text
-score <= 59
-grade = C
-```
-
-Guncel test sonucu:
-
-```text
-health_score = 54
-health_grade = C
-added_sugar_per_serving = 33.33
-refined_carb_per_serving = 20.83
-ingredient_penalty = 22
-```
-
-Aciklama:
-
-```text
-Bu tarif porsiyon basina yuksek miktarda eklenmis seker ve rafine karbonhidrat icerdigi icin saglik skoru dusurulmustur.
-```
-
-### 7.8 Health score testleri
-
-Guncel beklenen testler:
-
-```text
-Tavuk Pilav:
-  calories=504, protein=36, carbs=63, fat=12
-  score ~= 79
-  grade = B
-
-Ali Nazik:
-  calories=1156, protein=76, carbs=32, fat=80
-  score ~= 54
-  grade = C
-
-Balli Tarcinli Elma Cipsi:
-  calories=98, protein=0, carbs=24, fat=0, category=snack
-  score ~= 72
-  grade = B
-
-Sutlac:
-  1 su bardagi seker / 6 porsiyon
-  score ~= 54
-  grade = C
-```
-
-### 7.9 Health score backfill
-
-Dosya:
+Health score backfill:
 
 ```text
 backend/scripts/backfill_health_scores.py
 ```
 
-Komutlar:
+Kullanim:
 
 ```bash
 python backend/scripts/backfill_health_scores.py --dry-run
 python backend/scripts/backfill_health_scores.py --apply
 ```
 
-Script:
-
-- Tum recipes kayitlarini okur.
-- Ilgili recipe_ingredients ve ingredients kayitlarini eager load eder.
-- `build_recipe_health_profile(recipe)` ile skor hesaplar.
-- `health_score`, `health_grade`, `health_explanation` alanlarini update eder.
-- Dry-run modunda DB’ye kalici skor yazmaz.
-
-Son dry-run dagilimi:
+Son dry-run dagilim hedefi:
 
 ```text
 Toplam tarif: 467
-A: 73 (%15.6)
-B: 178 (%38.1)
-C: 152 (%32.5)
-D: 64 (%13.7)
+A: 73
+B: 178
+C: 152
+D: 64
 Hard cap uygulanan: 197
 ```
 
-Bu dagilim hedefe yakindir. Tariflerin buyuk kismi A/B’ye yigilmiyor.
+Bu dagilim, tariflerin buyuk cogunlugunun yapay olarak A/B bandina yigilmasini engeller.
 
 ---
 
-## 8. Tarif Oneri Algoritmasi
+## 13. Frontend Mimarisi
 
-Endpoint:
+Frontend React ve Vite ile gelistirilmistir. Ana uygulama routing ve layout yapisi `App.jsx` uzerinden ilerler. Global state ve API iletisimleri `AppContext.jsx` icinde toplanmistir.
 
-```text
-POST /api/recipes/recommendations
-```
+Ana frontend sorumluluklari:
+
+- Kullanici oturum ve profil state'i.
+- Tema state'i.
+- Malzeme secimi.
+- Kiler/dolap state'i.
+- Favori tarifler.
+- Gunluk ve haftalik loglar.
+- Tarif cache'i.
+- API helper fonksiyonlari.
+
+### 13.1 AppContext
 
 Dosya:
 
 ```text
-backend/app/services/recipe_service.py
+frontend/src/context/AppContext.jsx
 ```
 
-Girdi:
+Onemli karar:
 
-- `selected_ingredient_ids`
-- `pantry_ingredient_ids`
-- `disliked_ingredient_ids`
-- `cooking_types`
-- `exclude_disliked`
-- `user_id`
-- `source`
-- `healthy_only`
+`fetchRecipeById(id)`, cache'de tarif varsa bile `ingredients` alanlari eksikse detay endpointini tekrar cagirir. Boylece liste ekranindan gelen ozet tarif, detay sayfasinda malzeme listesinin kaybolmasina neden olmaz.
 
-Mantik:
+### 13.2 Ana Sayfalar
 
-- Kullanici secili malzemeleri ve dolap malzemeleri birlestirilir.
-- Tarif malzemeleri normalize edilmis ingredient key’leriyle karsilastirilir.
-- Secili malzeme eslesmeleri daha yuksek agirlik alir.
-- Dolap malzemesi eslesmeleri ek puan alir.
-- Eksik malzemeler reason alaninda gosterilir.
-- Sevilmeyen malzemeler filtrelenebilir veya cezalandirilabilir.
-- Sonuc `score` alanina gore siralanir.
+- `Dashboard.jsx`: Gunluk hedef, tuketim ve ozet metrikleri.
+- `IngredientSelection.jsx`: Malzeme secimi.
+- `Recommendations.jsx`: Onerilen tarifler.
+- `RecipeListDb.jsx`: Veritabanindaki tarif listesi.
+- `RecipeDetailDb.jsx`: Tarif detaylari.
+- `Pantry.jsx`: Kiler/dolap yonetimi.
+- `DislikedIngredients.jsx`: Sevilmeyen malzemeler.
+- `FavoritesDb.jsx`: Favori tarifler.
+- `DailyLogs.jsx`: Gunluk kayitlar.
+- `WeeklyLogs.jsx`: Haftalik kayitlar.
+- `ProfileSetup.jsx` ve `ProfileEdit.jsx`: Profil olusturma/duzenleme.
 
-Oneri skoru health score’dan farklidir:
+### 13.3 UI ve Tema
 
-- `score`: Kullanicinin elindeki malzemelerle tarif uyumu.
-- `health_score`: Tarifin makro/malzeme bazli kalite puani.
+Gelistirilen UI iyilestirmeleri:
+
+- Acik/koyu tema destegi.
+- Login ekraninin tema degiskenleriyle daha stabil calismasi.
+- Malzeme secim ekraninda dark mode okunabilirliginin iyilestirilmesi.
+- Tarif detay ekraninda kalite bilgisinin gosterilmesi.
+- Nutrition confidence uyarilarinin detay ekranina dahil edilmesi.
+- Dashboard ve log ekranlarinda kalori/makro takibinin gorsellestirilmesi.
 
 ---
 
-## 9. Backend API
+## 14. Gunluk ve Haftalik Beslenme Takibi
 
-Temel endpointler:
+Kullanici profilinden hesaplanan `daily_calorie`, dashboard ve log ekranlarinda hedef deger olarak kullanilir.
+
+Makro hedefleri frontend tarafinda yaklasik hesaplanir:
+
+```text
+protein: kalorinin %25'i / 4
+karbonhidrat: kalorinin %45'i / 4
+yag: kalorinin %30'u / 9
+```
+
+`daily_logs` tablosu:
+
+- Tarif veya manuel kayit bilgisini saklar.
+- Porsiyon/miktar bilgisiyle toplam kalori ve makro tuketimini hesaplamaya yardim eder.
+- Gunluk ve haftalik ekranlarda raporlanir.
+- `entry_source` ile gunluk/haftalik veya farkli kaynak ayrimi desteklenir.
+
+---
+
+## 15. Scraper ve Tarif Import Sistemi
+
+Projede farkli kaynaklardan tarif verisi toplamak ve sisteme almak icin scraper/import scriptleri gelistirildi.
+
+Kaynak dosyalar:
+
+```text
+backend/scraper/yemekcom_scraper.py
+backend/scraper/bbcgoodfood_scraper.py
+backend/scraper/eatingwell_scraper.py
+backend/scraper/skinnytaste_scraper.py
+backend/scraper/import_yemekcom_recipes.py
+backend/scraper/import_bbcgoodfood_healthy_recipes.py
+backend/scraper/import_eatingwell_healthy_recipes.py
+backend/scraper/import_skinnytaste_healthy_recipes.py
+backend/import_yemekcom_diet_healthy_recipes.py
+```
+
+Import sirasinda:
+
+- Tarif basligi, aciklama, hazirlanis, sure, porsiyon ve gorsel bilgileri alinir.
+- Malzeme listeleri parse edilir.
+- Malzeme adlari normalize edilip ingredient kayitlariyla eslestirilir.
+- Eslesmeyen malzemeler raporlanir.
+- Health score ve gram donusum backfill surecleri sonradan calistirilabilir.
+
+---
+
+## 16. API Ozeti
+
+Ana endpoint gruplari:
 
 ```text
 POST /api/register
 POST /api/verify
 POST /api/login
+POST /api/forgot-password
+POST /api/reset-password
+
 GET  /api/ingredients/categorized
+
 GET  /api/recipes
 GET  /api/recipes/{recipe_id}
 POST /api/recipes/recommendations
 POST /api/recipes/custom
+
 GET  /api/users/{id}/profile
 PUT  /api/users/{id}/profile
+
 GET  /api/users/{id}/ingredients
 POST /api/users/{id}/ingredients
+
 GET  /api/users/{id}/disliked-ingredients
 POST /api/users/{id}/disliked-ingredients
+
 GET  /api/users/{id}/favorites
 POST /api/users/{id}/favorites/{recipe_id}
 DELETE /api/users/{id}/favorites/{recipe_id}
+
 GET  /api/users/{id}/daily-logs
 POST /api/users/{id}/daily-logs
 PUT  /api/users/{id}/daily-logs/{log_id}
 DELETE /api/users/{id}/daily-logs/{log_id}
 ```
 
-Tarif response’lari `serialize_recipe_summary` ve `serialize_recipe_detail` ile uretilir. Health alanlari bu serialization sirasinda `build_recipe_health_profile(recipe)` ile hesaplanir.
+Tarif response'lari summary ve detail seviyesinde ayrilir. Detail response icinde malzeme listesi, hazirlanis, makrolar ve health score bilgileri birlikte doner.
 
 ---
 
-## 10. Frontend Mimari Notlari
-
-### 10.1 AppContext
-
-Dosya:
-
-```text
-frontend/src/context/AppContext.jsx
-```
-
-Gorevleri:
-
-- Kullanici ve profil state’i
-- Dark/light tema state’i
-- Malzeme secimleri
-- Dolap/kiler malzemeleri
-- Favoriler
-- Gunluk loglar
-- Tarif cache’i
-- API helper fonksiyonlari
-
-Onemli duzeltme:
-
-`fetchRecipeById(id)` cache’de tarif varsa ama `ingredients` bos ise detay endpoint’ini tekrar cagirir. Aksi halde liste ekranindan gelen malzemesiz ozet tarif detayda malzemeleri gizleyebilir.
-
-### 10.2 Tarif detay ekrani
-
-Dosya:
-
-```text
-frontend/src/pages/RecipeDetailDb.jsx
-```
-
-Gosterilenler:
-
-- Tarif adi
-- Gorsel
-- Aciklama
-- Hazirlanis adimlari
-- Malzeme listesi
-- Porsiyon ayari
-- Kalori/protein/karbonhidrat/yag
-- Health grade / kalite
-- Nutrition confidence uyarisi
-
-### 10.3 Health grade UI
-
-Dosya:
-
-```text
-frontend/src/utils/recipeInsights.js
-```
-
-Eşikler:
-
-```text
-score >= 80 -> A kalite
-score >= 60 -> B kalite
-score >= 50 -> C kalite
-else -> D kalite
-```
-
-Renkler:
-
-```text
-A -> yesil
-B -> turkuaz
-C -> turuncu
-D -> kirmizi
-```
-
-### 10.4 Tema duzeltmeleri
-
-Yapilan son UI duzeltmeleri:
-
-- Login ekrani global dark mode’dan bagimsiz acik tema degiskenleriyle sabitlendi.
-- Malzeme secim ekranindaki arama inputu dark mode’da okunur hale getirildi.
-- Tarif detay cache sorunu cozuldu; malzemeler backend detay response’undan dogru gelir.
-
-Ilgili dosyalar:
-
-```text
-frontend/src/index.css
-frontend/src/components/IngredientPicker.css
-frontend/src/context/AppContext.jsx
-```
-
----
-
-## 11. Gunluk Log ve Dashboard
-
-Dashboard kullanicinin gunluk hedeflerini ve tuketimini gosterir.
-
-Kalori hedefi:
-
-- Kullanici profiline gore hesaplanir.
-- `daily_calorie` alaninda tutulur.
-- Makro hedefleri frontend’de yaklasik hesaplanir:
-  - protein: kalorinin %25’i / 4
-  - karbonhidrat: kalorinin %45’i / 4
-  - yag: kalorinin %30’u / 9
-
-Gunluk loglar:
-
-- `daily_logs` tablosunda saklanir.
-- Tarifin kalorisi ve serving multiplier bilgisiyle toplam tuketim hesaplanir.
-- Haftalik ve gunluk log ayrimi `entry_source` ile desteklenir.
-
----
-
-## 12. Migration ve Backfill Notlari
+## 17. Migration ve Backfill Dosyalari
 
 Migration dosyalari:
 
@@ -918,11 +782,9 @@ backend/alembic/versions/20260424_01_add_usda_nutrition_tables.py
 backend/alembic/versions/20260426_01_add_ingredient_aliases_and_unmatched.py
 backend/alembic/versions/20260427_01_add_recipe_ingredient_gram_conversions.py
 backend/alembic/versions/20260427_02_add_recipe_health_score_fields.py
+backend/alembic/versions/20260428_01_add_ingredient_inline_nutrition.py
+backend/alembic/versions/20260428_02_use_nutrition_values_for_custom_ingredients.py
 ```
-
-Not:
-
-Projede `backend/alembic/versions` klasoru var ancak tam Alembic scaffold her ortamda bulunmayabilir. Scriptler kritik kolonlari `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` ile de guvenli sekilde olusturur.
 
 Backfill scriptleri:
 
@@ -934,65 +796,121 @@ python backend/scripts/backfill_health_scores.py --dry-run
 python backend/scripts/backfill_health_scores.py --apply
 ```
 
-`--apply` oncesi PostgreSQL backup alinmasi onerilir.
+Notlar:
+
+- `--dry-run`, veritabanina kalici yazmadan kontrol icin kullanilir.
+- `--apply`, gercek guncelleme yapar.
+- Kalici backfill oncesinde veritabani yedegi alinmasi onerilir.
+- Orijinal tarif miktar ve birim alanlari hicbir backfill sirasinda ezilmemelidir.
 
 ---
 
-## 13. Bilinen Teknik Kararlar
+## 18. Test ve Dogrulama
 
-- Orijinal tarif miktar/birim verisi korunur.
-- Gram normalize sonucu ayri alanlara yazilir.
-- Health score deterministik olmalidir: ayni tarif ayni veriyle ayni skoru uretmelidir.
-- Protein bonusu yuksek kalori/yuksek yag risklerini tamamen kapatamaz.
-- Eklenmis seker USDA nutrition verisi olmasa bile malzeme adindan yakalanir.
-- Health score ve tarif onerisi uyum skoru farkli kavramlardir.
-- Frontend cache, detay malzemelerini gizlememelidir; cache’de ingredients yoksa detay endpoint’i tekrar cagrilir.
+Projede health score ve onerilerin mantigini kontrol etmek icin hedef senaryolar kullanildi.
 
----
+Onemli dogrulamalar:
 
-## 14. AI Asistani Icin Hizli Kontrol Listesi
+- Tavuk Pilav dengeli makro nedeniyle B bandinda kalir.
+- Ali Nazik yuksek proteinli olsa bile cok yuksek kalori/yag nedeniyle C bandina cekilir.
+- Balli Tarcinli Elma Cipsi dusuk kalorili ama seker kaynagi iceren snack olarak B bandinda kalir.
+- Sutlac eklenmis seker ve rafine karbonhidrat nedeniyle C bandina cekilir.
+- Tarif detay cache problemi cozuldu; detay sayfasinda malzemeler kaybolmaz.
+- `.venv`, `node_modules`, build ciktilari, `.env`, veritabani ve gecici Python dosyalari GitHub'a gonderilmez.
 
-Yeni bir AI bu projede calisirken:
-
-1. Once `backend/app/db/models.py` dosyasindaki gercek model alanlarini oku.
-2. Health score degistirilecekse `backend/app/utils/recipe_health.py` ana kaynaktir.
-3. Gram donusum degistirilecekse `backend/app/services/unit_conversion_service.py` ana kaynaktir.
-4. Tarif response’lari icin `backend/app/services/recipe_service.py` incelenmelidir.
-5. Frontend API/cache davranisi icin `frontend/src/context/AppContext.jsx` incelenmelidir.
-6. Health grade renk/esik UI icin `frontend/src/utils/recipeInsights.js` incelenmelidir.
-7. DB’ye kalici yazmadan once backfill scriptleri mutlaka `--dry-run` ile calistirilmalidir.
-8. `amount` ve `unit` alanlari orijinal veri olarak korunmalidir.
-9. Sekerli tarif testinde Sutlac C bandinda kalmalidir.
-10. Ali Nazik gibi cok kalorili/cok yagli tarifler protein yuksek diye B olmamalidir.
-
----
-
-## 15. Son Dogrulama Sonuclari
-
-Ornek health score testleri:
+Mevcut test dosyasi:
 
 ```text
-Tavuk Pilav -> 79 / B
-Ali Nazik -> 54 / C
-Balli Tarcinli Elma Cipsi -> 72 / B
-Sutlac -> 54 / C
+test_recommendations.py
 ```
-
-Son health backfill dry-run dagilimi:
-
-```text
-Toplam tarif: 467
-A: 73 (%15.6)
-B: 178 (%38.1)
-C: 152 (%32.5)
-D: 64 (%13.7)
-Hard cap uygulanan: 197
-```
-
-Bu dagilim, butun tariflerin A/B’ye yigilmasini engeller ve daha dengeli bir siniflandirma saglar.
 
 ---
 
-## 16. Kisa Ozet
+## 19. Git ve GitHub Durumu
 
-Bu proje, malzeme bazli tarif onerisi ve beslenme takibi yapan bir FastAPI + React uygulamasidir. Proje su an 12 haftalik genisletilmis takvimin 10. haftasindadir. Son guncellemelerle sistem; olcu birimlerini gram cinsine normalize edebilir, tarifleri makro ve malzeme risklerine gore `A/B/C/D` kaliteyle siniflandirabilir, sekerli/rafine karbonhidratli tarifleri fazla iyi puanlamaz ve frontend detay ekraninda bu bilgileri gosterebilir. Kalan 2 haftada ana odak yeni buyuk ozelliklerden cok test, stabilizasyon, raporlama, demo ve teslim hazirligidir.
+Git kurulumu yapildi ve proje klasoru Git reposu olarak baslatildi.
+
+Yapilan Git islemleri:
+
+- `main` branch'i olusturuldu.
+- `.gitignore` guncellendi.
+- Veritabani dosyalari ve gecici derlenmis Python dosyalari commit disinda birakildi.
+- Ilk commit olusturuldu.
+- GitHub remote eklendi.
+- Proje `origin/main` branch'ine push edildi.
+
+Remote:
+
+```text
+origin https://github.com/yavuzorhan/Reci_Match.git
+```
+
+`.gitignore` ile dislanan kritik dosyalar:
+
+```text
+.venv/
+__pycache__/
+*.py[cod]
+*.pyc.*
+*.db
+*.sqlite
+*.sqlite3
+frontend/node_modules/
+frontend/dist/
+.env
+.env.*
+```
+
+---
+
+## 20. Bilinen Teknik Kararlar
+
+- Health score ile tarif onerisi skoru birbirinden ayridir.
+- Tarif onerisi, kullanicinin malzeme uyumunu olcer.
+- Health score, tarifin besinsel kalite siniflandirmasidir.
+- Orijinal tarif miktar ve birim bilgileri korunur.
+- Gram donusum sonucu ayri alanlara yazilir.
+- Protein bonusu, yuksek kalori ve yuksek yag riskini tamamen kapatamaz.
+- Eklenmis seker, USDA verisi olmasa bile malzeme adindan tespit edilir.
+- Rafine karbonhidrat ve eklenmis seker birlikteyse skor daha sert dusurulur.
+- Frontend cache, detay response'undaki malzeme listesini ezmemelidir.
+- Backfill scriptleri once `--dry-run` ile calistirilmalidir.
+- `.env` ve veritabani dosyalari GitHub'a gonderilmemelidir.
+
+---
+
+## 21. Yeni Gelistirici Icin Hizli Rehber
+
+Bu projede calismaya baslayan bir gelistirici su sirayla ilerlemelidir:
+
+1. Veritabani modelleri icin `backend/app/db/models.py` dosyasini incele.
+2. Backend baslangici icin `backend/main.py` dosyasini incele.
+3. Tarif is mantigi icin `backend/app/services/recipe_service.py` dosyasini incele.
+4. Health score icin `backend/app/utils/recipe_health.py` dosyasini incele.
+5. Gram donusum icin `backend/app/services/unit_conversion_service.py` dosyasini incele.
+6. Kullanici ve auth akislarini `auth_service.py`, `user_service.py` ve ilgili routerlarda takip et.
+7. Frontend global state icin `frontend/src/context/AppContext.jsx` dosyasini incele.
+8. Tarif detay davranisi icin `frontend/src/pages/RecipeDetailDb.jsx` dosyasini incele.
+9. Health grade UI esikleri icin `frontend/src/utils/recipeInsights.js` dosyasini incele.
+10. DB guncelleyen scriptleri once `--dry-run` ile calistir.
+
+---
+
+## 22. Kisa Sonuc
+
+Reci Match; tarif onerisi, kullanici profili, malzeme yonetimi, kiler takibi, sevilmeyen malzeme filtresi, favoriler, gunluk/haftalik beslenme loglari, USDA destekli nutrition altyapisi, gram donusum sistemi ve health score algoritmasi bulunan kapsamli bir bitirme projesidir.
+
+Proje artik yalnizca planlanan bir uygulama degil; backend, frontend, veri isleme scriptleri, skor algoritmasi ve GitHub yayini olan gelistirilmis bir urundur. Bundan sonraki ana odak; kurulum dokumani, demo senaryosu, tez/rapor metni, test kapsami ve son UI/UX kontrollerinin netlestirilmesidir.
+
+---
+
+## 23. Backend Katmanlı Mimari (Layered Architecture) Revizyonu
+
+Nisan 2026 itibarıyla proje backend'i, endüstri standardı olan **Katmanlı Mimari (Layered Architecture)** prensiplerine tam uyumlu olacak şekilde yeniden yapılandırılmıştır:
+
+1. **Repository Katmanı İzole Edildi:** `user_repository.py`, `ingredient_repository.py` ve `recipe_repository.py` oluşturularak `db.query` ve `db.execute` gibi tüm veritabanı sorguları Service katmanından buraya taşındı.
+2. **Service Katmanı Temizlendi:** `user_service.py`, `ingredient_service.py` ve `recipe_service.py` içerisindeki tüm SQL mantıkları çıkarıldı. Servisler artık sadece iş kurallarını (business logic) işler ve veritabanı erişimi için Repository fonksiyonlarını çağırır.
+3. **Helper Modülleri Oluşturuldu:** `recipe_service.py` içerisindeki uzun kalori hesaplama, gram dönüşüm (`_unit_to_grams`) gibi yardımcı fonksiyonlar tamamen sökülüp `app/utils/recipe_helpers.py` içerisine taşındı.
+4. **Klasör Hiyerarşisi Temizlendi:** Sadece çalıştırma amacıyla kullanılan (cron job veya migration) geçici scriptler `backend/scripts/` altına taşındı. Kullanılmayan eski React mock dosyaları (`mockData.js`) ve sayfası olmayan bileşenler silindi.
+
+Bu yapı sayesinde backend kod tabanı çok daha modüler, test edilebilir ve sürdürülebilir hale getirilmiştir.

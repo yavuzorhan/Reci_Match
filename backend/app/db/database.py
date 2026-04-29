@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy import text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 from ..config.settings import settings
 
 # Veritabanı motorunu (engine) oluşturuyoruz
@@ -61,16 +60,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-def check_connection():
-    """
-    Bağlantıyı test etmek için basit bir kontrol fonksiyonu.
-    """
-    try:
-        # Basit bir SELECT sorgusu ile bağlantıyı doğrula
-        with engine.connect() as connection:
-            print("Successfully connected to PostgreSQL database!")
-            return True
-    except Exception as e:
-        print(f"Error connecting to the database: {e}")
-        return False

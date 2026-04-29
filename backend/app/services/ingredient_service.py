@@ -1,10 +1,10 @@
 """
 Malzeme iş mantığı: kategorize listeleme, özel malzeme ekleme ve kiler yönetimi.
 """
-from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
 
-from app.db.models import Ingredient, IngredientCategory, OwnedIngredient, DislikedIngredient
+from app.repositories import ingredient_repository
 from app.utils.helpers import normalize_ingredient_name
 
 
@@ -27,7 +27,7 @@ CATEGORY_PRIORITY = {
 
 
 def get_categorized_ingredients(user_id: int | None, db: Session) -> list[dict]:
-    categories = db.query(IngredientCategory).all()
+    categories = ingredient_repository.get_all_categories(db)
     sorted_cats = sorted(categories, key=lambda item: CATEGORY_PRIORITY.get(item.category_name, 100))
 
     result = []
@@ -61,28 +61,26 @@ def create_custom_ingredient(user_id: int, name: str, category_id: int | None, d
     if not category_id:
         raise HTTPException(status_code=400, detail="Kategori seçimi zorunludur. Lütfen kategori seçin.")
 
-    existing_global = db.query(Ingredient).filter(
-        Ingredient.ingredient_name == clean_name,
-        Ingredient.user_id.is_(None),
-    ).first()
+    existing_global = ingredient_repository.find_global_ingredient_by_name(db, clean_name)
     if existing_global:
         return {
             "message": "Sistemde zaten bu malzeme var.",
             "ingredient": {"id": existing_global.ingredient_id, "name": existing_global.ingredient_name},
         }
 
-    existing_user = db.query(Ingredient).filter(
-        Ingredient.ingredient_name == clean_name,
-        Ingredient.user_id == user_id,
-    ).first()
+    existing_user = ingredient_repository.find_user_ingredient_by_name(db, user_id, clean_name)
     if existing_user:
         return {
             "message": "Bu malzeme zaten ekli.",
             "ingredient": {"id": existing_user.ingredient_id, "name": existing_user.ingredient_name},
         }
 
-    new_ingredient = Ingredient(ingredient_name=clean_name, category_id=category_id, user_id=user_id)
-    db.add(new_ingredient)
+    new_ingredient = ingredient_repository.create_ingredient(
+        db,
+        ingredient_name=clean_name,
+        category_id=category_id,
+        user_id=user_id,
+    )
     db.commit()
     db.refresh(new_ingredient)
     return {
@@ -92,26 +90,26 @@ def create_custom_ingredient(user_id: int, name: str, category_id: int | None, d
 
 
 def get_user_ingredients(user_id: int, db: Session) -> list[dict]:
-    owned = db.query(OwnedIngredient).filter(OwnedIngredient.user_id == user_id).all()
+    owned = ingredient_repository.find_owned_ingredients_by_user(db, user_id)
     return [{"id": item.ingredient_id, "name": item.ingredient.ingredient_name} for item in owned]
 
 
 def update_user_ingredients(user_id: int, ingredient_ids: list[int], db: Session) -> dict:
-    db.query(OwnedIngredient).filter(OwnedIngredient.user_id == user_id).delete()
+    ingredient_repository.delete_owned_ingredients_by_user(db, user_id)
     for ingredient_id in ingredient_ids:
-        db.add(OwnedIngredient(user_id=user_id, ingredient_id=ingredient_id))
+        ingredient_repository.create_owned_ingredient(db, user_id, ingredient_id)
     db.commit()
     return {"message": "Malzemeler güncellendi."}
 
 
 def get_disliked_ingredients(user_id: int, db: Session) -> list[int]:
-    disliked = db.query(DislikedIngredient).filter(DislikedIngredient.user_id == user_id).all()
+    disliked = ingredient_repository.find_disliked_ingredients_by_user(db, user_id)
     return [item.ingredient_id for item in disliked]
 
 
 def update_disliked_ingredients(user_id: int, ingredient_ids: list[int], db: Session) -> dict:
-    db.query(DislikedIngredient).filter(DislikedIngredient.user_id == user_id).delete()
+    ingredient_repository.delete_disliked_ingredients_by_user(db, user_id)
     for ingredient_id in ingredient_ids:
-        db.add(DislikedIngredient(user_id=user_id, ingredient_id=ingredient_id))
+        ingredient_repository.create_disliked_ingredient(db, user_id, ingredient_id)
     db.commit()
     return {"message": "Sevilmeyen malzemeler güncellendi."}

@@ -4,11 +4,11 @@ Kullanıcı (User) profil iş mantığı - profil, favoriler ve günlük kayıtl
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
-from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.db.models import DailyLog, Favorite, Recipe, User
+from app.db.models import Recipe
+from app.repositories import user_repository
 
 
 TURKEY_TZ = timezone(timedelta(hours=3))
@@ -103,12 +103,7 @@ def update_profile(
 
 def get_favorites(user_id: int, db: Session) -> list[int]:
     _ensure_user_exists(user_id, db)
-    favorites = (
-        db.query(Favorite)
-        .filter(Favorite.user_id == user_id)
-        .order_by(Favorite.favorite_id.desc())
-        .all()
-    )
+    favorites = user_repository.find_favorites_by_user(db, user_id)
     return [favorite.recipe_id for favorite in favorites]
 
 
@@ -116,26 +111,17 @@ def add_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
     _ensure_user_exists(user_id, db)
     _ensure_recipe_exists(recipe_id, db)
 
-    existing = (
-        db.query(Favorite)
-        .filter(Favorite.user_id == user_id, Favorite.recipe_id == recipe_id)
-        .first()
-    )
+    existing = user_repository.find_favorite(db, user_id, recipe_id)
     if existing:
         return {"message": "Tarif zaten favorilerde.", "recipe_id": recipe_id}
 
-    favorite = Favorite(user_id=user_id, recipe_id=recipe_id)
-    db.add(favorite)
+    user_repository.create_favorite(db, user_id, recipe_id)
     db.commit()
     return {"message": "Favorilere eklendi.", "recipe_id": recipe_id}
 
 
 def remove_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
-    favorite = (
-        db.query(Favorite)
-        .filter(Favorite.user_id == user_id, Favorite.recipe_id == recipe_id)
-        .first()
-    )
+    favorite = user_repository.find_favorite(db, user_id, recipe_id)
     if not favorite:
         raise HTTPException(status_code=404, detail="Favori kaydı bulunamadı.")
 
@@ -145,15 +131,8 @@ def remove_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
 
 
 def get_daily_logs(user_id: int, db: Session) -> list[dict]:
-    _ensure_daily_log_columns(db)
     _ensure_user_exists(user_id, db)
-    logs = (
-        db.query(DailyLog, Recipe)
-        .join(Recipe, Recipe.recipe_id == DailyLog.recipe_id)
-        .filter(DailyLog.user_id == user_id)
-        .order_by(DailyLog.logged_at.desc().nullslast(), DailyLog.log_id.desc())
-        .all()
-    )
+    logs = user_repository.find_daily_logs_with_recipe(db, user_id)
 
     result = []
     for log, recipe in logs:
@@ -192,7 +171,6 @@ def add_daily_log(
     log_date: str | None = None,
     entry_source: str | None = "daily",
 ) -> dict:
-    _ensure_daily_log_columns(db)
     _ensure_user_exists(user_id, db)
     recipe = _ensure_recipe_exists(recipe_id, db)
 
@@ -222,7 +200,8 @@ def add_daily_log(
     adjusted_calorie = (float(recipe.calorie) if recipe.calorie is not None else 0) * resolved_multiplier
     resolved_entry_source = (entry_source or "daily").strip().lower()
 
-    log = DailyLog(
+    log = user_repository.create_daily_log(
+        db,
         user_id=user_id,
         recipe_id=recipe_id,
         log_date=now.date(),
@@ -233,7 +212,6 @@ def add_daily_log(
         serving_count=resolved_serving_count,
         serving_multiplier=round(resolved_multiplier, 2),
     )
-    db.add(log)
 
     try:
         db.commit()
@@ -265,11 +243,7 @@ def add_daily_log(
 
 
 def remove_daily_log(user_id: int, log_id: int, db: Session) -> dict:
-    log = (
-        db.query(DailyLog)
-        .filter(DailyLog.user_id == user_id, DailyLog.log_id == log_id)
-        .first()
-    )
+    log = user_repository.find_daily_log(db, user_id, log_id)
     if not log:
         raise HTTPException(status_code=404, detail="Günlük kayıt bulunamadı.")
 
@@ -285,19 +259,11 @@ def update_daily_log(
     serving_count: int | None,
     db: Session,
 ) -> dict:
-    log = (
-        db.query(DailyLog)
-        .filter(DailyLog.user_id == user_id, DailyLog.log_id == log_id)
-        .first()
-    )
+    log = user_repository.find_daily_log(db, user_id, log_id)
     if not log:
         raise HTTPException(status_code=404, detail="Kayıt bulunamadı.")
 
-    recipe = (
-        db.query(Recipe)
-        .filter(Recipe.recipe_id == log.recipe_id)
-        .first()
-    )
+    recipe = user_repository.find_recipe_by_id(db, log.recipe_id)
 
     if meal_type:
         log.meal_type = meal_type
@@ -333,15 +299,17 @@ def update_daily_log(
     }
 
 
-def _ensure_user_exists(user_id: int, db: Session) -> User:
-    user = db.query(User).filter(User.user_id == user_id).first()
+# ─── Private Helpers ────────────────────────────────────────────────────────
+
+def _ensure_user_exists(user_id: int, db: Session):
+    user = user_repository.find_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
     return user
 
 
 def _ensure_recipe_exists(recipe_id: int, db: Session) -> Recipe:
-    recipe = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
+    recipe = user_repository.find_recipe_by_id(db, recipe_id)
     if not recipe:
         raise HTTPException(status_code=404, detail="Tarif bulunamadı.")
     return recipe
@@ -366,13 +334,7 @@ def _normalize_meal_type(meal_type: str | None) -> str:
 
 def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, db: Session) -> str:
     meal_order = ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği"]
-
-    existing_logs = (
-        db.query(DailyLog.meal_type)
-        .filter(DailyLog.user_id == user_id, DailyLog.log_date == log_date)
-        .all()
-    )
-    used_meal_types = {meal_type for (meal_type,) in existing_logs if meal_type}
+    used_meal_types = user_repository.find_daily_log_meal_types(db, user_id, log_date)
 
     if requested_meal_type not in used_meal_types:
         return requested_meal_type
@@ -386,47 +348,3 @@ def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, d
 
 def _local_now() -> datetime:
     return datetime.now(TURKEY_TZ).replace(tzinfo=None)
-
-
-def _ensure_daily_log_columns(db: Session) -> None:
-    db.execute(
-        text(
-            """
-            DO $$
-            BEGIN
-                IF NOT EXISTS (
-                    SELECT 1 FROM information_schema.columns
-                    WHERE table_name = 'daily_logs' AND column_name = 'logged_at'
-                ) THEN
-                    ALTER TABLE daily_logs ADD COLUMN logged_at TIMESTAMP;
-                END IF;
-                IF NOT EXISTS (
-                    SELECT 1 FROM information_schema.columns
-                    WHERE table_name = 'daily_logs' AND column_name = 'entry_source'
-                ) THEN
-                    ALTER TABLE daily_logs ADD COLUMN entry_source VARCHAR(20);
-                END IF;
-            END $$;
-            """
-        )
-    )
-    db.execute(
-        text(
-            """
-            UPDATE daily_logs
-            SET logged_at = (log_date::timestamp + INTERVAL '12 hours')
-            WHERE logged_at IS NULL
-              AND log_date IS NOT NULL;
-            """
-        )
-    )
-    db.execute(
-        text(
-            """
-            UPDATE daily_logs
-            SET entry_source = 'daily'
-            WHERE entry_source IS NULL;
-            """
-        )
-    )
-    db.commit()

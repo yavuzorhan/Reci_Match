@@ -1,6 +1,11 @@
 """Batch sync ingredient nutrition values from USDA FoodData Central."""
 from __future__ import annotations
 
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from app.db.database import SessionLocal
 from app.services.ingredient_nutrition_service import sync_missing_ingredient_nutrition
 

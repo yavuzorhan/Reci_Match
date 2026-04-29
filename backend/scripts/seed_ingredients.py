@@ -4,7 +4,7 @@ import sys
 from sqlalchemy import text
 
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.db.database import SessionLocal, engine
 from app.db.models import Base, Ingredient, IngredientCategory

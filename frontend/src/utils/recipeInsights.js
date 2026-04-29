@@ -83,3 +83,57 @@ export const getHealthGrade = (score = 0) => {
   if (score >= 50) return 'C kalite';
   return 'D kalite';
 };
+
+const stripHtml = (value) => (
+  (value || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+);
+
+const firstSentence = (value) => {
+  const cleaned = stripHtml(value);
+  if (!cleaned) return '';
+
+  const match = cleaned.match(/^.*?[.!?](?=\s|$)/);
+  const sentence = (match ? match[0] : cleaned).trim();
+  return /[.!?]$/.test(sentence) ? sentence : `${sentence}.`;
+};
+
+const looksLikeHealthScore = (value) => {
+  const text = stripHtml(value).toLocaleLowerCase('tr-TR');
+  if (!text) return false;
+
+  return (
+    /^[abcd]\s*kalite\b/.test(text)
+    || /\bkalite\s*\(\d+\/100\)/.test(text)
+    || text.includes('makro dagilimi')
+    || text.includes('makro dağılımı')
+    || text.includes('sağlık skoru')
+    || text.includes('saglik skoru')
+    || text.includes('skoru düşürülmüştür')
+    || text.includes('skoru dusurulmustur')
+    || text.includes('skoru destekledi')
+  );
+};
+
+export const buildRecipeShortSummary = (recipe, fallback = 'Lezzetli ve pratik bir tarif seçeneği.') => {
+  const candidates = [
+    recipe?.recipe_summary,
+    recipe?.description,
+    recipe?.explanation,
+  ];
+
+  const realSummary = candidates.find((item) => item && !looksLikeHealthScore(item));
+  if (realSummary) return firstSentence(realSummary);
+
+  if (!recipe?.name) return fallback;
+
+  const category = (recipe.recipe_category || 'tarif').toLocaleLowerCase('tr-TR');
+  const cookingType = recipe.cooking_type
+    ? `${recipe.cooking_type.toLocaleLowerCase('tr-TR')} yöntemiyle hazırlanan `
+    : '';
+
+  return `${recipe.name}, ${cookingType}kısa sürede sofraya uyarlanabilecek bir ${category} seçeneğidir.`;
+};
