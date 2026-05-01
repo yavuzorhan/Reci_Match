@@ -80,11 +80,30 @@ REFINED_CARB_TERMS = {
     "pirinc", "beyaz pirinc", "nisasta", "beyaz un", "un", "makarna", "yufka",
     "milfoy", "irmik", "galeta unu",
 }
+WHOLE_FLOUR_EXCLUSIONS = {
+    "tam bugday", "tam tahil", "yulaf", "nohut", "kepek",
+    "cevdar", "arpa", "karabugday", "cavdar",
+}
 POSITIVE_INGREDIENT_TERMS = {
     "sebze", "domates", "kabak", "brokoli", "ispanak", "mercimek", "nohut",
     "fasulye", "yogurt", "yoğurt", "tavuk", "hindi", "balik", "balık",
     "yulaf", "bulgur", "tam bugday", "tam buğday",
 }
+
+
+def _is_refined_carb(name: str) -> bool:
+    """
+    Malzeme adı refined carb mı?
+    "un" içeren malzemelerde tam tahıl kontrolü yapar.
+    """
+    if not _contains_any_health_word(name, REFINED_CARB_TERMS):
+        return False
+    folded = _fold_text(name)
+    if "un" in folded.split():
+        for exclusion in WHOLE_FLOUR_EXCLUSIONS:
+            if exclusion in folded:
+                return False
+    return True
 
 
 def build_recipe_health_profile(recipe, calorie_target: float | None = None, meal_count: int | None = None) -> dict:
@@ -396,7 +415,7 @@ def analyze_recipe_ingredient_risks(recipe) -> dict:
         if sugar_factor and grams is not None:
             added_sugar_total += grams * sugar_factor
 
-        if _contains_any_health_word(name, REFINED_CARB_TERMS) and grams is not None:
+        if _is_refined_carb(name) and grams is not None:
             refined_carb_total += grams
 
         bonus += _ingredient_bonus_points(name)

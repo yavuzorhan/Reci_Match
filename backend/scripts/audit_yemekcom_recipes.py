@@ -1,3 +1,8 @@
+"""
+Yemek.com tariflerini kalite kriterlere göre denetler.
+--dry-run: Sadece rapor üretir, DB'ye yazmaz.
+--apply:   Şüpheli tarifleri is_active=False yapar.
+"""
 from __future__ import annotations
 
 import argparse
@@ -11,73 +16,131 @@ sys.path.append(base_dir)
 
 from app.db.database import SessionLocal
 from app.repositories import recipe_repository
-from app.utils.text_normalize import normalize_turkish_text
 
 
-COMMON_INGREDIENT_WORDS = {
-    "un", "pirinc", "bulgur", "seker", "tuz", "yag", "zeytinyagi", "tereyagi",
-    "sut", "yogurt", "yumurta", "domates", "sogan", "sarimsak", "biber",
-    "patates", "havuç", "havuc", "tavuk", "et", "kiyma", "peynir", "maydanoz",
-    "mercimek", "nohut", "fasulye", "makarna",
-}
+COMMON_INGREDIENT_KEYWORDS = [
+    "soğan", "sogan", "sarımsak", "sarimsak", "domates", "biber",
+    "yağ", "yag", "tuz", "su", "şeker", "seker", "un",
+    "yumurta", "süt", "sut", "tereyağ", "tereyag", "zeytinyağı", "zeytinyagi",
+    "limon", "maydanoz", "nane", "pirinç", "pirinc", "makarna",
+    "tavuk", "et", "peynir", "yoğurt", "yogurt", "salça", "salca",
+]
 
 
-def audit_recipe(recipe) -> dict:
-    links = list(getattr(recipe, "ingredients", []) or [])
-    ingredient_names = [
-        normalize_turkish_text(getattr(link.ingredient, "ingredient_name", ""))
-        for link in links
-        if getattr(link, "ingredient", None)
-    ]
-    ingredient_tokens = {token for name in ingredient_names for token in name.split()}
-    empty_amount_unit = sum(1 for link in links if link.amount is None or not link.unit)
-    empty_ratio = empty_amount_unit / len(links) if links else 1.0
+def audit_recipe(recipe, ingredient_keywords: list[str]) -> tuple[int, list[str], dict]:
+    score = 0
+    flags: list[str] = []
+    details: dict = {}
 
-    prep_text = normalize_turkish_text(f"{recipe.explanation or ''} {recipe.preparation or ''}")
-    prep_tokens = {token for token in prep_text.split() if token in COMMON_INGREDIENT_WORDS}
-    overlap = len(prep_tokens & ingredient_tokens) / len(prep_tokens) if prep_tokens else 1.0
+    # Kriter A: Malzeme sayısı
+    ingredient_count = len(recipe.ingredients)
+    details["ingredient_count"] = ingredient_count
+    if ingredient_count < 3:
+        score += 1
+        flags.append("az_malzeme")
 
-    criteria = {
-        "few_ingredients": len(links) < 3,
-        "empty_amount_unit_ratio": empty_ratio > 0.5,
-        "low_preparation_overlap": overlap < 0.5,
+    # Kriter B: Boş amount oranı
+    total = len(recipe.ingredients)
+    empty_amount = sum(
+        1 for ri in recipe.ingredients
+        if ri.amount is None or str(ri.amount).strip() == "" or float(ri.amount or 0) == 0
+    )
+    empty_ratio = empty_amount / total if total > 0 else 0
+    details["empty_amount_ratio"] = round(empty_ratio, 2)
+    if empty_ratio > 0.5:
+        score += 1
+        flags.append("bos_miktar_fazla")
+
+    # Kriter C: Hazırlanış metni ile malzeme örtüşmesi
+    preparation = (recipe.preparation or "").lower()
+    ingredient_names = {
+        (ri.ingredient.ingredient_name or "").lower()
+        for ri in recipe.ingredients
+        if ri.ingredient
     }
-    failed = [name for name, failed in criteria.items() if failed]
-    return {
-        "recipe_id": recipe.recipe_id,
-        "recipe_name": recipe.recipe_name,
-        "source_url": recipe.source_url,
-        "is_active": bool(getattr(recipe, "is_active", True)),
-        "ingredient_count": len(links),
-        "empty_amount_unit_ratio": round(empty_ratio, 3),
-        "preparation_overlap": round(overlap, 3),
-        "failed_criteria": failed,
-        "should_deactivate": len(failed) >= 2,
-    }
+    missing_keywords: list[str] = []
+    for keyword in ingredient_keywords:
+        keyword_lower = keyword.lower()
+        in_prep = keyword_lower in preparation
+        in_ingredients = any(keyword_lower in name for name in ingredient_names)
+        if in_prep and not in_ingredients:
+            missing_keywords.append(keyword)
+
+    details["missing_keywords"] = missing_keywords
+    if len(missing_keywords) >= 3:
+        score += 1
+        flags.append("hazirlanis_malzeme_uyumsuz")
+
+    return score, flags, details
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Yemek.com tariflerini kalite kriterlerine göre denetler."
+    )
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--dry-run", action="store_true")
-    mode.add_argument("--apply", action="store_true")
+    mode.add_argument("--dry-run", action="store_true", help="Sadece rapor üretir, DB'ye yazmaz.")
+    mode.add_argument("--apply", action="store_true", help="Şüpheli tarifleri is_active=False yapar.")
+    parser.add_argument("--output", default=None, help="JSON çıktı dosyası yolu.")
     parser.set_defaults(dry_run=True)
     args = parser.parse_args()
 
     db = SessionLocal()
     try:
-        results = [audit_recipe(recipe) for recipe in recipe_repository.get_yemekcom_recipes_for_audit(db)]
-        output_path = Path(base_dir) / "audit_yemekcom_results.json"
-        output_path.write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding="utf-8")
+        recipes = recipe_repository.get_yemekcom_recipes_for_audit(db)
+
+        healthy_0 = 0
+        warning_1 = 0
+        suspicious_ids: list[int] = []
+        suspicious_entries: list[dict] = []
+
+        for recipe in recipes:
+            score, flags, details = audit_recipe(recipe, COMMON_INGREDIENT_KEYWORDS)
+            if score == 0:
+                healthy_0 += 1
+            elif score == 1:
+                warning_1 += 1
+            else:
+                suspicious_ids.append(recipe.recipe_id)
+                suspicious_entries.append({
+                    "recipe_id": recipe.recipe_id,
+                    "recipe_name": recipe.recipe_name,
+                    "score": score,
+                    "flags": flags,
+                    "ingredient_count": details["ingredient_count"],
+                    "empty_amount_ratio": details["empty_amount_ratio"],
+                    "missing_keywords": details["missing_keywords"],
+                })
 
         deactivated = 0
-        if args.apply:
-            deactivated = recipe_repository.deactivate_recipes(
-                db,
-                [item["recipe_id"] for item in results if item["should_deactivate"]],
-            )
+        if args.apply and suspicious_ids:
+            deactivated = recipe_repository.deactivate_recipes(db, suspicious_ids)
             db.commit()
-        print(json.dumps({"audited": len(results), "would_deactivate": sum(1 for item in results if item["should_deactivate"]), "deactivated": deactivated, "output": str(output_path)}, ensure_ascii=False))
+
+        output = {
+            "summary": {
+                "total": len(recipes),
+                "healthy_0": healthy_0,
+                "warning_1": warning_1,
+                "suspicious_2plus": len(suspicious_ids),
+                "deactivated": deactivated,
+            },
+            "suspicious": suspicious_entries,
+        }
+
+        output_path = args.output or str(Path(base_dir) / "audit_yemekcom_results.json")
+        Path(output_path).write_text(
+            json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+        mode_label = "[--apply]" if args.apply else "[--dry-run]"
+        print(f"{mode_label} Toplam tarif: {len(recipes)}")
+        print(f"  Sağlıklı (skor=0):    {healthy_0}")
+        print(f"  Uyarı    (skor=1):    {warning_1}")
+        print(f"  Şüpheli  (skor>=2):   {len(suspicious_ids)}")
+        if args.apply:
+            print(f"  Devre dışı bırakıldı: {deactivated}")
+        print(f"  Çıktı: {output_path}")
     finally:
         db.close()
 

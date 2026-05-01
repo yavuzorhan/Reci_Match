@@ -484,7 +484,16 @@ const RecipeDetailDb = () => {
           </div>
         </div>
       </div>
-      {showRevisionModal && <RecipeRevisionModal recipe={recipe} onClose={() => setShowRevisionModal(false)} />}
+      {showRevisionModal && (
+        <RecipeRevisionModal
+          recipe={recipe}
+          onClose={() => setShowRevisionModal(false)}
+          onSaved={(newId) => {
+            setShowRevisionModal(false);
+            navigate(`/recipes/${newId}`);
+          }}
+        />
+      )}
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn {
