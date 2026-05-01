@@ -4,13 +4,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from fastapi import HTTPException
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db.models import Ingredient, IngredientNutritionValue, IngredientUsdaMapping
+from app.repositories import ingredient_repository
 from app.services.ingredient_nutrition_service import ensure_ingredient_nutrition_table
+from app.services.nutrition_resolver_service import resolve_ingredient_nutrition
 from app.utils.helpers import infer_ingredient_category, normalize_ingredient_name
-from app.utils.nutrition_fetcher import fetch_ingredient_nutrition
+from app.utils.text_normalize import normalize_turkish_text
+
+try:
+    from rapidfuzz import fuzz
+except ImportError:  # pragma: no cover
+    fuzz = None
 
 
 @dataclass
@@ -32,58 +38,84 @@ async def resolve_ingredient_for_user(
 
     existing = find_matching_ingredient(db, user_id, clean_name)
     if existing:
-        if getattr(existing, "nutrition_value", None):
-            return ResolveResult(status="resolved", ingredient=existing)
-        if try_usda:
-            nutrition = await fetch_ingredient_nutrition(existing.ingredient_name)
-            if nutrition:
-                upsert_ingredient_nutrition(db, existing, nutrition, source="USDA_FDC")
-                upsert_usda_mapping(db, existing, nutrition, clean_name)
-                return ResolveResult(status="resolved", ingredient=existing)
-        return ResolveResult(status="manual_required", ingredient_name=ingredient_name)
+        return await ensure_nutrition_for_ingredient(
+            db=db,
+            ingredient=existing,
+            query_name=clean_name,
+            try_usda=try_usda,
+        )
 
     if not try_usda:
         return ResolveResult(status="manual_required", ingredient_name=ingredient_name)
 
-    nutrition = await fetch_ingredient_nutrition(clean_name)
-    if nutrition:
+    nutrition_result = await resolve_ingredient_nutrition(db, user_id, clean_name)
+    if nutrition_result:
         ingredient = create_or_get_user_ingredient(
             db=db,
             user_id=user_id,
             ingredient_name=clean_name,
-            source="usda_auto",
+            source=f"{nutrition_result.source}_auto",
             flush=True,
         )
-        upsert_ingredient_nutrition(db, ingredient, nutrition, source="USDA_FDC")
-        upsert_usda_mapping(db, ingredient, nutrition, clean_name)
+        upsert_ingredient_nutrition(db, ingredient, nutrition_result.nutrition, source=nutrition_result.source)
+        if nutrition_result.source == "usda":
+            upsert_usda_mapping(db, ingredient, nutrition_result.nutrition, clean_name)
         return ResolveResult(status="resolved", ingredient=ingredient)
 
     return ResolveResult(status="manual_required", ingredient_name=ingredient_name)
 
 
-def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) -> Ingredient | None:
-    exact_matches = (
-        db.query(Ingredient)
-        .filter(
-            Ingredient.ingredient_name == normalized_name,
-            or_(Ingredient.user_id == user_id, Ingredient.user_id.is_(None)),
-        )
-        .all()
-    )
-    if exact_matches:
-        return _pick_best_match(exact_matches, user_id, normalized_name)
+async def ensure_nutrition_for_ingredient(
+    db: Session,
+    ingredient: Ingredient,
+    query_name: str | None = None,
+    try_usda: bool = True,
+) -> ResolveResult:
+    if getattr(ingredient, "nutrition_value", None):
+        return ResolveResult(status="resolved", ingredient=ingredient)
 
-    fuzzy_matches = (
-        db.query(Ingredient)
-        .filter(
-            Ingredient.ingredient_name.ilike(f"%{normalized_name}%"),
-            or_(Ingredient.user_id == user_id, Ingredient.user_id.is_(None)),
-        )
-        .all()
-    )
-    if not fuzzy_matches:
-        return None
-    return _pick_best_match(fuzzy_matches, user_id, normalized_name)
+    if not try_usda:
+        return ResolveResult(status="manual_required", ingredient_name=ingredient.ingredient_name)
+
+    nutrition_result = await resolve_ingredient_nutrition(db, ingredient.user_id or 0, query_name or ingredient.ingredient_name)
+    if nutrition_result:
+        upsert_ingredient_nutrition(db, ingredient, nutrition_result.nutrition, source=nutrition_result.source)
+        if nutrition_result.source == "usda":
+            upsert_usda_mapping(db, ingredient, nutrition_result.nutrition, query_name or ingredient.ingredient_name)
+        return ResolveResult(status="resolved", ingredient=ingredient)
+
+    return ResolveResult(status="manual_required", ingredient_name=ingredient.ingredient_name)
+
+
+def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) -> Ingredient | None:
+    normalized_key = normalize_turkish_text(normalized_name)
+    exact_matches = [
+        ingredient
+        for ingredient in ingredient_repository.find_accessible_ingredients_by_name(db, user_id, normalized_name)
+        if normalize_turkish_text(ingredient.ingredient_name) == normalized_key
+    ]
+    if exact_matches:
+        return _pick_best_match(exact_matches, user_id, normalized_key)
+
+    alias = ingredient_repository.find_accessible_ingredient_alias(db, user_id, normalized_key)
+    if alias:
+        return alias.ingredient
+
+    best_match: Ingredient | None = None
+    best_score = 0.0
+    for ingredient in ingredient_repository.list_accessible_ingredients(db, user_id):
+        candidate_key = normalize_turkish_text(ingredient.ingredient_name)
+        if not candidate_key or candidate_key == normalized_key:
+            continue
+        score = fuzz.token_set_ratio(normalized_key, candidate_key) if fuzz else 0.0
+        if score > best_score:
+            best_match = ingredient
+            best_score = score
+
+    if best_match is not None and best_score >= 90:
+        return best_match
+
+    return None
 
 
 def create_manual_ingredient(
@@ -102,15 +134,15 @@ def create_manual_ingredient(
     clean_name = normalize_ingredient_name(ingredient_name)
     existing = find_matching_ingredient(db, user_id, clean_name)
     if existing and existing.user_id == user_id:
-        return existing
-
-    ingredient = create_or_get_user_ingredient(
-        db=db,
-        user_id=user_id,
-        ingredient_name=clean_name,
-        source="manual",
-        flush=False,
-    )
+        ingredient = existing
+    else:
+        ingredient = create_or_get_user_ingredient(
+            db=db,
+            user_id=user_id,
+            ingredient_name=clean_name,
+            source="manual",
+            flush=False,
+        )
     db.flush()
     upsert_ingredient_nutrition(
         db,
@@ -188,8 +220,9 @@ def upsert_ingredient_nutrition(
     value.fiber_per_100g = float(nutrition.get("fiber_per_100g") or 0)
     value.sugar_per_100g = float(nutrition.get("sugar_per_100g") or 0)
     value.sodium_mg_per_100g = float(nutrition.get("sodium_mg_per_100g") or 0)
-    value.source = source
-    value.confidence_score = 0.85 if source == "USDA_FDC" else 0.4
+    value.source = "USDA_FDC" if source == "usda" else source
+    value.data_source = source
+    value.confidence_score = {"db": 1.0, "usda": 0.85, "ai": 0.5, "manual": 0.4}.get(source, 0.4)
     ingredient.nutrition_value = value
     return value
 

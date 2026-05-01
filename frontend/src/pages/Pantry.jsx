@@ -32,29 +32,33 @@ const Pantry = () => {
 
   return (
     <Layout>
-      <div style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '2.2rem', color: 'var(--text-primary)' }}>Mutfak Dolabım</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Mutfakta sürekli bulunan malzemeleri buradan yönetebilirsiniz.</p>
-        </div>
-        <button className="primary-btn" onClick={handleSavePantry} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Save size={20} /> Değişiklikleri Kaydet
-        </button>
-      </div>
+      <div className="pantry-page">
+        <div className="pantry-atmosphere" aria-hidden="true" />
 
-      <div className="card">
-        <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Package size={20} color="var(--primary-color)" /> Malzeme Dolabı
-        </h3>
-        <IngredientPicker
-          key={pantryIds.join('-')}
-          userId={user?.id}
-          initialSelection={effectiveSelectedIds}
-          onSelectionChange={(ids) => {
-            setHasEdited(true);
-            setSelectedIds(ids);
-          }}
-        />
+        <div className="pantry-header">
+          <div>
+            <h1>Mutfak Dolabım</h1>
+            <p>Mutfakta sürekli bulunan malzemeleri buradan yönetebilirsiniz.</p>
+          </div>
+          <button className="primary-btn pantry-save-button" onClick={handleSavePantry}>
+            <Save size={20} /> Değişiklikleri Kaydet
+          </button>
+        </div>
+
+        <div className="card pantry-card">
+          <h3>
+            <Package size={22} color="var(--primary-color)" /> Malzeme Dolabı
+          </h3>
+          <IngredientPicker
+            key={pantryIds.join('-')}
+            userId={user?.id}
+            initialSelection={effectiveSelectedIds}
+            onSelectionChange={(ids) => {
+              setHasEdited(true);
+              setSelectedIds(ids);
+            }}
+          />
+        </div>
       </div>
     </Layout>
   );

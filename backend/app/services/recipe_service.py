@@ -2,6 +2,9 @@
 Tarif (Recipe) is mantigi - listeleme, detay, oneri motoru ve ozel tarif olusturma.
 """
 from fastapi import HTTPException
+from pathlib import Path
+from uuid import uuid4
+
 from sqlalchemy.orm import Session
 
 from app.db.models import Recipe
@@ -77,6 +80,7 @@ def serialize_recipe_detail(
                         "carbs_per_100g": ingredient_carbs_per_100g(item.ingredient),
                         "fat_per_100g": ingredient_fat_per_100g(item.ingredient),
                         "source": item.ingredient.source,
+                        "nutrition_data_source": getattr(item.ingredient.nutrition_value, "data_source", None),
                         "is_verified": bool(item.ingredient.is_verified),
                     }
                     if item.ingredient
@@ -230,6 +234,13 @@ async def create_custom_recipe(
             for item in resolved_items
         ]
         recipe_repository.replace_recipe_ingredients(db, new_recipe.recipe_id, ingredient_rows)
+        db.flush()
+        recipe_with_relations = recipe_repository.find_recipe_by_id_with_relations(db, new_recipe.recipe_id)
+        if recipe_with_relations:
+            health_profile = build_recipe_health_profile(recipe_with_relations)
+            new_recipe.health_score = health_profile.get("health_score")
+            new_recipe.health_grade = health_profile.get("health_grade")
+            new_recipe.health_explanation = health_profile.get("health_summary")
 
         db.commit()
         db.refresh(new_recipe)
@@ -351,6 +362,40 @@ def delete_custom_recipe(user_id: int, recipe_id: int, db: Session) -> dict:
     recipe_repository.delete_recipe(db, recipe)
     db.commit()
     return {"status": "success", "message": "Tarif silindi."}
+
+
+async def upload_recipe_image(user_id: int, recipe_id: int, upload_file, db: Session) -> dict:
+    recipe = recipe_repository.find_recipe_by_id(db, recipe_id)
+    if not recipe or recipe.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Tarif bulunamadi veya bu tarif size ait degil.")
+
+    if upload_file.content_type not in {"image/jpeg", "image/png", "image/webp"}:
+        raise HTTPException(status_code=400, detail="Sadece jpeg, png veya webp yukleyebilirsiniz.")
+
+    content = await upload_file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Resim boyutu en fazla 5 MB olabilir.")
+
+    try:
+        from io import BytesIO
+        from PIL import Image
+
+        image = Image.open(BytesIO(content))
+        image.thumbnail((1200, 1200))
+        if image.mode not in {"RGB", "L"}:
+            image = image.convert("RGB")
+
+        upload_dir = Path(__file__).resolve().parents[2] / "uploads" / "recipe_images"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        filename = f"{uuid4().hex}.jpg"
+        output_path = upload_dir / filename
+        image.save(output_path, format="JPEG", quality=85, optimize=True)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Resim islenemedi.") from exc
+
+    recipe.image_url = f"/uploads/recipe_images/{filename}"
+    db.commit()
+    return {"status": "success", "image_url": recipe.image_url}
 
 
 def get_recommendations(

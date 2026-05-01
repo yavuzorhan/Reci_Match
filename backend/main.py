@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.routers import auth, ingredients, recipes, users
 
@@ -38,6 +39,8 @@ app.include_router(auth.router)
 app.include_router(ingredients.router)
 app.include_router(recipes.router)
 app.include_router(users.router)
+
+app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "uploads")), name="uploads")
 
 
 # ─── Root Endpoint ──────────────────────────────────────────────────────────

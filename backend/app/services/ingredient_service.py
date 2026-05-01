@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.repositories import ingredient_repository
+from app.services.ingredient_resolver_service import ensure_nutrition_for_ingredient
 from app.utils.helpers import normalize_ingredient_name
 
 
@@ -55,7 +56,7 @@ def get_categorized_ingredients(user_id: int | None, db: Session) -> list[dict]:
     return result
 
 
-def create_custom_ingredient(user_id: int, name: str, category_id: int | None, db: Session) -> dict:
+async def create_custom_ingredient(user_id: int, name: str, category_id: int | None, db: Session) -> dict:
     clean_name = normalize_ingredient_name(name)
 
     if not category_id:
@@ -63,16 +64,22 @@ def create_custom_ingredient(user_id: int, name: str, category_id: int | None, d
 
     existing_global = ingredient_repository.find_global_ingredient_by_name(db, clean_name)
     if existing_global:
+        nutrition_result = await ensure_nutrition_for_ingredient(db, existing_global, query_name=clean_name)
+        db.commit()
         return {
             "message": "Sistemde zaten bu malzeme var.",
             "ingredient": {"id": existing_global.ingredient_id, "name": existing_global.ingredient_name},
+            "nutrition_status": nutrition_result.status,
         }
 
     existing_user = ingredient_repository.find_user_ingredient_by_name(db, user_id, clean_name)
     if existing_user:
+        nutrition_result = await ensure_nutrition_for_ingredient(db, existing_user, query_name=clean_name)
+        db.commit()
         return {
             "message": "Bu malzeme zaten ekli.",
             "ingredient": {"id": existing_user.ingredient_id, "name": existing_user.ingredient_name},
+            "nutrition_status": nutrition_result.status,
         }
 
     new_ingredient = ingredient_repository.create_ingredient(
@@ -81,11 +88,13 @@ def create_custom_ingredient(user_id: int, name: str, category_id: int | None, d
         category_id=category_id,
         user_id=user_id,
     )
+    nutrition_result = await ensure_nutrition_for_ingredient(db, new_ingredient, query_name=clean_name)
     db.commit()
     db.refresh(new_ingredient)
     return {
         "message": "Malzeme eklendi.",
         "ingredient": {"id": new_ingredient.ingredient_id, "name": new_ingredient.ingredient_name},
+        "nutrition_status": nutrition_result.status,
     }
 
 

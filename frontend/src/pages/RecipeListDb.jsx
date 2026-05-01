@@ -349,7 +349,7 @@ const RecipeListDb = () => {
             .premium-recipe-card:hover .card-thumb { transform: scale(1.08); }
             .search-bar-wrap:focus-within {
               border-color: var(--primary-color) !important;
-              box-shadow: 0 8px 18px rgba(108, 92, 231, 0.08) !important;
+              box-shadow: 0 8px 18px rgba(217, 154, 43, 0.08) !important;
             }
             .no-scrollbar::-webkit-scrollbar { display: none; }
           `,

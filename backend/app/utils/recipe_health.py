@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import unicodedata
+from app.utils.text_normalize import contains_any_word
 
 
 FDA_DAILY_VALUES = {
@@ -283,6 +284,8 @@ def calculate_health_score(
 
     applied_caps = _hard_caps(calories, fat, fat_pct, category)
     max_score = min([100, *[cap["max_score"] for cap in applied_caps]]) if applied_caps else 100
+    if _has_negated_health_term(_fold_text(f"{recipe_name or ''} {category or ''}")) and calories <= 90:
+        max_score = 100
     score = min(raw_score, max_score)
     score = max(0, min(100, round(score)))
     grade = _health_grade(score)
@@ -393,7 +396,7 @@ def analyze_recipe_ingredient_risks(recipe) -> dict:
         if sugar_factor and grams is not None:
             added_sugar_total += grams * sugar_factor
 
-        if _contains_any(name, REFINED_CARB_TERMS) and grams is not None:
+        if _contains_any_health_word(name, REFINED_CARB_TERMS) and grams is not None:
             refined_carb_total += grams
 
         bonus += _ingredient_bonus_points(name)
@@ -520,15 +523,17 @@ def _sugar_source_grams(amount: float, unit_key: str | None, normalized_name: st
 
 
 def _added_sugar_factor(normalized_name: str) -> float:
-    if _contains_any(normalized_name, HONEY_TERMS):
+    if _has_negated_health_term(normalized_name):
+        return 0.0
+    if _contains_any_health_word(normalized_name, HONEY_TERMS):
         return 0.82
-    if _contains_any(normalized_name, MOLASSES_TERMS):
+    if _contains_any_health_word(normalized_name, MOLASSES_TERMS):
         return 0.60
-    if _contains_any(normalized_name, JAM_TERMS):
+    if _contains_any_health_word(normalized_name, JAM_TERMS):
         return 0.60
-    if _contains_any(normalized_name, SYRUP_TERMS):
+    if _contains_any_health_word(normalized_name, SYRUP_TERMS):
         return 0.70
-    if _contains_any(normalized_name, ADDED_SUGAR_TERMS):
+    if _contains_any_health_word(normalized_name, ADDED_SUGAR_TERMS):
         return 1.0
     return 0.0
 
@@ -732,7 +737,7 @@ def _weighted_name_category_adjustment(
         adjustment -= 10
     if _contains_any(text, {"pilav", "pirinc", "pirinç"}) and carbs >= 50:
         adjustment -= 5
-    if _contains_any(text, {"seker", "şeker", "balli", "ballı", "tatli", "tatlı"}) and carb_pct >= 75:
+    if (not _has_negated_health_term(text)) and _contains_any_health_word(text, {"seker", "şeker", "balli", "ballı", "tatli", "tatlı"}) and carb_pct >= 75:
         adjustment -= 5
     if _contains_any(text, {"krema", "tereyagi", "tereyağı", "kuyruk yagi", "kuyruk yağı"}) and fat >= 30:
         adjustment -= 6
@@ -773,7 +778,15 @@ def _weighted_calibration(
     category: str | None,
 ) -> float:
     text = _fold_text(f"{recipe_name or ''} {category or ''}")
-    if _contains_any(text, {"pilav", "pirinc", "pirinç"}) and carbs >= 50:
+    if _has_negated_health_term(text) and calories <= 90:
+        raw_score = max(raw_score, 80)
+    if _contains_any_health_word(text, {"pekmez"}) and carbs >= 45:
+        raw_score = min(raw_score, 59)
+    if _contains_any_health_word(text, {"makarna"}) and carbs >= 70:
+        raw_score = min(raw_score, 59)
+    if _contains_any(text, {"beyaz pirinc", "beyaz pirinç", "pirinc pilav", "pirinç pilav"}) and carbs >= 50:
+        raw_score = min(raw_score, 59)
+    elif _contains_any(text, {"pilav", "pirinc", "pirinç"}) and carbs >= 50:
         raw_score = min(raw_score, 79)
     if calories >= 1000 and fat >= 70 and fat_pct >= 55 and protein >= 60:
         raw_score = max(raw_score, 54)
@@ -847,7 +860,7 @@ def _macro_rule_bonus(calories: float, protein: float, carbs: float, fat: float,
 def _name_category_adjustment(recipe_name: str | None, category: str | None, carbs: float, carb_pct: float) -> int:
     text = _fold_text(f"{recipe_name or ''} {category or ''}")
     adjustment = 0
-    if _contains_any(text, {"bal", "seker", "şeker", "tatli", "tatlı"}) and carb_pct > 80:
+    if (not _has_negated_health_term(text)) and _contains_any_health_word(text, {"bal", "seker", "şeker", "tatli", "tatlı"}) and carb_pct > 80:
         adjustment -= 4
     if _contains_any(text, {"pilav", "pirinc", "pirinç"}) and carbs >= 50:
         adjustment -= 5
@@ -1019,7 +1032,7 @@ def _build_ingredient_profile(recipe) -> dict:
         "has_dairy": _contains_any(joined, DAIRY_TERMS),
         "has_added_fat": _contains_any(joined, ADDED_FAT_TERMS),
         "has_heavy_fat": _contains_any(joined, HEAVY_FAT_TERMS),
-        "has_sugar": _contains_any(joined, SUGAR_TERMS),
+        "has_sugar": (not _has_negated_health_term(joined)) and _contains_any_health_word(joined, SUGAR_TERMS),
         "has_processed_meat": _contains_any(joined, PROCESSED_MEAT_TERMS),
         "has_salt": _contains_any(joined, SALT_TERMS),
     }
@@ -1211,6 +1224,14 @@ def _divide_optional(value: float | None, divisor: int) -> float | None:
 def _contains_any(text: str, terms: set[str]) -> bool:
     folded_terms = {_fold_text(term) for term in terms}
     return any(term and term in text for term in folded_terms)
+
+
+def _contains_any_health_word(text: str, terms: set[str]) -> bool:
+    return contains_any_word(text, terms)
+
+
+def _has_negated_health_term(text: str) -> bool:
+    return contains_any_word(text, {"sekersiz", "şekersiz", "tuzsuz", "yagsiz", "yağsız"})
 
 
 def _fold_text(value: str) -> str:

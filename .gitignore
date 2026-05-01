@@ -12,9 +12,12 @@ __pycache__/
 
 frontend/node_modules/
 frontend/dist/
+backend/uploads/
 
 .env
 .env.*
+!.env.example
+!backend/.env.example
 
 .DS_Store
 Thumbs.db

@@ -16,6 +16,7 @@ import Pantry from './pages/Pantry';
 import Recommendations from './pages/Recommendations';
 import RecipeList from './pages/RecipeListDb';
 import RecipeDetail from './pages/RecipeDetailDb';
+import EditRecipe from './pages/EditRecipe';
 import HealthyMenu from './pages/HealthyMenu';
 import HealthyResults from './pages/HealthyResults';
 import Favorites from './pages/FavoritesDb';
@@ -51,6 +52,7 @@ const App = () => {
           <Route path="/pantry" element={<PrivateRoute><Pantry /></PrivateRoute>} />
           <Route path="/recipes" element={<PrivateRoute><RecipeList /></PrivateRoute>} />
           <Route path="/recipe/:id" element={<PrivateRoute><RecipeDetail /></PrivateRoute>} />
+          <Route path="/recipes/:id/edit" element={<PrivateRoute><EditRecipe /></PrivateRoute>} />
           <Route path="/healthy-menu" element={<PrivateRoute><HealthyMenu /></PrivateRoute>} />
           <Route path="/healthy-menu/results" element={<PrivateRoute><HealthyResults /></PrivateRoute>} />
           <Route path="/healthy-menu/:id" element={<PrivateRoute><RecipeDetail /></PrivateRoute>} />

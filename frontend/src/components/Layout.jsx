@@ -1,24 +1,21 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  ChefHat,
   Heart,
   LayoutDashboard,
-  Leaf,
   LogOut,
   Menu,
-  Moon,
   NotebookText,
   Package,
   ShoppingBasket,
-  Sun,
   UserCircle,
   X,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import reciMatchMiniLogo from '../assets/recimatch-mini-logo.png';
 
 const Layout = ({ children, variant = 'default' }) => {
-  const { setUser, isDarkMode, toggleDarkMode } = useApp();
+  const { setUser, isDarkMode } = useApp();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
@@ -40,27 +37,33 @@ const Layout = ({ children, variant = 'default' }) => {
   ]), []);
 
   useLayoutEffect(() => {
+    let frameId = 0;
+    const updatePill = (nextStyle) => {
+      frameId = window.requestAnimationFrame(() => setPillStyle(nextStyle));
+    };
+
     const activeItem = menuItems.find((item) => location.pathname.startsWith(item.path));
     if (!activeItem) {
-        setPillStyle(prev => ({ ...prev, opacity: 0 }));
-        return;
+        updatePill(prev => ({ ...prev, opacity: 0 }));
+        return () => window.cancelAnimationFrame(frameId);
     }
 
     const navElement = navRef.current;
     const activeElement = itemRefs.current[activeItem.path];
 
     if (!navElement || !activeElement) {
-      return;
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     const navRect = navElement.getBoundingClientRect();
     const activeRect = activeElement.getBoundingClientRect();
 
-    setPillStyle({
+    updatePill({
       opacity: 1,
       transform: `translateY(${activeRect.top - navRect.top}px)`,
       height: activeRect.height,
     });
+    return () => window.cancelAnimationFrame(frameId);
   }, [location.pathname, menuItems]);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
@@ -83,16 +86,18 @@ const Layout = ({ children, variant = 'default' }) => {
 
       <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="brand-mark" style={{ marginBottom: '2.5rem' }}>
-          <div className="brand-icon">
-            {resolvedVariant === 'healthy' ? <Leaf size={22} /> : <ChefHat size={22} />}
-          </div>
-          <div>
-            <p className="brand-kicker">
-              {resolvedVariant === 'healthy' ? 'Sağlıklı Seçimler' : 'Beslenme Asistanı'}
-            </p>
-            <h1 className="brand-title">
-              {resolvedVariant === 'healthy' ? 'Green Match' : 'ReciMatch'}
+          <img className="brand-symbol" src={reciMatchMiniLogo} alt="" aria-hidden="true" />
+          <span className="brand-divider" aria-hidden="true" />
+          <div className="brand-wordmark" aria-label="ReciMatch Beslenme Asistanı">
+            <h1>
+              <span className="brand-wordmark-reci">Reci</span>
+              <span className="brand-wordmark-match">Match</span>
             </h1>
+            <p>
+              <span aria-hidden="true" />
+              Beslenme Asistanı
+              <span aria-hidden="true" />
+            </p>
           </div>
         </div>
 

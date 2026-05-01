@@ -14,6 +14,20 @@ USDA_SEARCH_URL = "https://api.nal.usda.gov/fdc/v1/foods/search"
 LOGGER = logging.getLogger(__name__)
 
 TURKISH_USDA_ALIASES = {
+    "bal": "honey",
+    "badem": "almonds raw",
+    "domates": "tomatoes raw",
+    "elma sirkesi": "apple cider vinegar",
+    "elma": "apples raw",
+    "tuz": "salt table",
+    "sarimsak": "garlic raw",
+    "maydanoz": "parsley fresh",
+    "dereotu": "dill weed fresh",
+    "tereyagi": "butter",
+    "krema": "cream",
+    "kinoa": "quinoa uncooked",
+    "zeytinyagi": "olive oil",
+    "zeytinya": "olive oil",
     "tavuk gogsu": "chicken breast",
     "yumurta": "whole egg",
     "sut": "cow milk fluid",
@@ -23,6 +37,7 @@ TURKISH_USDA_ALIASES = {
     "muz": "bananas raw",
     "protein tozu": "whey protein powder",
     "yulaf": "oats",
+    "yulaf unu": "oat flour",
     "pirinc unu": "rice flour",
     "pirinc": "rice",
     "bulgur": "bulgur",
@@ -31,12 +46,35 @@ TURKISH_USDA_ALIASES = {
 
 USDA_DATA_TYPE_PRIORITY = ["Foundation", "SR Legacy", "Survey (FNDDS)"]
 USDA_REQUIRED_DESCRIPTION_TOKENS = {
+    "bal": {"honey"},
+    "badem": {"almond", "almonds"},
+    "avokado": {"avocado", "avocados"},
+    "domates": {"tomato", "tomatoes"},
+    "elma": {"apple", "apples"},
+    "elma sirkesi": {"apple", "cider", "vinegar"},
+    "sarimsak": {"garlic"},
+    "maydanoz": {"parsley"},
+    "dereotu": {"dill"},
+    "kinoa": {"quinoa"},
+    "yulaf unu": {"oat", "flour"},
+    "tuz": {"salt"},
+    "zeytinyagi": {"olive", "oil"},
+    "zeytinya": {"olive", "oil"},
     "sut": {"milk"},
     "cikolata": {"chocolate", "candies"},
     "visne": {"cherry", "cherries"},
     "muz": {"banana", "bananas"},
 }
 USDA_EXCLUDED_DESCRIPTION_TOKENS = {
+    "domates": {"sauce", "soup", "juice", "paste"},
+    "badem": {"butter", "milk", "flour", "oil"},
+    "avokado": {"oil", "sauce"},
+    "maydanoz": {"corn", "cilantro"},
+    "dereotu": {"pickle", "pickles", "cucumber", "sauce"},
+    "kinoa": {"flour"},
+    "tuz": {"tomato", "sauce", "soup", "seasoning", "cracker", "snack"},
+    "zeytinyagi": {"anchovies", "fish", "tuna", "sardines", "corn", "peanut"},
+    "zeytinya": {"anchovies", "fish", "tuna", "sardines", "corn", "peanut"},
     "sut": {"almond", "cheese", "coconut", "oat", "soy", "yogurt"},
     "visne": {"juice", "cream", "pork", "sauce"},
     "muz": {"pepper", "peppers", "wax", "hungarian"},
@@ -156,6 +194,10 @@ def parse_usda_nutrients(food_nutrients: list[dict]) -> dict:
         "protein_per_100g": 0.0,
         "carbohydrate_per_100g": 0.0,
         "fat_per_100g": 0.0,
+        "saturated_fat_per_100g": 0.0,
+        "fiber_per_100g": 0.0,
+        "sugar_per_100g": 0.0,
+        "sodium_mg_per_100g": 0.0,
     }
     for item in food_nutrients:
         nutrient_name = _normalize_text(item.get("nutrientName") or "")
@@ -174,6 +216,14 @@ def parse_usda_nutrients(food_nutrients: list[dict]) -> dict:
             result["carbohydrate_per_100g"] = amount
         elif nutrient_name == "total lipid fat":
             result["fat_per_100g"] = amount
+        elif nutrient_name == "fatty acids total saturated":
+            result["saturated_fat_per_100g"] = amount
+        elif nutrient_name == "fiber total dietary":
+            result["fiber_per_100g"] = amount
+        elif nutrient_name in {"sugars total including nlea", "total sugars"}:
+            result["sugar_per_100g"] = amount
+        elif nutrient_name == "sodium na":
+            result["sodium_mg_per_100g"] = amount
     if (
         result["calorie_per_100g"] == 0
         and any(result[key] > 0 for key in ("protein_per_100g", "carbohydrate_per_100g", "fat_per_100g"))
@@ -215,14 +265,22 @@ def _score_food(query: str, food: dict, normalized_key: str | None = None) -> fl
 
 
 def _has_reliable_food_match(food: dict, query: str, nutrients: dict, normalized_key: str | None = None) -> bool:
-    has_macro = any(float(nutrients.get(key) or 0) > 0 for key in nutrients)
-    description_tokens = set(_normalize_text(food.get("description") or "").split())
+    has_macro = any(
+        float(nutrients.get(key) or 0) > 0
+        for key in ("calorie_per_100g", "protein_per_100g", "carbohydrate_per_100g", "fat_per_100g")
+    )
+    has_nutrition_signal = has_macro or float(nutrients.get("sodium_mg_per_100g") or 0) > 0
+    description = _normalize_text(food.get("description") or "")
+    description_tokens = set(description.split())
     query_tokens = set(_normalize_text(query).split())
+    if normalized_key == "tuz":
+        excluded = USDA_EXCLUDED_DESCRIPTION_TOKENS.get("tuz", set())
+        return has_nutrition_signal and description.startswith("salt") and not (description_tokens & excluded)
     if normalized_key in USDA_REQUIRED_DESCRIPTION_TOKENS:
-        return has_macro and _description_matches_required_tokens(description_tokens, normalized_key)
+        return has_nutrition_signal and _description_matches_required_tokens(description_tokens, normalized_key)
     if not query_tokens & GENERIC_EXCLUDED_DESCRIPTION_TOKENS and description_tokens & GENERIC_EXCLUDED_DESCRIPTION_TOKENS:
         return False
-    return has_macro and _score_food(query, food, normalized_key) >= 0.35
+    return has_nutrition_signal and _score_food(query, food, normalized_key) >= 0.35
 
 
 def _description_matches_required_tokens(description_tokens: set[str], normalized_key: str | None) -> bool:
@@ -232,6 +290,20 @@ def _description_matches_required_tokens(description_tokens: set[str], normalize
     excluded = USDA_EXCLUDED_DESCRIPTION_TOKENS.get(normalized_key or "", set())
     if description_tokens & excluded:
         return False
+    if normalized_key in {"zeytinyagi", "zeytinya"}:
+        return {"olive", "oil"}.issubset(description_tokens)
+    if normalized_key == "elma sirkesi":
+        return {"apple", "vinegar"}.issubset(description_tokens) or {"cider", "vinegar"}.issubset(description_tokens)
+    if normalized_key == "yulaf unu":
+        return {"oat", "flour"}.issubset(description_tokens)
+    if normalized_key == "kinoa":
+        return "quinoa" in description_tokens
+    if normalized_key == "badem":
+        return bool({"almond", "almonds"} & description_tokens) and not ({"butter", "milk", "flour", "oil"} & description_tokens)
+    if normalized_key == "avokado":
+        return bool({"avocado", "avocados"} & description_tokens) and not ({"oil", "sauce"} & description_tokens)
+    if normalized_key == "dereotu":
+        return "dill" in description_tokens and not ({"pickle", "pickles", "cucumber"} & description_tokens)
     if normalized_key == "sut":
         return "milk" in description_tokens
     return bool(description_tokens & required)

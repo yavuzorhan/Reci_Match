@@ -5,7 +5,9 @@ const API_BASE = 'http://localhost:8000';
 
 const withProxiedImage = (recipe) => {
   if (!recipe?.image_url) return recipe;
+  if (recipe.image_url.startsWith('/uploads')) return { ...recipe, image_url: `${API_BASE}${recipe.image_url}` };
   if (recipe.image_url.startsWith(`${API_BASE}/api/recipe-image`)) return recipe;
+  if (recipe.image_url.startsWith(`${API_BASE}/uploads`)) return recipe;
   const proxiedUrl = `${API_BASE}/api/recipe-image?url=${encodeURIComponent(recipe.image_url)}`;
   return { ...recipe, image_url: proxiedUrl };
 };
@@ -65,12 +67,21 @@ export const AppProvider = ({ children }) => {
   const fetchUserPreferences = useCallback(async () => {
     if (!user?.id) return;
     try {
+      const safeFetch = async (url, fallback) => {
+        try {
+          return await fetchJson(url);
+        } catch (error) {
+          console.error('Preference endpoint error:', url, error);
+          return fallback;
+        }
+      };
+
       const [dislikedData, pantryData, favoriteIds, dailyLogData, profileData] = await Promise.all([
-        fetchJson(`${API_BASE}/api/users/${user.id}/disliked-ingredients`),
-        fetchJson(`${API_BASE}/api/users/${user.id}/ingredients`),
-        fetchJson(`${API_BASE}/api/users/${user.id}/favorites`),
-        fetchJson(`${API_BASE}/api/users/${user.id}/daily-logs`),
-        fetchJson(`${API_BASE}/api/users/${user.id}/profile`), // Corrected endpoint
+        safeFetch(`${API_BASE}/api/users/${user.id}/disliked-ingredients`, []),
+        safeFetch(`${API_BASE}/api/users/${user.id}/ingredients`, []),
+        safeFetch(`${API_BASE}/api/users/${user.id}/favorites`, []),
+        safeFetch(`${API_BASE}/api/users/${user.id}/daily-logs`, []),
+        safeFetch(`${API_BASE}/api/users/${user.id}/profile`, {}),
       ]);
 
       setDislikedIngredients(dislikedData);
@@ -79,13 +90,15 @@ export const AppProvider = ({ children }) => {
       setDailyLogs(dailyLogData);
       
       // Normalize profile fields to match frontend usage
-      const normalizedProfile = {
-        ...profileData,
-        height: profileData.height ?? profileData.height_cm,
-        weight: profileData.weight ?? profileData.weight_kg,
-        name: profileData.name ?? profileData.name_surname ?? user.name
-      };
-      setProfile(normalizedProfile);
+      if (profileData && Object.keys(profileData).length > 0) {
+        const normalizedProfile = {
+          ...profileData,
+          height: profileData.height ?? profileData.height_cm,
+          weight: profileData.weight ?? profileData.weight_kg,
+          name: profileData.name ?? profileData.name_surname ?? user.name
+        };
+        setProfile(normalizedProfile);
+      }
 
       const recipeIds = [...new Set([
         ...favoriteIds,
@@ -149,7 +162,8 @@ export const AppProvider = ({ children }) => {
             id: ing.id || ing.ingredient?.id || ing.ingredient_id,
             name: ing.name || ing.ingredient?.name || 'İsimsiz Malzeme',
             amount: ing.amount,
-            unit: ing.unit
+            unit: ing.unit,
+            nutrition_data_source: ing.nutrition?.nutrition_data_source || ing.nutrition_data_source
         }))
     };
 
@@ -279,6 +293,37 @@ export const AppProvider = ({ children }) => {
     return data;
   }, [fetchJson, user]);
 
+  const uploadRecipeImage = useCallback(async (recipeId, file, onProgress = null) => {
+    if (!user?.id) throw new Error('Giris yapmalisiniz.');
+    const formData = new FormData();
+    formData.append('image', file);
+    onProgress?.(35);
+    const data = await fetchJson(`${API_BASE}/api/recipes/${recipeId}/image?user_id=${user.id}`, {
+      method: 'POST',
+      body: formData,
+    });
+    onProgress?.(100);
+    return data;
+  }, [fetchJson, user]);
+
+  const reviseRecipe = useCallback(async (recipeId, modifications) => {
+    if (!user?.id) throw new Error('Giris yapmalisiniz.');
+    return fetchJson(`${API_BASE}/api/recipes/${recipeId}/revise?user_id=${user.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(modifications),
+    });
+  }, [fetchJson, user]);
+
+  const saveRevisedRecipe = useCallback(async (recipeId, revisedRecipe) => {
+    if (!user?.id) throw new Error('Giris yapmalisiniz.');
+    return fetchJson(`${API_BASE}/api/recipes/${recipeId}/revise/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: user.id, revised_recipe: revisedRecipe }),
+    });
+  }, [fetchJson, user]);
+
   const createManualIngredient = useCallback(async (ingredientName, nutritionValues) => {
     if (!user?.id) throw new Error('Giris yapmalisiniz.');
     return fetchJson(`${API_BASE}/api/users/${user.id}/ingredients/manual`, {
@@ -355,6 +400,9 @@ export const AppProvider = ({ children }) => {
       addCustomRecipe,
       updateCustomRecipe,
       deleteCustomRecipe,
+      uploadRecipeImage,
+      reviseRecipe,
+      saveRevisedRecipe,
       createManualIngredient,
       dashboardData,
       isDarkMode, toggleDarkMode

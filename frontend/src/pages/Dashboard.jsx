@@ -83,19 +83,19 @@ const Dashboard = () => {
         label: 'Protein',
         current: protein,
         target: toNumber(dashboardData.macroTargets?.protein),
-        color: '#85B7EB',
+        color: '#7f9b78',
       },
       {
         label: 'Karbonhidrat',
         current: carb,
         target: toNumber(dashboardData.macroTargets?.carb),
-        color: '#ED93B1',
+        color: '#c59a42',
       },
       {
         label: 'Yağ',
         current: fat,
         target: toNumber(dashboardData.macroTargets?.fat),
-        color: '#EF9F27',
+        color: '#a86b13',
       },
     ].map((macro) => ({
       ...macro,
@@ -154,9 +154,9 @@ const Dashboard = () => {
                   <circle className="ring-track" cx="90" cy="90" r={circleRadius} />
                   <defs>
                     <linearGradient id="calorieRingGradient" x1="28" y1="28" x2="152" y2="152" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#6ea8ff" />
-                      <stop offset="48%" stopColor="#7f74ff" />
-                      <stop offset="100%" stopColor="#9a6cff" />
+                      <stop offset="0%" stopColor="#f1c16b" />
+                      <stop offset="52%" stopColor="#d99a2b" />
+                      <stop offset="100%" stopColor="#7f9b78" />
                     </linearGradient>
                   </defs>
                   <circle
@@ -256,7 +256,14 @@ const Dashboard = () => {
               })
             ) : (
               <div className="empty-meals">
-                Bugün henüz öğün eklenmedi.
+                <span className="empty-meals-mark">
+                  <Leaf size={26} />
+                </span>
+                <strong>Öğünlerini ekleyerek güne başla!</strong>
+                <small>Öğünlerini kaydet, makrolarını takip et ve hedefine ulaş.</small>
+                <button type="button" onClick={() => navigate('/weekly-logs')}>
+                  + Öğün Ekle
+                </button>
               </div>
             )}
           </div>
@@ -266,7 +273,7 @@ const Dashboard = () => {
       <style dangerouslySetInnerHTML={{ __html: `
         .dashboard-home {
           display: grid;
-          gap: 1.25rem;
+          gap: 1.35rem;
         }
 
         .dashboard-home-header {
@@ -279,28 +286,31 @@ const Dashboard = () => {
         .dashboard-home-header h1 {
           margin: 0;
           color: var(--text-primary);
-          font-size: clamp(1.55rem, 2.4vw, 2rem);
-          font-weight: 900;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: clamp(2.1rem, 3.6vw, 3rem);
+          font-style: italic;
+          font-weight: 700;
           letter-spacing: 0;
-          line-height: 1;
+          line-height: 1.05;
         }
 
         .dashboard-home-header p {
           margin-top: 0.45rem;
           color: var(--text-secondary);
-          font-size: 0.98rem;
+          font-size: 1rem;
         }
 
         .dashboard-theme-button {
           width: 48px;
           height: 48px;
-          border-radius: 16px;
-          border: 1px solid var(--border-color);
-          background: var(--background-elevated);
-          color: var(--text-primary);
+          border-radius: 14px;
+          border: 1px solid var(--border-strong);
+          background: color-mix(in srgb, var(--background-elevated) 78%, transparent);
+          color: var(--primary-color);
           display: grid;
           place-items: center;
           flex: 0 0 auto;
+          box-shadow: var(--shadow-sm);
         }
 
         .dashboard-hero-grid {
@@ -313,26 +323,48 @@ const Dashboard = () => {
         .dashboard-recipe-hero {
           min-height: 360px;
           padding: clamp(1.7rem, 3vw, 2.4rem);
-          border-radius: 32px;
-          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
-          color: white;
+          border-radius: 22px;
+          background:
+            linear-gradient(90deg, rgba(0, 17, 14, 0.98) 0%, rgba(2, 31, 26, 0.94) 52%, rgba(3, 27, 23, 0.88) 100%),
+            radial-gradient(ellipse at 82% 50%, rgba(217, 154, 43, 0.14), transparent 34%),
+            repeating-linear-gradient(135deg, rgba(241, 193, 107, 0.028) 0 1px, transparent 1px 9px);
+          color: #f8eedc;
           overflow: hidden;
-          border: 1px solid rgba(196, 181, 253, 0.12);
+          border: 1px solid var(--border-strong);
           text-align: left;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
           position: relative;
-          box-shadow: none;
+          box-shadow: var(--shadow-md);
         }
 
         .dashboard-recipe-hero::before {
           content: "";
           position: absolute;
-          inset: 0;
-          opacity: 0.08;
-          background: radial-gradient(circle at 2px 2px, white 1px, transparent 0);
-          background-size: 26px 26px;
+          right: clamp(1rem, 4vw, 3rem);
+          top: 8%;
+          width: min(34vw, 360px);
+          height: 82%;
+          opacity: 0.3;
+          background:
+            radial-gradient(ellipse at 72% 58%, rgba(241, 193, 107, 0.22), transparent 18%),
+            linear-gradient(42deg, transparent 42%, rgba(241, 193, 107, 0.38) 43% 44%, transparent 45%),
+            linear-gradient(118deg, transparent 46%, rgba(127, 155, 120, 0.38) 47% 48%, transparent 49%);
+          filter: blur(0.1px);
+        }
+
+        .dashboard-recipe-hero::after {
+          content: "";
+          position: absolute;
+          right: 6%;
+          bottom: 8%;
+          width: 280px;
+          height: 160px;
+          opacity: 0.22;
+          border-radius: 50%;
+          border: 1px solid rgba(241, 193, 107, 0.55);
+          transform: rotate(-12deg);
         }
 
         .dashboard-recipe-hero > * {
@@ -347,7 +379,9 @@ const Dashboard = () => {
           margin-bottom: 1rem;
           padding: 0.5rem 0.85rem;
           border-radius: 999px;
-          background: rgba(255,255,255,0.15);
+          background: rgba(241, 193, 107, 0.12);
+          border: 1px solid rgba(241, 193, 107, 0.38);
+          color: #f1c16b;
           font-size: 0.76rem;
           font-weight: 900;
         }
@@ -355,16 +389,18 @@ const Dashboard = () => {
         .dashboard-recipe-hero h2 {
           max-width: 13ch;
           margin: 0 0 0.85rem;
+          font-family: 'Playfair Display', Georgia, serif;
           font-size: clamp(2rem, 4vw, 3rem);
+          font-style: italic;
           line-height: 1.02;
-          font-weight: 950;
+          font-weight: 700;
           letter-spacing: 0;
         }
 
         .dashboard-recipe-hero p {
           max-width: 46ch;
           margin: 0 0 1.5rem;
-          color: rgba(255,255,255,0.86);
+          color: rgba(248, 238, 220, 0.84);
           font-size: 1rem;
           line-height: 1.55;
         }
@@ -374,17 +410,19 @@ const Dashboard = () => {
           align-items: center;
           gap: 0.65rem;
           padding: 0.95rem 1.35rem;
-          border-radius: 16px;
-          background: white;
-          color: #4f46e5;
+          border-radius: 14px;
+          border: 1px solid var(--border-strong);
+          background: rgba(8, 35, 29, 0.7);
+          color: #f1c16b;
           font-size: 1rem;
           font-weight: 900;
+          box-shadow: 0 0 24px rgba(217, 154, 43, 0.12);
         }
 
         .dashboard-recipe-hero small {
           margin-top: auto;
           padding-top: 1rem;
-          color: rgba(255,255,255,0.92);
+          color: #f1c16b;
           font-size: 0.86rem;
           font-weight: 800;
         }
@@ -395,8 +433,12 @@ const Dashboard = () => {
           align-content: center;
           gap: 1rem;
           padding: 1.5rem;
-          border-radius: 32px;
-          box-shadow: none;
+          border-radius: 22px;
+          border-color: var(--border-strong);
+          background:
+            linear-gradient(145deg, color-mix(in srgb, var(--background-elevated) 96%, transparent), color-mix(in srgb, var(--background-muted) 88%, transparent)),
+            repeating-linear-gradient(135deg, rgba(217, 154, 43, 0.026) 0 1px, transparent 1px 9px);
+          box-shadow: var(--shadow-sm);
         }
 
         .status-ring-row {
@@ -428,7 +470,7 @@ const Dashboard = () => {
         }
 
         .ring-track {
-          stroke: rgba(145, 136, 191, 0.14);
+          stroke: rgba(197, 154, 66, 0.18);
         }
 
         .ring-progress {
@@ -463,7 +505,7 @@ const Dashboard = () => {
 
         .calorie-ring-center em {
           margin-top: 0.12rem;
-          color: #a99cff;
+          color: var(--primary-color);
           font-size: 0.9rem;
           font-style: normal;
           font-weight: 650;
@@ -502,11 +544,11 @@ const Dashboard = () => {
           display: grid;
           gap: 0.72rem;
           padding-top: 0.85rem;
-          border-top: 1px solid var(--border-color);
+          border-top: 1px solid var(--border-strong);
         }
 
         .macro-mini-title {
-          color: var(--text-secondary);
+          color: var(--primary-color);
           font-size: 0.78rem;
           font-weight: 900;
         }
@@ -547,7 +589,7 @@ const Dashboard = () => {
         .macro-mini-track {
           height: 7px;
           border-radius: 999px;
-          background: rgba(196, 181, 253, 0.14);
+          background: rgba(197, 154, 66, 0.18);
           overflow: hidden;
         }
 
@@ -570,9 +612,10 @@ const Dashboard = () => {
           align-items: center;
           gap: 0.9rem;
           padding: 1.1rem 1.25rem;
-          border-radius: 22px;
+          border-radius: 18px;
+          border-color: var(--border-strong);
           text-align: left;
-          box-shadow: none;
+          box-shadow: var(--shadow-sm);
         }
 
         .quick-icon {
@@ -585,13 +628,13 @@ const Dashboard = () => {
         }
 
         .quick-icon.healthy {
-          background: rgba(16, 185, 129, 0.1);
-          color: #10b981;
+          background: rgba(127, 155, 120, 0.18);
+          color: #7f9b78;
         }
 
         .quick-icon.favorite {
-          background: rgba(244, 63, 94, 0.1);
-          color: #f43f5e;
+          background: rgba(241, 193, 107, 0.18);
+          color: #f1c16b;
         }
 
         .dashboard-quick-card strong {
@@ -609,9 +652,10 @@ const Dashboard = () => {
         }
 
         .meals-card {
-          padding: 1.1rem 1.25rem;
-          border-radius: 22px;
-          box-shadow: none;
+          padding: 1.35rem 1.55rem;
+          border-radius: 18px;
+          border-color: var(--border-strong);
+          box-shadow: var(--shadow-sm);
         }
 
         .meals-card-head {
@@ -625,8 +669,10 @@ const Dashboard = () => {
         .meals-card-head h2 {
           margin: 0;
           color: var(--text-primary);
-          font-size: 1.05rem;
-          font-weight: 900;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-size: 1.65rem;
+          font-style: italic;
+          font-weight: 700;
         }
 
         .meals-card-head button {
@@ -669,11 +715,11 @@ const Dashboard = () => {
           display: grid;
           place-items: center;
           flex: 0 0 auto;
-          background: rgba(124, 58, 237, 0.1);
+          background: rgba(217, 154, 43, 0.1);
         }
 
         .meal-icon.breakfast {
-          color: #8b7cf6;
+          color: #d99a2b;
         }
 
         .meal-icon.lunch {
@@ -724,10 +770,50 @@ const Dashboard = () => {
         }
 
         .empty-meals {
-          padding: 0.65rem 0;
+          min-height: 142px;
+          margin-top: 0.75rem;
+          padding: 1.15rem;
+          border: 1px dashed color-mix(in srgb, var(--primary-color) 55%, transparent);
+          border-radius: 16px;
           color: var(--text-secondary);
-          font-size: 0.9rem;
+          display: grid;
+          justify-items: center;
+          align-content: center;
+          gap: 0.4rem;
+          text-align: center;
+          background: color-mix(in srgb, var(--background-muted) 44%, transparent);
+        }
+
+        .empty-meals-mark {
+          width: 48px;
+          height: 48px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          color: var(--primary-color);
+          background: rgba(217, 154, 43, 0.12);
+        }
+
+        .empty-meals strong {
+          color: var(--primary-color);
+          font-size: 1rem;
+          font-weight: 900;
+        }
+
+        .empty-meals small {
+          color: var(--text-secondary);
+          font-size: 0.86rem;
           font-weight: 700;
+        }
+
+        .empty-meals button {
+          margin-top: 0.3rem;
+          padding: 0.58rem 0.9rem;
+          border-radius: 12px;
+          border: 1px solid var(--border-strong);
+          background: rgba(217, 154, 43, 0.12);
+          color: var(--primary-color);
+          font-weight: 900;
         }
 
         .dashboard-recipe-hero:hover,

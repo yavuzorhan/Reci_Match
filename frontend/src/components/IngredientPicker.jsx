@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X, Check, ChevronDown, Plus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import './IngredientPicker.css';
@@ -14,17 +14,7 @@ const IngredientPicker = ({ onSelectionChange, initialSelection = [], userId = n
   const [customError, setCustomError] = useState('');
   const [selectedCategoryToAdd, setSelectedCategoryToAdd] = useState('');
 
-  useEffect(() => {
-    fetchCategorizedIngredients();
-  }, [userId]);
-
-  useEffect(() => {
-    if (initialSelection) {
-      setSelectedIds(initialSelection);
-    }
-  }, [initialSelection]);
-
-  const fetchCategorizedIngredients = async () => {
+  const fetchCategorizedIngredients = useCallback(async () => {
     try {
       const query = userId ? `?user_id=${userId}` : '';
       const response = await fetch(`http://localhost:8000/api/ingredients/categorized${query}`);
@@ -38,7 +28,17 @@ const IngredientPicker = ({ onSelectionChange, initialSelection = [], userId = n
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchCategorizedIngredients();
+  }, [fetchCategorizedIngredients]);
+
+  useEffect(() => {
+    if (initialSelection) {
+      setSelectedIds(initialSelection);
+    }
+  }, [initialSelection]);
 
   const toggleIngredient = (id) => {
     const newSelection = selectedIds.includes(id)

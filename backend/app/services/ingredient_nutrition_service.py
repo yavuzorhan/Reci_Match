@@ -67,6 +67,77 @@ def sync_missing_ingredient_nutrition(limit: int, db: Session) -> dict:
     return import_all_missing_nutrition(db, client, limit=max(1, min(limit, 500)))
 
 
+async def complete_missing_ingredient_nutrition(
+    limit: int,
+    db: Session,
+    include_user_ingredients: bool = True,
+) -> dict:
+    ensure_nutrition_support_tables(db)
+
+    query = (
+        db.query(Ingredient)
+        .outerjoin(
+            IngredientNutritionValue,
+            IngredientNutritionValue.ingredient_id == Ingredient.ingredient_id,
+        )
+        .filter(IngredientNutritionValue.ingredient_id.is_(None))
+        .order_by(Ingredient.ingredient_id.asc())
+    )
+    if not include_user_ingredients:
+        query = query.filter(Ingredient.user_id.is_(None))
+
+    ingredients = query.limit(max(1, min(limit, 500))).all()
+    report = {
+        "checked": len(ingredients),
+        "completed": [],
+        "manual_required": [],
+    }
+
+    from app.services.ingredient_resolver_service import ensure_nutrition_for_ingredient
+
+    for ingredient in ingredients:
+        try:
+            result = await ensure_nutrition_for_ingredient(
+                db=db,
+                ingredient=ingredient,
+                query_name=ingredient.ingredient_name,
+                try_usda=True,
+            )
+            if result.status == "resolved":
+                db.commit()
+                db.refresh(ingredient)
+                report["completed"].append(
+                    {
+                        "ingredient_id": ingredient.ingredient_id,
+                        "ingredient_name": ingredient.ingredient_name,
+                    }
+                )
+            else:
+                db.rollback()
+                report["manual_required"].append(
+                    {
+                        "ingredient_id": ingredient.ingredient_id,
+                        "ingredient_name": ingredient.ingredient_name,
+                    }
+                )
+        except Exception as exc:
+            db.rollback()
+            report["manual_required"].append(
+                {
+                    "ingredient_id": ingredient.ingredient_id,
+                    "ingredient_name": ingredient.ingredient_name,
+                    "reason": str(exc),
+                }
+            )
+
+    report["summary"] = {
+        "Checked": report["checked"],
+        "Completed": len(report["completed"]),
+        "Manual required": len(report["manual_required"]),
+    }
+    return report
+
+
 def serialize_mapping(mapping: IngredientUsdaMapping) -> dict:
     return {
         "ingredient_id": mapping.ingredient_id,

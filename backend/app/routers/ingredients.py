@@ -29,12 +29,12 @@ def get_categorized_ingredients(
 
 
 @router.post("/users/{user_id}/custom-ingredients")
-def create_custom_ingredient(
+async def create_custom_ingredient(
     user_id: int,
     req: CustomIngredientCreate,
     db: Session = Depends(get_db),
 ):
-    return ingredient_service.create_custom_ingredient(user_id, req.name, req.category_id, db)
+    return await ingredient_service.create_custom_ingredient(user_id, req.name, req.category_id, db)
 
 
 @router.post("/ingredients/resolve")
@@ -115,8 +115,8 @@ def sync_ingredient_nutrition(req: IngredientNutritionSyncRequest, db: Session =
 
 
 @router.post("/ingredients/nutrition/sync-missing")
-def sync_missing_ingredient_nutrition(
+async def sync_missing_ingredient_nutrition(
     req: MissingIngredientNutritionSyncRequest,
     db: Session = Depends(get_db),
 ):
-    return ingredient_nutrition_service.sync_missing_ingredient_nutrition(req.limit, db)
+    return await ingredient_nutrition_service.complete_missing_ingredient_nutrition(req.limit, db)

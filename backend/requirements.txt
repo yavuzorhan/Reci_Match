@@ -11,3 +11,7 @@ beautifulsoup4
 lxml
 bcrypt
 deep-translator
+rapidfuzz
+Pillow
+python-multipart
+google-generativeai

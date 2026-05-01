@@ -17,10 +17,12 @@ import {
   Activity,
   Dna,
   Info,
+  Pencil,
   Utensils
 } from 'lucide-react';
 
 import Layout from '../components/Layout';
+import RecipeRevisionModal from '../components/RecipeRevisionModal';
 import { useApp } from '../context/AppContext';
 import { getHealthGrade, getHealthTone } from '../utils/recipeInsights';
 
@@ -121,12 +123,13 @@ const RecipeDetailDb = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { favorites, toggleFavorite, addDailyLog, fetchRecipeById } = useApp();
+  const { user, favorites, toggleFavorite, addDailyLog, fetchRecipeById } = useApp();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [servingMultiplier, setServingMultiplier] = useState(1);
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
 
   const isHealthyExperience = location.pathname.startsWith('/healthy-menu');
 
@@ -160,6 +163,10 @@ const RecipeDetailDb = () => {
   const healthGrade = recipe?.health_grade || getHealthGrade(recipe?.health_score ?? 0).split(' ')[0];
   const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
   const qualityPoints = useMemo(() => getQualityPoints(recipe, healthGrade), [recipe, healthGrade]);
+  const canEdit = recipe?.user_id === user?.id;
+  const matchScoreParam = new URLSearchParams(location.search).get('match_score');
+  const rawMatchScore = location.state?.score ?? recipe?.score ?? (matchScoreParam ? Number(matchScoreParam) : null);
+  const canRevise = rawMatchScore != null && Number(rawMatchScore) >= 90;
 
   // Ingredients are now normalized in AppContext.fetchRecipeById
   const displayIngredients = useMemo(() => {
@@ -290,7 +297,7 @@ const RecipeDetailDb = () => {
                 <h1 style={{ fontSize: '3rem', fontWeight: '950', marginBottom: '1rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>{recipe.name}</h1>
                 
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <span style={{ background: 'rgba(124, 58, 237, 0.1)', color: 'var(--primary-color)', padding: '6px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800' }}>
+                  <span style={{ background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', padding: '6px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800' }}>
                     {recipe.recipe_category || 'Genel'}
                   </span>
                   {(healthLabels || []).map(label => (
@@ -299,6 +306,11 @@ const RecipeDetailDb = () => {
                     </span>
                   ))}
                 </div>
+                {canEdit && (
+                  <button onClick={() => navigate(`/recipes/${recipe.id}/edit`)} className="primary-btn" style={{ marginTop: '1rem', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                    <Pencil size={16} /> Duzenle
+                  </button>
+                )}
               </div>
 
               <section
@@ -429,11 +441,21 @@ const RecipeDetailDb = () => {
               <div style={{ display: 'grid', gap: '14px' }}>
                 {displayIngredients.map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 20px', background: 'var(--background-elevated)', borderRadius: '18px', border: '1px solid var(--border-color)' }}>
-                    <span style={{ fontWeight: '800', fontSize: '1rem' }}>{item.name}</span>
+                    <span style={{ fontWeight: '800', fontSize: '1rem', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      {item.name}
+                      {item.nutrition_data_source === 'ai' && (
+                        <Info size={15} title="Bu deger AI tahminidir." style={{ color: '#f59e0b' }} />
+                      )}
+                    </span>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '700' }}>{adjustValue(item.amount)} {item.unit}</span>
                   </div>
                 ))}
               </div>
+              {canRevise && (
+                <button className="primary-btn" onClick={() => setShowRevisionModal(true)} style={{ marginTop: '1rem', width: '100%' }}>
+                  🪄 Bu Tarifi Revize Et
+                </button>
+              )}
             </div>
 
             <button
@@ -462,6 +484,7 @@ const RecipeDetailDb = () => {
           </div>
         </div>
       </div>
+      {showRevisionModal && <RecipeRevisionModal recipe={recipe} onClose={() => setShowRevisionModal(false)} />}
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes fadeIn {

@@ -15,6 +15,7 @@ from sqlalchemy import (
     Numeric,
     String,
     Text,
+    UniqueConstraint,
     func,
 )
 from sqlalchemy.orm import relationship
@@ -112,6 +113,7 @@ class Recipe(Base):
     health_grade = Column(String(1), nullable=True)
     health_explanation = Column(Text, nullable=True)
     image_url = Column(String(255), nullable=True)
+    is_active = Column(Boolean, nullable=False, default=True)
 
     ingredients = relationship("RecipeIngredient", back_populates="recipe")
     healthy_entries = relationship("HealthyRecipe", back_populates="recipe")
@@ -196,6 +198,7 @@ class IngredientNutritionValue(Base):
     iron_mg_per_100g = Column(Numeric(10, 2), nullable=True)
     vitamin_d_mcg_per_100g = Column(Numeric(10, 2), nullable=True)
     source = Column(String(30), nullable=False, default="USDA_FDC")
+    data_source = Column(String(20), nullable=False, default="db")
     confidence_score = Column(Numeric(5, 2), nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=True)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=True)
@@ -332,3 +335,20 @@ class DailyLog(Base):
 
     user = relationship("User", back_populates="daily_logs")
     recipe = relationship("Recipe", back_populates="daily_logs")
+
+
+class RevisionCache(Base):
+    __tablename__ = "revision_cache"
+
+    cache_id = Column(Integer, primary_key=True, index=True)
+    recipe_id = Column(Integer, ForeignKey("recipes.recipe_id", ondelete="CASCADE"), nullable=False)
+    modifications_hash = Column(String(64), nullable=False)
+    response_json = Column(Text, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=True)
+
+    recipe = relationship("Recipe")
+
+    __table_args__ = (
+        Index("ix_revision_cache_recipe_hash", recipe_id, modifications_hash),
+        UniqueConstraint("recipe_id", "modifications_hash", name="uq_revision_cache_recipe_hash"),
+    )

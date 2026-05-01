@@ -2,13 +2,15 @@
 Tarif (Recipe) router'i - listeleme, detay, öneri ve özel tarif oluşturma.
 """
 import requests
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.schemas.recipe import CustomRecipeCreate, RecipeRecommendationRequest
+from app.schemas.recipe_revision import RecipeRevisionRequest, RecipeRevisionResponse, RecipeRevisionSaveRequest
 from app.services import recipe_service
+from app.services import recipe_revision_service
 from app.services.healthy_recipe_service import sync_healthy_recipes
 
 router = APIRouter(prefix="/api", tags=["Recipes"])
@@ -79,6 +81,25 @@ def sync_curated_healthy_recipes(db: Session = Depends(get_db)):
     return sync_healthy_recipes(db)
 
 
+@router.post("/recipes/{recipe_id}/revise", response_model=RecipeRevisionResponse)
+async def revise_recipe(
+    recipe_id: int,
+    req: RecipeRevisionRequest,
+    user_id: int = Query(...),
+    db: Session = Depends(get_db),
+):
+    return await recipe_revision_service.revise_recipe(db, recipe_id, user_id, req)
+
+
+@router.post("/recipes/{recipe_id}/revise/save")
+async def save_revised_recipe(
+    recipe_id: int,
+    req: RecipeRevisionSaveRequest,
+    db: Session = Depends(get_db),
+):
+    return await recipe_revision_service.save_revised_recipe(db, recipe_id, req.user_id, req.revised_recipe)
+
+
 @router.post("/users/{user_id}/custom-recipes")
 async def create_custom_recipe(
     user_id: int,
@@ -132,6 +153,16 @@ def delete_custom_recipe(
     db: Session = Depends(get_db),
 ):
     return recipe_service.delete_custom_recipe(user_id=user_id, recipe_id=recipe_id, db=db)
+
+
+@router.post("/recipes/{recipe_id}/image")
+async def upload_recipe_image(
+    recipe_id: int,
+    user_id: int = Query(...),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    return await recipe_service.upload_recipe_image(user_id=user_id, recipe_id=recipe_id, upload_file=image, db=db)
 
 
 @router.post("/recipes/custom")

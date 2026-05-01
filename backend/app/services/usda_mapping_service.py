@@ -96,6 +96,7 @@ def ensure_nutrition_support_tables(db: Session) -> None:
         )
     )
     db.execute(text("ALTER TABLE ingredient_nutrition_values ALTER COLUMN fdc_id DROP NOT NULL"))
+    db.execute(text("ALTER TABLE ingredient_nutrition_values DROP CONSTRAINT IF EXISTS ingredient_nutrition_values_fdc_id_key"))
     db.execute(
         text(
             """

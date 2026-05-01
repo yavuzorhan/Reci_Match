@@ -28,7 +28,7 @@ const IngredientSelection = () => {
     <Layout>
       <header style={{ marginBottom: '1.6rem', animation: 'fadeInDown 0.6s ease-out' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-          <div style={{ background: 'rgba(108, 92, 231, 0.1)', color: 'var(--primary-color)', padding: '8px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', padding: '8px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <ShoppingCart size={16} fill="currentColor" />
             MALZEME SEÇİMİ
           </div>
@@ -104,7 +104,7 @@ const IngredientSelection = () => {
       <section style={{ animation: 'fadeIn 1s ease-out' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(108, 92, 231, 0.1)', color: 'var(--primary-color)', display: 'grid', placeItems: 'center' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', display: 'grid', placeItems: 'center' }}>
               <Filter size={22} />
             </div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: '900' }}>Malzeme Kütüphanesi</h3>
@@ -134,7 +134,7 @@ const IngredientSelection = () => {
                 fontSize: '1rem',
                 opacity: selectedIds.length === 0 ? 0.5 : 1,
                 cursor: selectedIds.length === 0 ? 'not-allowed' : 'pointer',
-                boxShadow: selectedIds.length > 0 ? '0 12px 24px rgba(108, 92, 231, 0.24)' : 'none',
+                boxShadow: selectedIds.length > 0 ? '0 12px 24px rgba(217, 154, 43, 0.24)' : 'none',
                 transition: 'all 0.3s',
               }}
             >
@@ -157,7 +157,7 @@ const IngredientSelection = () => {
           box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
         .pantry-quick-chip.active:hover {
-          box-shadow: 0 12px 25px rgba(108, 92, 231, 0.3);
+          box-shadow: 0 12px 25px rgba(217, 154, 43, 0.3);
         }
         @keyframes fadeInDown {
           from { opacity: 0; transform: translateY(-30px); }

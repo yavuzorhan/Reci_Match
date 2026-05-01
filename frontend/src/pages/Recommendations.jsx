@@ -163,7 +163,7 @@ const Recommendations = () => {
               whiteSpace: 'nowrap',
               background: activeFilters.includes(option.value) ? 'var(--primary-color)' : 'var(--card-bg)',
               color: activeFilters.includes(option.value) ? 'white' : 'var(--text-secondary)',
-              boxShadow: activeFilters.includes(option.value) ? '0 8px 20px rgba(108, 92, 231, 0.2)' : 'none',
+              boxShadow: activeFilters.includes(option.value) ? '0 8px 20px rgba(217, 154, 43, 0.2)' : 'none',
             }}
           >
             {option.label}
@@ -198,7 +198,7 @@ const Recommendations = () => {
             return (
               <article
                 key={recipe.id}
-                onClick={() => navigate(`/recipe/${recipe.id}`)}
+                onClick={() => navigate(`/recipe/${recipe.id}?match_score=${recipe.score ?? ''}`, { state: { score: recipe.score } })}
                 className="premium-recipe-card"
                 style={{
                   cursor: 'pointer',
@@ -267,7 +267,7 @@ const Recommendations = () => {
                         borderRadius: '18px',
                         fontSize: '1rem',
                         fontWeight: '950',
-                        boxShadow: '0 10px 25px rgba(108, 92, 231, 0.3)',
+                        boxShadow: '0 10px 25px rgba(217, 154, 43, 0.3)',
                       }}
                     >
                       %{recipe.score} Uyum
@@ -361,7 +361,7 @@ const Recommendations = () => {
             .premium-recipe-card:hover {
               transform: translateY(-15px);
               border-color: var(--primary-color) !important;
-              box-shadow: 0 40px 80px rgba(108, 92, 231, 0.12);
+              box-shadow: 0 40px 80px rgba(217, 154, 43, 0.12);
             }
             .premium-recipe-card:hover .card-thumb { transform: scale(1.1); }
             .no-scrollbar::-webkit-scrollbar { display: none; }

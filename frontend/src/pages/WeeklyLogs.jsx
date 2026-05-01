@@ -172,7 +172,7 @@ const WeeklyLogs = () => {
       <div className="weekly-logs-page">
         <header className="page-header-simple" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '20px' }}>
           <div className="header-info">
-            <div className="history-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '99px', background: 'rgba(124, 58, 237, 0.1)', color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div className="history-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', borderRadius: '99px', background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', fontSize: '0.8rem', fontWeight: '700', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               <History size={16} />
               <span>Beslenme Geçmişi</span>
             </div>

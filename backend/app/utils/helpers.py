@@ -37,6 +37,8 @@ CATEGORY_NAME_TO_ID = {
 
 
 DIRECT_ALIASES = {
+    "elma sirkesi": "elma sirkesi",
+    "pirinc kremasi": "pirinc kremasi",
     "pirinc unu": "pirinc unu",
     "yumurta sarisi": "yumurta",
     "yumurta beyazi": "yumurta",
@@ -295,6 +297,7 @@ DIRECT_ALIASES = {
 
 
 PHRASE_RULES = [
+    ("pirinc kremasi", "pirinc kremasi"),
     ("kuru uzum", "kuru uzum"),
     ("domates salcasi", "domates salcasi"),
     ("biber salcasi", "biber salcasi"),
@@ -302,7 +305,7 @@ PHRASE_RULES = [
     ("limon suyu", "limon suyu"),
     ("portakal suyu", "portakal suyu"),
     ("soya sosu", "soya sosu"),
-    ("elma sirkesi", "sirke"),
+    ("elma sirkesi", "elma sirkesi"),
     ("uzum sirkesi", "sirke"),
     ("sirke", "sirke"),
     ("tavuk suyu", "tavuk suyu"),
@@ -567,6 +570,7 @@ CANONICAL_DISPLAY = {
     "dut": "dut",
     "ekmek": "ekmek",
     "elma": "elma",
+    "elma sirkesi": "elma sirkesi",
     "erik": "erik",
     "esmer seker": "esmer şeker",
     "et suyu": "et suyu",
@@ -647,6 +651,7 @@ CANONICAL_DISPLAY = {
     "pekmez": "pekmez",
     "pirasa": "pırasa",
     "pirinc": "pirinç",
+    "pirinc kremasi": "pirinç kreması",
     "pirinc unu": "pirinç unu",
     "portakal": "portakal",
     "portakal suyu": "portakal suyu",
@@ -995,8 +1000,14 @@ def infer_ingredient_category(ingredient_name: str) -> tuple[str, int]:
     if {"mercimek", "nohut", "fasulye", "bakla", "barbunya", "borulce", "mas"} & tokens:
         return "Bakliyatlar", CATEGORY_NAME_TO_ID["Bakliyatlar"]
 
-    if {"un", "bulgur", "pirinc", "makarna", "sehriye", "yufka", "ekmek", "irmik", "galeta", "bugday", "kadayif", "nisasta", "kuskus", "tortilla", "pide", "biskuvi", "yulaf", "milfoy", "hamuru", "lavas", "maya"} & tokens:
+    if normalized in {"pirinc kremasi", "pirinç kreması"}:
         return "Tahıllar ve Unlu Ürünler", CATEGORY_NAME_TO_ID["Tahıllar ve Unlu Ürünler"]
+
+    if {"un", "bulgur", "pirinc", "pirinç", "makarna", "sehriye", "yufka", "ekmek", "irmik", "galeta", "bugday", "kadayif", "nisasta", "kuskus", "tortilla", "pide", "biskuvi", "yulaf", "milfoy", "hamuru", "lavas", "maya"} & tokens:
+        return "Tahıllar ve Unlu Ürünler", CATEGORY_NAME_TO_ID["Tahıllar ve Unlu Ürünler"]
+
+    if normalized == "elma sirkesi":
+        return "Soslar ve Yağlar", CATEGORY_NAME_TO_ID["Soslar ve Yağlar"]
 
     if {"salca", "sos", "sirke", "eksi", "yag", "zeytinyagi", "aycicek", "hardal", "mayonez", "ketcap", "soya", "tahin", "pekmez", "bal", "misirozu"} & tokens:
         return "Soslar ve Yağlar", CATEGORY_NAME_TO_ID["Soslar ve Yağlar"]

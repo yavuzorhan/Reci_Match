@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Plus, X, Search } from 'lucide-react';
+import { ImagePlus, Plus, X, Search } from 'lucide-react';
 import ManualIngredientNutritionModal from './ManualIngredientNutritionModal';
 
 const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
-  const { user, addCustomRecipe, updateCustomRecipe, addCustomIngredient, createManualIngredient } = useApp();
+  const { user, addCustomRecipe, updateCustomRecipe, addCustomIngredient, createManualIngredient, uploadRecipeImage } = useApp();
   const isEditMode = Boolean(initialRecipe?.id);
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +21,9 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
   const [error, setError] = useState('');
   const [pendingRecipePayload, setPendingRecipePayload] = useState(null);
   const [manualIngredientName, setManualIngredientName] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(0);
   
   // Ingredient search & select
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,6 +66,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
       calorie: initialRecipe.calorie || '',
       image_url: initialRecipe.image_url || ''
     });
+    setImagePreview(initialRecipe.image_url || '');
     setIngredients((initialRecipe.ingredients || []).map((item) => ({
       client_id: `id-${item.id}-${Date.now()}-${Math.random()}`,
       ingredient_id: item.id,
@@ -151,7 +155,34 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
       setManualIngredientName(data.ingredient_name);
       return false;
     }
+    const recipeId = data?.recipe_id || initialRecipe?.id;
+    if (recipeId && imageFile) {
+      const upload = await uploadRecipeImage(recipeId, imageFile, setUploadProgress);
+      payload.image_url = upload.image_url;
+    }
     return true;
+  };
+
+  const handleImageSelect = (file) => {
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setError('Sadece jpeg, png veya webp yukleyebilirsiniz.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Resim boyutu en fazla 5 MB olabilir.');
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+    setUploadProgress(0);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview('');
+    setFormData(prev => ({ ...prev, image_url: '' }));
+    setUploadProgress(0);
   };
 
   const handleSubmit = async (e) => {
@@ -223,6 +254,39 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
           </div>
         </div>
 
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            handleImageSelect(e.dataTransfer.files?.[0]);
+          }}
+          style={{ marginBottom: '1.5rem', border: '1px dashed var(--border-color)', borderRadius: '8px', padding: '1rem', display: 'grid', gap: '12px' }}
+        >
+          {imagePreview ? (
+            <img src={imagePreview} alt="Tarif" style={{ width: '100%', maxHeight: '260px', objectFit: 'cover', borderRadius: '8px' }} />
+          ) : (
+            <label style={{ minHeight: '150px', display: 'grid', placeItems: 'center', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+              <ImagePlus size={34} />
+              <span>Tarif resmi sec veya surukle</span>
+              <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => handleImageSelect(e.target.files?.[0])} />
+            </label>
+          )}
+          {imagePreview && (
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <label className="primary-btn" style={{ padding: '10px 14px', cursor: 'pointer' }}>
+                Resmi Degistir
+                <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => handleImageSelect(e.target.files?.[0])} />
+              </label>
+              <button type="button" onClick={removeImage} style={{ color: '#d63031', background: 'transparent', fontWeight: 800 }}>Resmi kaldir</button>
+            </div>
+          )}
+          {uploadProgress > 0 && uploadProgress < 100 && (
+            <div style={{ height: '8px', background: 'var(--background-elevated)', borderRadius: '99px', overflow: 'hidden' }}>
+              <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--primary-color)' }} />
+            </div>
+          )}
+        </div>
+
         <div style={{ marginBottom: '1.5rem' }}>
            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>Kısa Açıklama</label>
            <textarea name="explanation" value={formData.explanation} onChange={handleChange} rows="2" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
@@ -233,7 +297,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
            <textarea name="preparation" value={formData.preparation} onChange={handleChange} rows="4" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--border-color)' }} />
         </div>
 
-        <div style={{ padding: '1.5rem', background: 'rgba(108, 92, 231, 0.05)', borderRadius: '12px', marginBottom: '1.5rem' }}>
+        <div style={{ padding: '1.5rem', background: 'rgba(217, 154, 43, 0.05)', borderRadius: '12px', marginBottom: '1.5rem' }}>
            <h3 style={{ marginBottom: '10px' }}>Malzemeler *</h3>
            
            <div style={{ position: 'relative', marginBottom: '1rem' }}>

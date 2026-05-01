@@ -8,24 +8,25 @@ from app.db.models import (
     Ingredient,
     Recipe,
     RecipeIngredient,
+    RevisionCache,
     User,
 )
 
 
 def find_recipe_by_source_url(db: Session, source_url: str) -> Recipe | None:
-    return db.query(Recipe).filter(Recipe.source_url == source_url).first()
+    return db.query(Recipe).filter(Recipe.source_url == source_url, Recipe.is_active.is_(True)).first()
 
 
 def find_recipe_by_name(db: Session, recipe_name: str) -> Recipe | None:
     return (
         db.query(Recipe)
-        .filter(func.lower(Recipe.recipe_name) == recipe_name.lower())
+        .filter(func.lower(Recipe.recipe_name) == recipe_name.lower(), Recipe.is_active.is_(True))
         .first()
     )
 
 
 def find_recipe_by_id(db: Session, recipe_id: int) -> Recipe | None:
-    return db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
+    return db.query(Recipe).filter(Recipe.recipe_id == recipe_id, Recipe.is_active.is_(True)).first()
 
 
 def find_recipe_by_id_with_relations(db: Session, recipe_id: int) -> Recipe | None:
@@ -36,7 +37,7 @@ def find_recipe_by_id_with_relations(db: Session, recipe_id: int) -> Recipe | No
             .selectinload(RecipeIngredient.ingredient)
             .selectinload(Ingredient.nutrition_value)
         )
-        .filter(Recipe.recipe_id == recipe_id)
+        .filter(Recipe.recipe_id == recipe_id, Recipe.is_active.is_(True))
         .first()
     )
 
@@ -94,6 +95,7 @@ def get_all_recipes(
         .selectinload(RecipeIngredient.ingredient)
         .selectinload(Ingredient.nutrition_value)
     )
+    query = query.filter(Recipe.is_active.is_(True))
     query = query.filter((Recipe.user_id.is_(None)) | (Recipe.user_id == user_id))
 
     if healthy_only:
@@ -124,3 +126,40 @@ def get_ingredients_by_ids(db: Session, ingredient_ids: list[int]) -> list[Ingre
     if not ingredient_ids:
         return []
     return db.query(Ingredient).filter(Ingredient.ingredient_id.in_(ingredient_ids)).all()
+
+
+def get_yemekcom_recipes_for_audit(db: Session) -> list[Recipe]:
+    return (
+        db.query(Recipe)
+        .options(selectinload(Recipe.ingredients).selectinload(RecipeIngredient.ingredient))
+        .filter(Recipe.source.in_(["yemekcom", "yemek.com"]))
+        .all()
+    )
+
+
+def deactivate_recipes(db: Session, recipe_ids: list[int]) -> int:
+    if not recipe_ids:
+        return 0
+    return (
+        db.query(Recipe)
+        .filter(Recipe.recipe_id.in_(recipe_ids))
+        .update({"is_active": False}, synchronize_session=False)
+    )
+
+
+def find_revision_cache(db: Session, recipe_id: int, modifications_hash: str) -> RevisionCache | None:
+    return (
+        db.query(RevisionCache)
+        .filter(
+            RevisionCache.recipe_id == recipe_id,
+            RevisionCache.modifications_hash == modifications_hash,
+        )
+        .first()
+    )
+
+
+def create_revision_cache(db: Session, recipe_id: int, modifications_hash: str, response_json: str) -> RevisionCache:
+    cache = RevisionCache(recipe_id=recipe_id, modifications_hash=modifications_hash, response_json=response_json)
+    db.add(cache)
+    db.flush()
+    return cache
