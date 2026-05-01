@@ -107,12 +107,19 @@ def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) ->
         candidate_key = normalize_turkish_text(ingredient.ingredient_name)
         if not candidate_key or candidate_key == normalized_key:
             continue
-        score = fuzz.token_set_ratio(normalized_key, candidate_key) if fuzz else 0.0
+        if fuzz:
+            direct = fuzz.ratio(normalized_key, candidate_key)
+            token_sort = fuzz.token_sort_ratio(normalized_key, candidate_key)
+            raw = max(direct, token_sort)
+            len_ratio = min(len(normalized_key), len(candidate_key)) / max(len(normalized_key), len(candidate_key), 1)
+            score = raw * (0.5 + 0.5 * len_ratio)
+        else:
+            score = 0.0
         if score > best_score:
             best_match = ingredient
             best_score = score
 
-    if best_match is not None and best_score >= 90:
+    if best_match is not None and best_score >= 85:
         return best_match
 
     return None
