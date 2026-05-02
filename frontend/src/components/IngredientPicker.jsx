@@ -2,8 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Search, X, Check, ChevronDown, Plus } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import './IngredientPicker.css';
+import { API_BASE } from '../config';
 
-const IngredientPicker = ({ onSelectionChange, initialSelection = [], userId = null }) => {
+const IngredientPicker = ({
+  onSelectionChange,
+  initialSelection = [],
+  userId = null,
+  selectedLabel = 'Seçilen Malzemeler',
+  selectedDescription = '',
+  searchPlaceholder = 'Malzeme ara (Örn: Domates, Tavuk...)',
+  hideHeader = false,
+  hideSelectedArea = false,
+}) => {
   const { addCustomIngredient } = useApp();
   const [categories, setCategories] = useState([]);
   const [selectedIds, setSelectedIds] = useState(initialSelection);
@@ -17,7 +27,7 @@ const IngredientPicker = ({ onSelectionChange, initialSelection = [], userId = n
   const fetchCategorizedIngredients = useCallback(async () => {
     try {
       const query = userId ? `?user_id=${userId}` : '';
-      const response = await fetch(`http://localhost:8000/api/ingredients/categorized${query}`);
+      const response = await fetch(`${API_BASE}/api/ingredients/categorized${query}`);
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -94,45 +104,50 @@ const IngredientPicker = ({ onSelectionChange, initialSelection = [], userId = n
 
   return (
     <div className="ingredient-picker">
-      <div className="picker-header">
-        <div className="search-bar">
-          <Search size={20} />
-          <input 
-            type="text" 
-            placeholder="Malzeme ara (Örn: Domates, Tavuk...)" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      {!hideHeader && (
+        <div className="picker-header">
+          <div className="search-bar">
+            <Search size={20} />
+            <input 
+              type="text" 
+              placeholder={searchPlaceholder}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
 
-        {selectedIds.length > 0 && (
-          <div className="selected-area">
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Seçilen Malzemeler ({selectedIds.length})</p>
-            <div className="selected-tray">
-              {selectedObjects.map(ing => (
-                <div key={ing.id} className="selected-chip">
-                  {ing.name}
-                  <button onClick={() => removeIngredient(ing.id)}><X size={14} /></button>
-                </div>
+          {!hideSelectedArea && selectedIds.length > 0 && (
+            <div className="selected-area">
+              <div className="selected-area-head">
+                <p>{selectedLabel} ({selectedIds.length})</p>
+                {selectedDescription && <span>{selectedDescription}</span>}
+              </div>
+              <div className="selected-tray">
+                {selectedObjects.map(ing => (
+                  <div key={ing.id} className="selected-chip">
+                    {ing.name}
+                    <button onClick={() => removeIngredient(ing.id)}><X size={14} /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {!searchTerm && (
+            <div className="category-nav">
+              {categories.map(cat => (
+                <button 
+                  key={cat.id} 
+                  className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => setActiveCategory(cat.id)}
+                >
+                  {cat.name}
+                </button>
               ))}
             </div>
-          </div>
-        )}
-
-        {!searchTerm && (
-          <div className="category-nav">
-            {categories.map(cat => (
-              <button 
-                key={cat.id} 
-                className={`category-btn ${activeCategory === cat.id ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <div className="ingredients-grid">
         {displayedIngredients.length > 0 ? (

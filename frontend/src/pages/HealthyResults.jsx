@@ -17,12 +17,11 @@ import {
   RECIPE_FILTER_OPTIONS,
   applyRecipeFilters,
   buildRecipeShortSummary,
-  getHealthGrade,
-  getHealthTone,
 } from '../utils/recipeInsights';
+import RecipeCard from '../components/RecipeCard';
 
 const HealthyResults = () => {
-  const { fetchHealthyRecipes, fetchRecommendedRecipes } = useApp();
+  const { fetchHealthyRecipes, fetchRecommendedRecipes, favorites, toggleFavorite } = useApp();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -90,6 +89,7 @@ const HealthyResults = () => {
 
   return (
     <Layout variant="healthy">
+      <div className="healthy-results-wrapper">
       <header style={{ marginBottom: '2.5rem', animation: 'fadeInDown 0.6s ease-out' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
           <div>
@@ -163,8 +163,10 @@ const HealthyResults = () => {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               fontWeight: '800',
-              background: selectedMenuRecipeId === null ? '#10b981' : 'var(--card-bg)',
-              color: selectedMenuRecipeId === null ? 'white' : 'var(--text-secondary)',
+              background: selectedMenuRecipeId === null ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
+              color: selectedMenuRecipeId === null ? '#003824' : '#bbcabf',
+              boxShadow: selectedMenuRecipeId === null ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
+              transition: 'all 0.2s'
             }}
           >
             Tum Tarifler
@@ -181,8 +183,10 @@ const HealthyResults = () => {
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 fontWeight: '700',
-                background: selectedMenuRecipeId === recipe.id ? 'var(--primary-color)' : 'var(--card-bg)',
-                color: selectedMenuRecipeId === recipe.id ? 'white' : 'var(--text-secondary)',
+                background: selectedMenuRecipeId === recipe.id ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
+                color: selectedMenuRecipeId === recipe.id ? '#003824' : '#bbcabf',
+                boxShadow: selectedMenuRecipeId === recipe.id ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
+                transition: 'all 0.2s'
               }}
             >
               {recipe.name}
@@ -209,9 +213,10 @@ const HealthyResults = () => {
               fontWeight: '750',
               fontSize: '0.88rem',
               whiteSpace: 'nowrap',
-              background: activeFilters.includes(option.value) ? '#10b981' : 'var(--card-bg)',
-              color: activeFilters.includes(option.value) ? 'white' : 'var(--text-secondary)',
-              borderColor: activeFilters.includes(option.value) ? 'transparent' : 'var(--border-color)',
+              background: activeFilters.includes(option.value) ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
+              color: activeFilters.includes(option.value) ? '#003824' : '#bbcabf',
+              borderColor: activeFilters.includes(option.value) ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
+              boxShadow: activeFilters.includes(option.value) ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
             }}
           >
             {option.label}
@@ -232,87 +237,25 @@ const HealthyResults = () => {
             {visibleRecipes.length} tarif gosteriliyor
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '2rem' }}>
-            {visibleRecipes.map((recipe) => {
-              const tone = getHealthTone(recipe.health_score);
-              const grade = getHealthGrade(recipe.health_score);
-
-              return (
-                <article
-                  key={recipe.id}
-                  onClick={() => navigate(`/recipe/${recipe.id}`)}
-                  className="premium-recipe-card"
-                  style={{
-                    cursor: 'pointer',
-                    background: 'var(--card-bg)',
-                    borderRadius: '30px',
-                    overflow: 'hidden',
-                    border: '1px solid var(--border-color)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <div style={{ height: '240px', position: 'relative', overflow: 'hidden' }}>
-                    {recipe.image_url ? (
-                      <img src={recipe.image_url} alt={recipe.name} className="card-thumb" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s' }} />
-                    ) : (
-                      <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', display: 'grid', placeItems: 'center' }}>
-                        <Leaf size={56} color="#10b981" style={{ opacity: 0.22 }} />
-                      </div>
-                    )}
-
-                    <div style={{ position: 'absolute', top: '16px', left: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                      <div style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(10px)', padding: '6px 12px', borderRadius: '12px', fontSize: '0.76rem', fontWeight: '900', color: '#065f46' }}>
-                        {recipe.cooking_type || 'Fit Tarif'}
-                      </div>
-                    </div>
-
-                    <div style={{ position: 'absolute', bottom: '16px', right: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                      {recipe.score !== undefined && (
-                        <div style={{ background: 'var(--primary-color)', color: 'white', padding: '10px 16px', borderRadius: '16px', fontSize: '0.95rem', fontWeight: '950' }}>
-                          %{recipe.score} Uyum
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div style={{ padding: '1.75rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <h3 style={{ fontSize: '1.45rem', fontWeight: '950', marginBottom: '10px', color: 'var(--text-primary)', lineHeight: '1.2' }}>
-                      {recipe.name}
-                    </h3>
-
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.98rem', lineHeight: '1.55', marginBottom: '1.5rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {buildRecipeShortSummary(recipe, 'Sağlık odaklı bir tarif önerisi.')}
-                    </p>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', marginBottom: '1.4rem', marginTop: 'auto' }}>
-                      <Metric label="Kalori" value={Math.round(recipe.calorie || 0)} color="#ef4444" />
-                      <Metric label="Protein" value={`${Math.round(recipe.protein || 0)}g`} color="#2563eb" />
-                      <Metric label="Sure" value={`${recipe.total_time_minutes || 0}'`} color="var(--text-primary)" />
-                      <Metric label="Kalite" value={grade.split(' ')[0]} color={tone.chip} />
-                    </div>
-
-                    {!!recipe.matched_ingredients?.length && (
-                      <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginBottom: '1rem' }}>
-                        <p style={{ color: '#059669', fontSize: '0.88rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <CheckCircle2 size={16} />
-                          {recipe.matched_ingredients.map((item) => item.name).slice(0, 4).join(', ')}
-                        </p>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <div style={{ color: '#059669', fontSize: '0.88rem', fontWeight: '900' }}>
-                        Tarife Git
-                      </div>
-                      <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'var(--background-elevated)', display: 'grid', placeItems: 'center', border: '1px solid var(--border-color)' }}>
-                        <ArrowRight size={18} />
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '2rem' }}>
+            {visibleRecipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.id}
+                recipe={recipe}
+                isFavorite={favorites?.includes?.(Number(recipe.id))}
+                onFavorite={async (event, id) => {
+                  event.stopPropagation();
+                  if (toggleFavorite) {
+                    try {
+                      await toggleFavorite(id);
+                    } catch (err) {
+                      alert(err.message || 'Favori güncellenemedi.');
+                    }
+                  }
+                }}
+                onClick={(recipe) => navigate(`/recipe/${recipe.id}`, { state: { matchScore: recipe.score } })}
+              />
+            ))}
           </div>
 
           {!visibleRecipes.length && (
@@ -324,18 +267,28 @@ const HealthyResults = () => {
           )}
         </>
       )}
+      </div>
 
       <style
         dangerouslySetInnerHTML={{
           __html: `
-            .premium-recipe-card:hover {
-              transform: translateY(-10px);
-              border-color: #10b981 !important;
-              box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
+            .layout-content:has(.healthy-results-wrapper) {
+              background-color: #0c0814 !important;
+              background-image:
+                radial-gradient(circle at 10% 20%, rgba(100, 31, 224, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(68, 226, 205, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(147, 0, 10, 0.03) 0%, transparent 60%) !important;
+              color: #d4e4fa;
+              padding: 0;
             }
-            .premium-recipe-card:hover .card-thumb {
-              transform: scale(1.08);
+
+            .healthy-results-wrapper {
+              font-family: 'Plus Jakarta Sans', sans-serif;
+              padding: 32px 32px 40px;
+              min-height: 100vh;
+              width: 100%;
             }
+
             .no-scrollbar::-webkit-scrollbar {
               display: none;
             }
@@ -356,12 +309,5 @@ const HealthyResults = () => {
     </Layout>
   );
 };
-
-const Metric = ({ label, value, color }) => (
-  <div style={{ textAlign: 'center', padding: '11px', background: 'var(--background-elevated)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
-    <div style={{ fontSize: '0.64rem', fontWeight: '800', opacity: 0.5 }}>{label.toUpperCase()}</div>
-    <div style={{ fontSize: '0.95rem', fontWeight: '900', color }}>{value}</div>
-  </div>
-);
 
 export default HealthyResults;

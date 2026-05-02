@@ -25,6 +25,19 @@ def find_recipe_by_name(db: Session, recipe_name: str) -> Recipe | None:
     )
 
 
+def find_active_recipe_by_name_for_health_validation(db: Session, search_term: str) -> Recipe | None:
+    return (
+        db.query(Recipe)
+        .options(selectinload(Recipe.ingredients).selectinload(RecipeIngredient.ingredient))
+        .filter(
+            Recipe.recipe_name.ilike(f"%{search_term}%"),
+            Recipe.is_active.is_(True),
+            Recipe.health_grade.isnot(None),
+        )
+        .first()
+    )
+
+
 def find_recipe_by_id(db: Session, recipe_id: int) -> Recipe | None:
     return db.query(Recipe).filter(Recipe.recipe_id == recipe_id, Recipe.is_active.is_(True)).first()
 

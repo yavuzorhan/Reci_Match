@@ -1,19 +1,23 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Bot,
+  ChefHat,
   Clock3,
+  Flame,
   Heart,
   Leaf,
   Moon,
-  Navigation,
-  Search,
+  MoreHorizontal,
+  NotebookText,
+  Plus,
   Sparkles,
   Sun,
-  Timer,
   Utensils,
 } from 'lucide-react';
 
 import Layout from '../components/Layout';
+import RecipeCard from '../components/RecipeCard';
 import { useApp } from '../context/AppContext';
 
 const clamp = (value, min = 0, max = 100) => Math.min(Math.max(value, min), max);
@@ -34,44 +38,69 @@ const isTodayLog = (log) => {
   return getLogDate(log).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
 };
 
-const getMealSlot = (log) => {
-  const hour = getLogDate(log).getHours();
-
-  if (hour >= 5 && hour < 12) {
-    return { name: 'Kahvaltı', className: 'breakfast', icon: <Clock3 size={18} /> };
-  }
-
-  if (hour >= 12 && hour < 17) {
-    return { name: 'Öğle yemeği', className: 'lunch', icon: <Navigation size={18} /> };
-  }
-
-  return { name: 'Akşam yemeği', className: 'dinner', icon: <Utensils size={18} /> };
-};
-
 const Dashboard = () => {
   const {
     dashboardData,
     user,
-    selectedIngredients,
+    pantryIngredients,
     dailyLogs,
     recipeCache,
+    favorites,
+    fetchRecommendedRecipes,
     isDarkMode,
     toggleDarkMode,
+    toggleFavorite,
   } = useApp();
   const navigate = useNavigate();
+  const [pantryMatches, setPantryMatches] = useState([]);
+  const [matchesLoading, setMatchesLoading] = useState(false);
+  const [matchesError, setMatchesError] = useState('');
 
-  const calorieTarget = toNumber(user?.daily_calorie || dashboardData.dailyCalorieTarget || 2000);
+  const pantryIds = useMemo(() => (
+    (pantryIngredients || []).map((ingredient) => ingredient.id).filter(Boolean)
+  ), [pantryIngredients]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (!pantryIds.length) {
+        setPantryMatches([]);
+        setMatchesError('');
+        return;
+      }
+
+      setMatchesLoading(true);
+      setMatchesError('');
+      try {
+        const data = await fetchRecommendedRecipes({
+          selected_ingredient_ids: pantryIds,
+          pantry_ingredient_ids: pantryIds,
+          exclude_disliked: true,
+        });
+        if (!cancelled) setPantryMatches((data || []).slice(0, 3));
+      } catch {
+        if (!cancelled) {
+          setPantryMatches([]);
+          setMatchesError('Dolabındaki malzemelerle tarifler alınamadı.');
+        }
+      } finally {
+        if (!cancelled) setMatchesLoading(false);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchRecommendedRecipes, pantryIds]);
+
+  const calorieTarget = toNumber(user?.daily_calorie || dashboardData.dailyCalorieTarget || 2200);
   const consumedCalories = toNumber(dashboardData.consumedCalories);
   const caloriePercent = calorieTarget ? clamp((consumedCalories / calorieTarget) * 100) : 0;
-  const caloriesLeft = Math.max(0, calorieTarget - consumedCalories);
-  const circleRadius = 66;
+  const circleRadius = 48;
   const circleLength = 2 * Math.PI * circleRadius;
   const circleOffset = circleLength - (circleLength * caloriePercent) / 100;
-  const goalMessage = caloriePercent < 70
-    ? 'Gün içinde rahat bir alanın var.'
-    : caloriePercent <= 100
-      ? 'Hedefine sakin sakin yaklaşıyorsun.'
-      : 'Bugün hedefin biraz aşıldı.';
 
   const macros = useMemo(() => {
     const protein = toNumber(dashboardData.macros?.protein);
@@ -79,24 +108,9 @@ const Dashboard = () => {
     const fat = toNumber(dashboardData.macros?.fat);
 
     return [
-      {
-        label: 'Protein',
-        current: protein,
-        target: toNumber(dashboardData.macroTargets?.protein),
-        color: '#7f9b78',
-      },
-      {
-        label: 'Karbonhidrat',
-        current: carb,
-        target: toNumber(dashboardData.macroTargets?.carb),
-        color: '#c59a42',
-      },
-      {
-        label: 'Yağ',
-        current: fat,
-        target: toNumber(dashboardData.macroTargets?.fat),
-        color: '#a86b13',
-      },
+      { label: 'Protein', current: protein, target: toNumber(dashboardData.macroTargets?.protein), color: '#ffb3af' },
+      { label: 'Carbs', current: carb, target: toNumber(dashboardData.macroTargets?.carb), color: '#44e2cd' },
+      { label: 'Fat', current: fat, target: toNumber(dashboardData.macroTargets?.fat), color: '#4edea3' },
     ].map((macro) => ({
       ...macro,
       percent: macro.target ? clamp((macro.current / macro.target) * 100) : 0,
@@ -109,751 +123,1062 @@ const Dashboard = () => {
       .sort((a, b) => getLogDate(a) - getLogDate(b));
   }, [dailyLogs]);
 
+  const topMatches = useMemo(() => (
+    (pantryMatches || []).map((recipe) => ({
+      ...recipe,
+      health_grade: recipe.health_grade || 'B',
+      tags: [
+        recipe.cooking_type || 'Dolabımdan',
+        recipe.recipe_category || 'Eşleşme',
+      ],
+    }))
+  ), [pantryMatches]);
+
+  const firstName = user?.name?.split(' ')[0] || 'Alex';
+
   return (
     <Layout>
-      <div className="dashboard-home">
-        <header className="dashboard-home-header">
-          <div>
-            <h1>Merhaba, {user?.name?.split(' ')[0] || 'Gurme'}</h1>
-            <p>Malzemelerini seç, gününü sakin bir akışla takip et.</p>
+      <div className="noct-dashboard">
+        <header className="noct-topbar">
+          <div />
+          <div className="noct-topbar-actions">
+            <button
+              type="button"
+              className="noct-icon-button"
+              onClick={toggleDarkMode}
+              aria-label={isDarkMode ? 'Açık temaya geç' : 'Koyu temaya geç'}
+              title={isDarkMode ? 'Açık tema' : 'Koyu tema'}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <span className="noct-separator" />
+            <button type="button" className="noct-assistant-button">
+              <Bot size={18} />
+              Assistant
+            </button>
+            <button type="button" className="noct-profile-button" onClick={() => navigate('/profile-edit')}>
+              <span className="noct-avatar">{(firstName[0] || 'A').toUpperCase()}</span>
+              <span>Profil</span>
+            </button>
           </div>
-
-          <button
-            type="button"
-            className="dashboard-theme-button"
-            onClick={toggleDarkMode}
-            aria-label="Temayı değiştir"
-          >
-            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
         </header>
 
-        <section className="dashboard-hero-grid">
-          <button
-            type="button"
-            className="dashboard-recipe-hero"
-            onClick={() => navigate('/select-ingredients')}
-          >
-            <span className="recipe-card-badge">
-              <Sparkles size={14} />
-              TARİF AL
-            </span>
-            <h2>Tarif almak için buraya dokun.</h2>
-            <p>Malzeme seçimine geç, elindekileri işaretle ve tarifleri uyumluluk skoruna göre listele.</p>
-            <span className="recipe-card-action">
-              <Search size={18} />
-              Malzeme Seçimine Git
-            </span>
-            <small>Şu an seçili malzeme: {selectedIngredients.length}</small>
-          </button>
+        <main className="noct-main">
+          <div className="noct-content-grid">
+            <div className="noct-left-column">
+              <section className="glass-panel noct-hero">
+                <div className="hero-glow" />
+                <div className="noct-hero-content">
+                  <span className="noct-live-badge">
+                    <span />
+                    {pantryIds.length ? `${topMatches.length} dolap eşleşmesi` : 'Dolabın hazır değil'}
+                  </span>
+                  <h1>Bugün dolabında ne var, {firstName}?</h1>
+                  <p>
+                    Dolabındaki gerçek malzemelere göre tarif eşleşmelerini gör ve günlük hedeflerini tek ekranda takip et.
+                  </p>
 
-          <article className="card dashboard-status-card">
-            <div className="status-ring-row">
-              <div className="calorie-ring-wrap">
-                <svg viewBox="0 0 180 180" className="calorie-ring" aria-label="Kalori takip halkası">
-                  <circle className="ring-track" cx="90" cy="90" r={circleRadius} />
-                  <defs>
-                    <linearGradient id="calorieRingGradient" x1="28" y1="28" x2="152" y2="152" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stopColor="#f1c16b" />
-                      <stop offset="52%" stopColor="#d99a2b" />
-                      <stop offset="100%" stopColor="#7f9b78" />
-                    </linearGradient>
-                  </defs>
-                  <circle
-                    className="ring-progress"
-                    cx="90"
-                    cy="90"
-                    r={circleRadius}
-                    strokeDasharray={circleLength}
-                    strokeDashoffset={circleOffset}
-                  />
-                </svg>
-                <div className="calorie-ring-center">
-                  <strong>{Math.round(consumedCalories).toLocaleString('tr-TR')}</strong>
-                  <span>kcal alındı</span>
-                  <em>%{Math.round(caloriePercent)}</em>
-                </div>
-              </div>
-
-              <div className="daily-goal">
-                <span>Günlük hedef</span>
-                <strong>{Math.round(caloriesLeft).toLocaleString('tr-TR')} kcal kaldı</strong>
-                <p>{goalMessage}</p>
-              </div>
-            </div>
-
-            <div className="macro-mini">
-              <div className="macro-mini-title">Makro besinler</div>
-              {macros.map((macro) => (
-                <div className="macro-mini-row" key={macro.label}>
-                  <div className="macro-mini-head">
+                  <div className="noct-search-box" onClick={() => navigate('/select-ingredients')}>
+                    <ChefHat size={24} />
                     <span>
-                      <i style={{ backgroundColor: macro.color }} />
-                      {macro.label}
+                      {pantryIds.length
+                        ? `${pantryIds.length} dolap malzemesiyle öneriler hazır`
+                        : 'Gerçek eşleşmeler için önce dolabına malzeme ekle'}
                     </span>
-                    <strong>{Math.round(macro.current)}/{Math.round(macro.target)}g</strong>
+                    <button type="button">
+                      <Sparkles size={18} />
+                      Tarif Al
+                    </button>
                   </div>
-                  <div className="macro-mini-track">
-                    <span style={{ width: `${macro.percent}%`, backgroundColor: macro.color }} />
+
+                </div>
+
+                <aside className="noct-insight">
+                  <div className="insight-dot">
+                    <Sparkles size={16} />
+                  </div>
+                  <span>AI Insight</span>
+                  <p>
+                    {pantryIds.length
+                      ? 'Öneriler dolabındaki kayıtlı malzemeler üzerinden canlı olarak hesaplanıyor.'
+                      : 'Dolabına malzeme eklediğinde burada gerçek eşleşme içgörüsü görünecek.'}
+                  </p>
+                  <div className="insight-meter">
+                    <i />
+                    <small>{pantryIds.length ? 'Active' : 'Waiting'}</small>
+                  </div>
+                </aside>
+              </section>
+
+              <section className="noct-section">
+                <div className="noct-section-head">
+                  <h2>
+                    <Sparkles size={20} />
+                    Dolabımdan Eşleşen Tarifler
+                  </h2>
+                  <button type="button" onClick={() => navigate('/recommendations')}>Tümünü gör</button>
+                </div>
+
+                {matchesLoading ? (
+                  <div className="glass-panel noct-match-state">Dolabındaki malzemelerle eşleşmeler hazırlanıyor...</div>
+                ) : matchesError ? (
+                  <div className="glass-panel noct-match-state error">{matchesError}</div>
+                ) : !pantryIds.length ? (
+                  <div className="glass-panel noct-match-state">
+                    Dolabında kayıtlı malzeme yok. Gerçek eşleşmeler için önce dolabını doldur.
+                    <button type="button" onClick={() => navigate('/pantry')}>Dolabıma Git</button>
+                  </div>
+                ) : !topMatches.length ? (
+                  <div className="glass-panel noct-match-state">
+                    Dolabındaki malzemelerle uygun tarif bulunamadı.
+                    <button type="button" onClick={() => navigate('/pantry')}>Dolabı Güncelle</button>
+                  </div>
+                ) : (
+                  <div className="noct-match-grid">
+                    {topMatches.map((recipe) => (
+                      <RecipeCard
+                        key={recipe.id || recipe.name}
+                        recipe={recipe}
+                        isFavorite={favorites?.includes?.(Number(recipe.id))}
+                        onFavorite={(event, id) => {
+                          event.stopPropagation();
+                          if (toggleFavorite) toggleFavorite(id);
+                        }}
+                        onClick={(recipe) => recipe.id && navigate(`/recipe/${recipe.id}`, { state: { matchScore: recipe.score } })}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+
+            <aside className="noct-right-column">
+              <section className="glass-panel noct-overview">
+                <div className="noct-panel-head">
+                  <h2>Daily Overview</h2>
+                  <MoreHorizontal size={20} />
+                </div>
+
+                <div className="noct-ring-wrap">
+                  <svg viewBox="0 0 100 100" className="noct-ring">
+                    <circle cx="50" cy="50" r={circleRadius} />
+                    <circle
+                      className="ring-progress"
+                      cx="50"
+                      cy="50"
+                      r={circleRadius}
+                      strokeDasharray={circleLength}
+                      strokeDashoffset={circleOffset}
+                    />
+                  </svg>
+                  <div>
+                    <strong>{Math.round(consumedCalories).toLocaleString('tr-TR')}</strong>
+                    <span>/ {Math.round(calorieTarget).toLocaleString('tr-TR')} KCAL</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </article>
-        </section>
 
-        <section className="dashboard-quick-grid">
-          <button className="card dashboard-quick-card" type="button" onClick={() => navigate('/healthy-menu')}>
-            <span className="quick-icon healthy">
-              <Leaf size={19} />
-            </span>
-            <span>
-              <strong>Sağlıklı Tarifler</strong>
-              <small>Sağlıklı tarif akışına geç.</small>
-            </span>
-          </button>
-
-          <button className="card dashboard-quick-card" type="button" onClick={() => navigate('/favorites')}>
-            <span className="quick-icon favorite">
-              <Heart size={19} fill="currentColor" />
-            </span>
-            <span>
-              <strong>Favoriler</strong>
-              <small>Kaydettiğin tariflere hızlı dönüş.</small>
-            </span>
-          </button>
-        </section>
-
-        <section className="card meals-card">
-          <div className="meals-card-head">
-            <h2>Bugünkü öğünler</h2>
-            <button type="button" onClick={() => navigate('/weekly-logs')}>Tümünü gör</button>
-          </div>
-
-          <div className="meal-list">
-            {todayLogs.length ? (
-              todayLogs.map((log) => {
-                const meal = getMealSlot(log);
-                const recipe = recipeCache?.[log.recipeId];
-                const calories = toNumber(log.calorieIntake || recipe?.calorie);
-                const details = recipe?.name || recipe?.title || log.recipeName || 'Öğün detayı eklenmedi';
-
-                return (
-                  <div className="meal-row" key={log.id || `${log.recipeId}-${log.loggedAt || log.eatenAt}`}>
-                    <div className="meal-info">
-                      <span className={`meal-icon ${meal.className}`}>{meal.icon || <Timer size={18} />}</span>
-                      <span>
-                        <strong>{meal.name}</strong>
-                        <small>{formatMealTime(log)}</small>
-                      </span>
+                <div className="noct-macro-list">
+                  {macros.map((macro) => (
+                    <div key={macro.label}>
+                      <div>
+                        <span>{macro.label}</span>
+                        <span>{Math.round(macro.current)}g / {Math.round(macro.target)}g</span>
+                      </div>
+                      <i>
+                        <b style={{ width: `${macro.percent}%`, backgroundColor: macro.color, boxShadow: `0 0 8px ${macro.color}66` }} />
+                      </i>
                     </div>
-                    <div className="meal-calories">
-                      <strong>{Math.round(calories)} kcal</strong>
-                      <span>{details}</span>
+                  ))}
+                </div>
+              </section>
+
+              <section className="glass-panel noct-log">
+                <div className="noct-panel-head">
+                  <h2>
+                    <NotebookText size={20} />
+                    Today's Log
+                  </h2>
+                  <button type="button" onClick={() => navigate('/weekly-logs')}>
+                    <Plus size={18} />
+                    Add Meal
+                  </button>
+                </div>
+
+                <div className="noct-log-list">
+                  {todayLogs.length ? (
+                    todayLogs.map((log) => {
+                      const recipe = recipeCache?.[log.recipeId];
+                      const calories = toNumber(log.calorieIntake || recipe?.calorie);
+                      return (
+                        <div className="noct-log-row" key={log.id || `${log.recipeId}-${log.loggedAt || log.eatenAt}`}>
+                          <span><Utensils size={20} /></span>
+                          <div>
+                            <strong>{recipe?.name || log.recipeName || 'Öğün'}</strong>
+                            <small>{formatMealTime(log)}</small>
+                          </div>
+                          <b>{Math.round(calories)}<small>kcal</small></b>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="noct-empty-log">
+                      <Leaf size={30} />
+                      <strong>Bugün için kayıt yok</strong>
+                      <span>Öğün ekleyerek günlük takibi başlat.</span>
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="empty-meals">
-                <span className="empty-meals-mark">
-                  <Leaf size={26} />
-                </span>
-                <strong>Öğünlerini ekleyerek güne başla!</strong>
-                <small>Öğünlerini kaydet, makrolarını takip et ve hedefine ulaş.</small>
-                <button type="button" onClick={() => navigate('/weekly-logs')}>
-                  + Öğün Ekle
-                </button>
-              </div>
-            )}
+                  )}
+                </div>
+              </section>
+            </aside>
           </div>
-        </section>
+        </main>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .dashboard-home {
-          display: grid;
-          gap: 1.35rem;
+        .layout-content:has(.noct-dashboard) {
+          background-color: #0c0814 !important;
+          background-image:
+            radial-gradient(circle at 10% 20%, rgba(100, 31, 224, 0.12) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(68, 226, 205, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, rgba(147, 0, 10, 0.03) 0%, transparent 60%) !important;
+          color: #d4e4fa;
+          padding: 0;
         }
 
-        .dashboard-home-header {
+        .noct-dashboard {
+          min-height: 100vh;
+          width: 100%;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: #d4e4fa;
+        }
+
+        .glass-panel {
+          background-color: rgba(28, 43, 60, 0.10);
+          backdrop-filter: blur(48px);
+          -webkit-backdrop-filter: blur(48px);
+          border: 0.5px solid rgba(255, 255, 255, 0.05);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        .noct-topbar {
+          position: sticky;
+          top: 0;
+          z-index: 30;
+          height: 80px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 1rem;
+          padding: 0 32px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          background: rgba(12, 8, 20, 0.28);
+          backdrop-filter: blur(18px);
         }
 
-        .dashboard-home-header h1 {
-          margin: 0;
-          color: var(--text-primary);
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(2.1rem, 3.6vw, 3rem);
-          font-style: italic;
-          font-weight: 700;
-          letter-spacing: 0;
-          line-height: 1.05;
+        .noct-topbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-left: auto;
         }
 
-        .dashboard-home-header p {
-          margin-top: 0.45rem;
-          color: var(--text-secondary);
-          font-size: 1rem;
+        .noct-icon-button,
+        .noct-assistant-button,
+        .noct-profile-button {
+          color: #bbcabf;
+          background: transparent;
+          border-radius: 999px;
+          border: 0;
         }
 
-        .dashboard-theme-button {
-          width: 48px;
-          height: 48px;
-          border-radius: 14px;
-          border: 1px solid var(--border-strong);
-          background: color-mix(in srgb, var(--background-elevated) 78%, transparent);
-          color: var(--primary-color);
+        .noct-icon-button {
+          width: 40px;
+          height: 40px;
           display: grid;
           place-items: center;
-          flex: 0 0 auto;
-          box-shadow: var(--shadow-sm);
         }
 
-        .dashboard-hero-grid {
+        .noct-icon-button:hover,
+        .noct-assistant-button:hover,
+        .noct-profile-button:hover {
+          color: #d4e4fa;
+          background: rgba(255,255,255,0.05);
+        }
+
+        .noct-separator {
+          width: 1px;
+          height: 24px;
+          background: rgba(255,255,255,0.10);
+        }
+
+        .noct-assistant-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(18, 33, 49, 0.30);
+          color: #d4e4fa;
+          font-size: 15px;
+          font-weight: 600;
+        }
+
+        .noct-assistant-button svg {
+          color: #4edea3;
+        }
+
+        .noct-profile-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 4px 12px 4px 4px;
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(18, 33, 49, 0.30);
+          color: #d4e4fa;
+          font-size: 15px;
+          font-weight: 600;
+        }
+
+        .noct-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 999px;
           display: grid;
-          grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
-          gap: 1.25rem;
-          align-items: stretch;
+          place-items: center;
+          border: 1px solid rgba(255,255,255,0.10);
+          background: linear-gradient(135deg, rgba(78,222,163,0.25), rgba(68,226,205,0.10));
+          color: #d4e4fa;
+          font-weight: 700;
         }
 
-        .dashboard-recipe-hero {
-          min-height: 360px;
-          padding: clamp(1.7rem, 3vw, 2.4rem);
-          border-radius: 22px;
-          background:
-            linear-gradient(90deg, rgba(0, 17, 14, 0.98) 0%, rgba(2, 31, 26, 0.94) 52%, rgba(3, 27, 23, 0.88) 100%),
-            radial-gradient(ellipse at 82% 50%, rgba(217, 154, 43, 0.14), transparent 34%),
-            repeating-linear-gradient(135deg, rgba(241, 193, 107, 0.028) 0 1px, transparent 1px 9px);
-          color: #f8eedc;
-          overflow: hidden;
-          border: 1px solid var(--border-strong);
-          text-align: left;
+        .noct-main {
+          padding: 32px 32px 40px;
+          width: 100%;
+        }
+
+        .noct-content-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 3fr) minmax(320px, 1fr);
+          gap: 40px;
+          width: 100%;
+        }
+
+        .noct-left-column,
+        .noct-right-column {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
+          gap: 40px;
+        }
+
+        .noct-hero {
+          min-height: 420px;
+          border-radius: 24px;
+          padding: 40px;
+          display: flex;
+          align-items: center;
+          gap: 40px;
           position: relative;
-          box-shadow: var(--shadow-md);
+          overflow: hidden;
+          border-color: rgba(255,255,255,0.10);
         }
 
-        .dashboard-recipe-hero::before {
-          content: "";
+        .hero-glow {
           position: absolute;
-          right: clamp(1rem, 4vw, 3rem);
-          top: 8%;
-          width: min(34vw, 360px);
-          height: 82%;
-          opacity: 0.3;
-          background:
-            radial-gradient(ellipse at 72% 58%, rgba(241, 193, 107, 0.22), transparent 18%),
-            linear-gradient(42deg, transparent 42%, rgba(241, 193, 107, 0.38) 43% 44%, transparent 45%),
-            linear-gradient(118deg, transparent 46%, rgba(127, 155, 120, 0.38) 47% 48%, transparent 49%);
-          filter: blur(0.1px);
-        }
-
-        .dashboard-recipe-hero::after {
-          content: "";
-          position: absolute;
-          right: 6%;
-          bottom: 8%;
-          width: 280px;
-          height: 160px;
-          opacity: 0.22;
+          width: 300px;
+          height: 300px;
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.10) 0%, transparent 70%);
+          top: -150px;
+          right: -150px;
           border-radius: 50%;
-          border: 1px solid rgba(241, 193, 107, 0.55);
-          transform: rotate(-12deg);
+          pointer-events: none;
+          z-index: 0;
         }
 
-        .dashboard-recipe-hero > * {
-          position: relative;
-          z-index: 1;
-        }
-
-        .recipe-card-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.45rem;
-          margin-bottom: 1rem;
-          padding: 0.5rem 0.85rem;
-          border-radius: 999px;
-          background: rgba(241, 193, 107, 0.12);
-          border: 1px solid rgba(241, 193, 107, 0.38);
-          color: #f1c16b;
-          font-size: 0.76rem;
-          font-weight: 900;
-        }
-
-        .dashboard-recipe-hero h2 {
-          max-width: 13ch;
-          margin: 0 0 0.85rem;
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: clamp(2rem, 4vw, 3rem);
-          font-style: italic;
-          line-height: 1.02;
-          font-weight: 700;
-          letter-spacing: 0;
-        }
-
-        .dashboard-recipe-hero p {
-          max-width: 46ch;
-          margin: 0 0 1.5rem;
-          color: rgba(248, 238, 220, 0.84);
-          font-size: 1rem;
-          line-height: 1.55;
-        }
-
-        .recipe-card-action {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.65rem;
-          padding: 0.95rem 1.35rem;
-          border-radius: 14px;
-          border: 1px solid var(--border-strong);
-          background: rgba(8, 35, 29, 0.7);
-          color: #f1c16b;
-          font-size: 1rem;
-          font-weight: 900;
-          box-shadow: 0 0 24px rgba(217, 154, 43, 0.12);
-        }
-
-        .dashboard-recipe-hero small {
-          margin-top: auto;
-          padding-top: 1rem;
-          color: #f1c16b;
-          font-size: 0.86rem;
-          font-weight: 800;
-        }
-
-        .dashboard-status-card {
-          min-height: 360px;
-          display: grid;
-          align-content: center;
-          gap: 1rem;
-          padding: 1.5rem;
-          border-radius: 22px;
-          border-color: var(--border-strong);
-          background:
-            linear-gradient(145deg, color-mix(in srgb, var(--background-elevated) 96%, transparent), color-mix(in srgb, var(--background-muted) 88%, transparent)),
-            repeating-linear-gradient(135deg, rgba(217, 154, 43, 0.026) 0 1px, transparent 1px 9px);
-          box-shadow: var(--shadow-sm);
-        }
-
-        .status-ring-row {
-          display: grid;
-          justify-items: center;
-          gap: 0.6rem;
-        }
-
-        .calorie-ring-wrap {
-          position: relative;
-          width: 218px;
-          height: 218px;
-          display: grid;
-          place-items: center;
-        }
-
-        .calorie-ring {
-          width: 218px;
-          height: 218px;
-          transform: rotate(-90deg);
-          overflow: visible;
-        }
-
-        .ring-track,
-        .ring-progress {
-          fill: none;
-          stroke-width: 8.5;
-          stroke-linecap: round;
-        }
-
-        .ring-track {
-          stroke: rgba(197, 154, 66, 0.18);
-        }
-
-        .ring-progress {
-          stroke: url(#calorieRingGradient);
-          transition: stroke-dashoffset 0.35s ease;
-        }
-
-        .calorie-ring-center {
+        .noct-hero::after {
+          content: "";
           position: absolute;
           inset: 0;
-          display: grid;
-          place-content: center;
-          justify-items: center;
-          text-align: center;
+          background: linear-gradient(135deg, rgba(78,222,163,0.05), transparent, rgba(100,31,224,0.05));
+          pointer-events: none;
         }
 
-        .calorie-ring-center strong {
-          color: var(--text-primary);
-          font-size: 2rem;
-          font-weight: 650;
-          letter-spacing: 0;
-          line-height: 1;
-        }
-
-        .calorie-ring-center span {
-          margin-top: 0.34rem;
-          color: var(--text-secondary);
-          font-size: 0.78rem;
-          font-weight: 550;
-          line-height: 1.1;
-        }
-
-        .calorie-ring-center em {
-          margin-top: 0.12rem;
-          color: var(--primary-color);
-          font-size: 0.9rem;
-          font-style: normal;
-          font-weight: 650;
-          line-height: 1.1;
-        }
-
-        .daily-goal {
-          display: grid;
-          gap: 0.18rem;
-          justify-items: center;
-          text-align: center;
+        .noct-hero-content {
+          position: relative;
+          z-index: 1;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
           min-width: 0;
         }
 
-        .daily-goal span {
-          color: var(--primary-color);
-          font-size: 0.74rem;
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-
-        .daily-goal strong {
-          color: var(--text-primary);
-          font-size: 1.05rem;
-          line-height: 1.12;
-        }
-
-        .daily-goal p {
-          color: var(--text-secondary);
-          font-size: 0.82rem;
-          line-height: 1.4;
-        }
-
-        .macro-mini {
-          display: grid;
-          gap: 0.72rem;
-          padding-top: 0.85rem;
-          border-top: 1px solid var(--border-strong);
-        }
-
-        .macro-mini-title {
-          color: var(--primary-color);
-          font-size: 0.78rem;
-          font-weight: 900;
-        }
-
-        .macro-mini-row {
-          display: grid;
-          gap: 0.35rem;
-        }
-
-        .macro-mini-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 0.8rem;
-          color: var(--text-secondary);
-          font-size: 0.82rem;
-          font-weight: 800;
-        }
-
-        .macro-mini-head span {
+        .noct-live-badge {
+          width: fit-content;
           display: inline-flex;
           align-items: center;
-          gap: 0.45rem;
+          gap: 8px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: rgba(78,222,163,0.10);
+          color: #4edea3;
+          border: 1px solid rgba(78,222,163,0.20);
+          font-size: 12px;
+          line-height: 1.1;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
         }
 
-        .macro-mini-head i {
+        .noct-live-badge span {
           width: 8px;
           height: 8px;
-          border-radius: 50%;
+          border-radius: 999px;
+          background: #4edea3;
+          box-shadow: 0 0 16px rgba(78,222,163,0.8);
         }
 
-        .macro-mini-head strong {
-          color: var(--text-primary);
-          font-size: 0.82rem;
+        .noct-hero h1 {
+          max-width: 720px;
+          margin: 0;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: clamp(2.35rem, 4vw, 4rem);
+          line-height: 1.08;
+          font-weight: 700;
+          letter-spacing: 0;
+          color: #d4e4fa;
+        }
+
+        .noct-hero p {
+          max-width: 640px;
+          margin: 0;
+          color: #bbcabf;
+          font-size: 18px;
+          line-height: 1.6;
+        }
+
+        .noct-search-box {
+          width: min(100%, 760px);
+          min-height: 64px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 8px 8px 8px 24px;
+          border-radius: 16px;
+          border: 1px solid rgba(255,255,255,0.10);
+          background: rgba(5, 20, 36, 0.60);
+          box-shadow: inset 0 2px 12px rgba(0,0,0,0.2);
+          cursor: pointer;
+        }
+
+        .noct-search-box > svg {
+          color: #86948a;
+          flex: 0 0 auto;
+        }
+
+        .noct-search-box span {
+          color: rgba(212, 228, 250, 0.72);
+          flex: 1;
+          font-size: 18px;
+          min-width: 0;
+        }
+
+        .noct-search-box button,
+        .noct-match-state button {
+          min-height: 48px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 0 24px;
+          border-radius: 12px;
+          background: #4edea3;
+          color: #003824;
+          font-size: 15px;
+          font-weight: 700;
+          box-shadow: 0 12px 28px rgba(78,222,163,0.20);
           white-space: nowrap;
         }
 
-        .macro-mini-track {
-          height: 7px;
+        .noct-chip-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+
+        .noct-chip-row span,
+        .noct-tag-row span {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 16px;
+          border-radius: 12px;
+          background: rgba(18, 33, 49, 0.42);
+          border: 1px solid rgba(255,255,255,0.10);
+          color: #d4e4fa;
+          font-size: 14px;
+          font-weight: 600;
+          backdrop-filter: blur(16px);
+        }
+
+        .noct-insight {
+          position: relative;
+          z-index: 1;
+          width: 256px;
+          margin-left: auto;
+          padding: 24px;
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.10);
+          background: rgba(255,255,255,0.05);
+          backdrop-filter: blur(24px);
+        }
+
+        .insight-dot {
+          position: absolute;
+          top: -12px;
+          right: -12px;
+          width: 32px;
+          height: 32px;
           border-radius: 999px;
-          background: rgba(197, 154, 66, 0.18);
+          display: grid;
+          place-items: center;
+          background: #4edea3;
+          color: #003824;
+          box-shadow: 0 12px 24px rgba(78,222,163,0.28);
+        }
+
+        .noct-insight span {
+          display: block;
+          margin-bottom: 8px;
+          color: #4edea3;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .noct-insight p {
+          margin: 0;
+          color: #bbcabf;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .insight-meter {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-top: 12px;
+        }
+
+        .insight-meter i {
+          flex: 1;
+          height: 4px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, #4edea3 66%, rgba(255,255,255,0.10) 66%);
+        }
+
+        .insight-meter small {
+          color: #86948a;
+          font-size: 10px;
+        }
+
+        .noct-section {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .noct-section-head,
+        .noct-panel-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+        }
+
+        .noct-section-head h2,
+        .noct-panel-head h2 {
+          margin: 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: #d4e4fa;
+          font-size: 32px;
+          line-height: 1.25;
+          font-weight: 600;
+          letter-spacing: 0;
+        }
+
+        .noct-section-head h2 svg {
+          color: rgba(78,222,163,0.4);
+        }
+
+        .noct-section-head button,
+        .noct-panel-head button {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: transparent;
+          color: #bbcabf;
+          font-size: 15px;
+          font-weight: 600;
+        }
+
+        .noct-match-state {
+          min-height: 220px;
+          border-radius: 16px;
+          display: grid;
+          place-items: center;
+          align-content: center;
+          gap: 16px;
+          text-align: center;
+          color: #bbcabf;
+          padding: 32px;
+        }
+
+        .noct-match-state.error {
+          color: #ffb4ab;
+        }
+
+        .noct-match-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 24px;
+        }
+
+        .noct-recipe-card {
+          border-radius: 16px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .noct-recipe-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(255,255,255,0.12);
+        }
+
+        .noct-card-media {
+          position: relative;
+          height: 256px;
           overflow: hidden;
         }
 
-        .macro-mini-track span {
-          display: block;
+        .noct-card-media img,
+        .noct-card-fallback {
+          width: 100%;
           height: 100%;
-          max-width: 100%;
-          border-radius: inherit;
+          object-fit: cover;
+          transition: transform 0.7s ease;
         }
 
-        .dashboard-quick-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 1.25rem;
+        .noct-recipe-card:hover .noct-card-media img {
+          transform: scale(1.05);
         }
 
-        .dashboard-quick-card {
-          min-height: 92px;
-          display: flex;
-          align-items: center;
-          gap: 0.9rem;
-          padding: 1.1rem 1.25rem;
-          border-radius: 18px;
-          border-color: var(--border-strong);
-          text-align: left;
-          box-shadow: var(--shadow-sm);
-        }
-
-        .quick-icon {
-          width: 42px;
-          height: 42px;
-          border-radius: 14px;
+        .noct-card-fallback {
           display: grid;
           place-items: center;
-          flex: 0 0 auto;
+          color: rgba(78,222,163,0.24);
+          background:
+            radial-gradient(circle at 30% 20%, rgba(78,222,163,0.22), transparent 34%),
+            linear-gradient(145deg, #122131, #010f1f);
         }
 
-        .quick-icon.healthy {
-          background: rgba(127, 155, 120, 0.18);
-          color: #7f9b78;
+        .noct-card-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(12,8,20,0.92), rgba(12,8,20,0.20), transparent);
         }
 
-        .quick-icon.favorite {
-          background: rgba(241, 193, 107, 0.18);
-          color: #f1c16b;
-        }
-
-        .dashboard-quick-card strong {
-          display: block;
-          margin-bottom: 0.12rem;
-          color: var(--text-primary);
-          font-size: 1rem;
-          font-weight: 900;
-        }
-
-        .dashboard-quick-card small {
-          color: var(--text-secondary);
-          font-size: 0.82rem;
-          line-height: 1.3;
-        }
-
-        .meals-card {
-          padding: 1.35rem 1.55rem;
-          border-radius: 18px;
-          border-color: var(--border-strong);
-          box-shadow: var(--shadow-sm);
-        }
-
-        .meals-card-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
-          margin-bottom: 0.55rem;
-        }
-
-        .meals-card-head h2 {
-          margin: 0;
-          color: var(--text-primary);
-          font-family: 'Playfair Display', Georgia, serif;
-          font-size: 1.65rem;
-          font-style: italic;
-          font-weight: 700;
-        }
-
-        .meals-card-head button {
-          background: transparent;
-          color: var(--primary-color);
-          font-size: 0.86rem;
-          font-weight: 900;
-          padding: 0.2rem 0;
-        }
-
-        .meal-list {
-          display: grid;
-        }
-
-        .meal-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
-          padding: 0.58rem 0;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .meal-row:last-child {
-          border-bottom: 0;
-          padding-bottom: 0;
-        }
-
-        .meal-info {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          min-width: 0;
-        }
-
-        .meal-icon {
+        .noct-card-heart {
+          position: absolute;
+          top: 16px;
+          right: 16px;
           width: 38px;
           height: 38px;
-          border-radius: 12px;
           display: grid;
           place-items: center;
-          flex: 0 0 auto;
-          background: rgba(217, 154, 43, 0.1);
+          border-radius: 999px;
+          background: rgba(12,8,20,0.40);
+          border: 1px solid rgba(255,255,255,0.10);
+          color: #ffb3af;
+          backdrop-filter: blur(12px);
+          z-index: 2;
         }
 
-        .meal-icon.breakfast {
-          color: #d99a2b;
+        .noct-card-badges {
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
         }
 
-        .meal-icon.lunch {
-          color: #10b981;
-        }
-
-        .meal-icon.dinner {
-          color: #f59e0b;
-        }
-
-        .meal-info strong {
-          display: block;
-          color: var(--text-primary);
-          font-size: 0.94rem;
-          font-weight: 900;
-          line-height: 1.15;
-        }
-
-        .meal-info small {
-          display: block;
-          color: var(--text-secondary);
-          font-size: 0.8rem;
-          font-weight: 800;
-        }
-
-        .meal-calories {
-          text-align: right;
-          min-width: 150px;
-        }
-
-        .meal-calories strong {
-          display: block;
-          color: var(--text-primary);
-          font-size: 0.94rem;
-          font-weight: 900;
-          line-height: 1.15;
-        }
-
-        .meal-calories span {
-          display: block;
-          color: var(--text-secondary);
-          font-size: 0.8rem;
+        .noct-card-badges span {
+          width: fit-content;
+          padding: 4px 8px;
+          border-radius: 8px;
+          font-size: 10px;
           font-weight: 700;
+          letter-spacing: 0.05em;
+          color: #44e2cd;
+          background: rgba(68,226,205,0.18);
+          border: 1px solid rgba(68,226,205,0.30);
+          backdrop-filter: blur(12px);
+        }
+
+        .noct-card-badges .grade-a {
+          color: #10b981;
+          background: rgba(16,185,129,0.20);
+          border-color: rgba(16,185,129,0.30);
+        }
+
+        .noct-card-badges .grade-b {
+          color: #ffb3af;
+          background: rgba(255,179,175,0.12);
+          border-color: rgba(255,179,175,0.30);
+        }
+
+        .noct-card-body {
+          position: relative;
+          z-index: 2;
+          margin-top: -64px;
+          padding: 24px;
+        }
+
+        .noct-card-body h3 {
+          margin: 0 0 8px;
+          color: white;
+          font-size: 24px;
+          line-height: 1.3;
+          font-weight: 600;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 520px;
         }
 
-        .empty-meals {
-          min-height: 142px;
-          margin-top: 0.75rem;
-          padding: 1.15rem;
-          border: 1px dashed color-mix(in srgb, var(--primary-color) 55%, transparent);
-          border-radius: 16px;
-          color: var(--text-secondary);
-          display: grid;
-          justify-items: center;
-          align-content: center;
-          gap: 0.4rem;
-          text-align: center;
-          background: color-mix(in srgb, var(--background-muted) 44%, transparent);
+        .noct-card-meta {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          margin-bottom: 16px;
+          color: rgba(255,255,255,0.80);
+          font-size: 14px;
         }
 
-        .empty-meals-mark {
-          width: 48px;
-          height: 48px;
-          border-radius: 16px;
+        .noct-card-meta span {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+
+        .noct-tag-row {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .noct-tag-row span {
+          border-radius: 8px;
+          color: #bbcabf;
+          font-size: 12px;
+          line-height: 1.1;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+
+        .noct-overview,
+        .noct-log {
+          border-radius: 24px;
+          padding: 40px;
+        }
+
+        .noct-overview {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+        }
+
+        .noct-panel-head {
+          width: 100%;
+        }
+
+        .noct-panel-head h2 {
+          font-size: 24px;
+          line-height: 1.3;
+        }
+
+        .noct-panel-head > svg {
+          color: #86948a;
+        }
+
+        .noct-ring-wrap {
+          position: relative;
+          width: 192px;
+          height: 192px;
           display: grid;
           place-items: center;
-          color: var(--primary-color);
-          background: rgba(217, 154, 43, 0.12);
         }
 
-        .empty-meals strong {
-          color: var(--primary-color);
-          font-size: 1rem;
-          font-weight: 900;
+        .noct-ring {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
         }
 
-        .empty-meals small {
-          color: var(--text-secondary);
-          font-size: 0.86rem;
+        .noct-ring circle {
+          fill: none;
+          stroke: rgba(255,255,255,0.03);
+          stroke-width: 2.5;
+        }
+
+        .noct-ring .ring-progress {
+          stroke: #4edea3;
+          stroke-linecap: round;
+          transition: stroke-dashoffset 0.35s;
+        }
+
+        .noct-ring-wrap div {
+          text-align: center;
+        }
+
+        .noct-ring-wrap strong {
+          display: block;
+          color: #d4e4fa;
+          font-size: 40px;
+          line-height: 1;
           font-weight: 700;
         }
 
-        .empty-meals button {
-          margin-top: 0.3rem;
-          padding: 0.58rem 0.9rem;
+        .noct-ring-wrap span {
+          color: #86948a;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: 0.10em;
+        }
+
+        .noct-macro-list {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .noct-macro-list > div > div {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 4px;
+          color: #86948a;
+          font-size: 12px;
+          line-height: 1.1;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .noct-macro-list i {
+          display: block;
+          height: 8px;
+          border-radius: 999px;
+          overflow: hidden;
+          background: rgba(18,33,49,0.55);
+        }
+
+        .noct-macro-list b {
+          display: block;
+          height: 100%;
+          border-radius: inherit;
+        }
+
+        .noct-log {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .noct-log-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-top: 24px;
+        }
+
+        .noct-log-row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px;
           border-radius: 12px;
-          border: 1px solid var(--border-strong);
-          background: rgba(217, 154, 43, 0.12);
-          color: var(--primary-color);
-          font-weight: 900;
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(18,33,49,0.22);
         }
 
-        .dashboard-recipe-hero:hover,
-        .dashboard-quick-card:hover {
-          transform: translateY(-4px);
+        .noct-log-row > span {
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          display: grid;
+          place-items: center;
+          flex: 0 0 auto;
+          background: rgba(28,43,60,0.60);
+          color: #4edea3;
         }
 
-        @media (max-width: 1120px) {
-          .dashboard-hero-grid,
-          .dashboard-quick-grid {
+        .noct-log-row div {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .noct-log-row strong {
+          display: block;
+          color: #d4e4fa;
+          font-size: 14px;
+          font-weight: 600;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .noct-log-row small {
+          color: #86948a;
+          font-size: 10px;
+        }
+
+        .noct-log-row b {
+          color: #d4e4fa;
+          font-size: 14px;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        .noct-log-row b small {
+          margin-left: 2px;
+          text-transform: uppercase;
+        }
+
+        .noct-empty-log {
+          min-height: 180px;
+          display: grid;
+          place-items: center;
+          align-content: center;
+          gap: 8px;
+          text-align: center;
+          color: #86948a;
+          border: 1px dashed rgba(255,255,255,0.08);
+          border-radius: 16px;
+        }
+
+        .noct-empty-log svg {
+          color: #4edea3;
+        }
+
+        .noct-empty-log strong {
+          color: #d4e4fa;
+        }
+
+        .layout-shell:has(.noct-dashboard) .sidebar {
+          background: rgba(12, 8, 20, 0.60);
+          border-right: 1px solid rgba(255,255,255,0.05);
+          backdrop-filter: blur(48px);
+          box-shadow: none;
+        }
+
+        .layout-shell:has(.noct-dashboard) .brand-wordmark-reci,
+        .layout-shell:has(.noct-dashboard) .brand-wordmark-match {
+          color: #4edea3;
+          text-shadow: none;
+        }
+
+        .layout-shell:has(.noct-dashboard) .brand-wordmark p {
+          color: rgba(187,202,191,0.60);
+        }
+
+        .layout-shell:has(.noct-dashboard) .sidebar-nav {
+          background: transparent;
+          border-color: transparent;
+        }
+
+        .layout-shell:has(.noct-dashboard) .nav-active-pill {
+          border-radius: 8px;
+          background: rgba(16,185,129,0.10);
+          border: 0;
+          box-shadow: inset 2px 0 0 #4edea3;
+        }
+
+        .layout-shell:has(.noct-dashboard) .nav-item,
+        .layout-shell:has(.noct-dashboard) .sidebar-action-button {
+          color: #bbcabf !important;
+          border-radius: 8px;
+        }
+
+        .layout-shell:has(.noct-dashboard) .nav-item:hover,
+        .layout-shell:has(.noct-dashboard) .sidebar-action-button:hover {
+          color: #d4e4fa !important;
+          background: rgba(255,255,255,0.05);
+        }
+
+        .layout-shell:has(.noct-dashboard) .nav-item.active {
+          color: #4edea3 !important;
+        }
+
+        .layout-shell:has(.noct-dashboard) .logout-button {
+          color: #ffb4ab !important;
+          background: transparent;
+          border-color: rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 1280px) {
+          .noct-content-grid {
             grid-template-columns: 1fr;
+          }
+
+          .noct-right-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .noct-insight {
+            display: none;
+          }
+        }
+
+        @media (max-width: 980px) {
+          .noct-match-grid,
+          .noct-right-column {
+            grid-template-columns: 1fr;
+          }
+
+          .noct-hero {
+            padding: 24px;
           }
         }
 
         @media (max-width: 720px) {
-          .dashboard-home-header,
-          .status-ring-row,
-          .meal-row {
-            align-items: flex-start;
+          .noct-topbar {
+            padding: 0 16px;
           }
 
-          .dashboard-home-header,
-          .status-ring-row,
-          .meal-row {
-            display: flex;
+          .noct-main {
+            padding: 24px 16px 32px;
+          }
+
+          .noct-search-box {
             flex-direction: column;
+            align-items: stretch;
+            padding: 18px;
           }
 
-          .dashboard-theme-button {
-            align-self: flex-end;
+          .noct-search-box button {
+            justify-content: center;
           }
 
-          .meal-calories {
-            min-width: 0;
-            text-align: left;
-            padding-left: 53px;
-          }
-
-          .meal-calories span {
-            max-width: 100%;
+          .noct-card-media {
+            height: 220px;
           }
         }
       ` }} />

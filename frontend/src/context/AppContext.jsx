@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
+import { API_BASE } from '../config';
 
 const AppContext = createContext();
-const API_BASE = 'http://localhost:8000';
 
 const withProxiedImage = (recipe) => {
   if (!recipe?.image_url) return recipe;
@@ -160,7 +160,7 @@ export const AppProvider = ({ children }) => {
         ...data,
         ingredients: rawIngs.map(ing => ({
             id: ing.id || ing.ingredient?.id || ing.ingredient_id,
-            name: ing.name || ing.ingredient?.name || 'İsimsiz Malzeme',
+            name: ing.name || ing.ingredient_name || ing.ingredient?.name || ing.ingredient?.ingredient_name || 'İsimsiz Malzeme',
             amount: ing.amount,
             unit: ing.unit,
             nutrition_data_source: ing.nutrition?.nutrition_data_source || ing.nutrition_data_source

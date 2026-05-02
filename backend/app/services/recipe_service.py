@@ -139,6 +139,34 @@ def get_recipe_detail(recipe_id: int, db: Session) -> dict:
     )
 
 
+class _ManualRequired(Exception):
+    def __init__(self, name: str):
+        self.name = name
+
+
+async def _resolve_ingredients(db: Session, user_id: int, ingredients: list[dict]) -> list[dict]:
+    resolved_items = []
+    for ing in ingredients:
+        if ing.get("ingredient_id"):
+            ingredient = recipe_repository.find_ingredient_by_id(db, ing["ingredient_id"], user_id)
+            if not ingredient:
+                raise HTTPException(status_code=404, detail="Malzeme bulunamadi.")
+            if not getattr(ingredient, "nutrition_value", None):
+                result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ingredient.ingredient_name, try_usda=True)
+                if result.status == "manual_required":
+                    raise _ManualRequired(ingredient.ingredient_name)
+                ingredient = result.ingredient
+        else:
+            result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ing.get("ingredient_name") or "", try_usda=True)
+            if result.status == "manual_required":
+                raise _ManualRequired(result.ingredient_name)
+            ingredient = result.ingredient
+
+        grams = unit_to_grams(ing.get("amount"), ing.get("unit"), ingredient.ingredient_name)
+        resolved_items.append({"ingredient": ingredient, "amount": ing.get("amount"), "unit": ing.get("unit"), "grams": grams})
+    return resolved_items
+
+
 async def create_custom_recipe(
     user_id: int,
     name: str,
@@ -161,45 +189,8 @@ async def create_custom_recipe(
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
 
     ensure_ingredient_nutrition_table(db)
-    resolved_items = []
     try:
-        for ing in ingredients:
-            ingredient = None
-            if ing.get("ingredient_id"):
-                ingredient = recipe_repository.find_ingredient_by_id(db, ing["ingredient_id"], user_id)
-                if not ingredient:
-                    raise HTTPException(status_code=404, detail="Malzeme bulunamadi.")
-                if not getattr(ingredient, "nutrition_value", None):
-                    resolve_result = await resolve_ingredient_for_user(
-                        db=db,
-                        user_id=user_id,
-                        ingredient_name=ingredient.ingredient_name,
-                        try_usda=True,
-                    )
-                    if resolve_result.status == "manual_required":
-                        db.rollback()
-                        return {
-                            "status": "manual_required",
-                            "ingredient_name": ingredient.ingredient_name,
-                        }
-                    ingredient = resolve_result.ingredient
-            else:
-                resolve_result = await resolve_ingredient_for_user(
-                    db=db,
-                    user_id=user_id,
-                    ingredient_name=ing.get("ingredient_name") or "",
-                    try_usda=True,
-                )
-                if resolve_result.status == "manual_required":
-                    db.rollback()
-                    return {
-                        "status": "manual_required",
-                        "ingredient_name": resolve_result.ingredient_name,
-                    }
-                ingredient = resolve_result.ingredient
-
-            grams = unit_to_grams(ing.get("amount"), ing.get("unit"), ingredient.ingredient_name)
-            resolved_items.append({"ingredient": ingredient, "amount": ing.get("amount"), "unit": ing.get("unit"), "grams": grams})
+        resolved_items = await _resolve_ingredients(db, user_id, ingredients)
 
         totals = calculate_recipe_nutrition(resolved_items)
         new_recipe = recipe_repository.create_recipe(
@@ -250,6 +241,9 @@ async def create_custom_recipe(
             "recipe_id": new_recipe.recipe_id,
             "nutrition": totals,
         }
+    except _ManualRequired as exc:
+        db.rollback()
+        return {"status": "manual_required", "ingredient_name": exc.name}
     except HTTPException:
         db.rollback()
         raise
@@ -282,40 +276,8 @@ async def update_custom_recipe(
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
 
     ensure_ingredient_nutrition_table(db)
-    resolved_items = []
     try:
-        for ing in ingredients:
-            ingredient = None
-            if ing.get("ingredient_id"):
-                ingredient = recipe_repository.find_ingredient_by_id(db, ing["ingredient_id"], user_id)
-                if not ingredient:
-                    raise HTTPException(status_code=404, detail="Malzeme bulunamadi.")
-                if not getattr(ingredient, "nutrition_value", None):
-                    resolve_result = await resolve_ingredient_for_user(
-                        db=db,
-                        user_id=user_id,
-                        ingredient_name=ingredient.ingredient_name,
-                        try_usda=True,
-                    )
-                    if resolve_result.status == "manual_required":
-                        db.rollback()
-                        return {"status": "manual_required", "ingredient_name": ingredient.ingredient_name}
-                    ingredient = resolve_result.ingredient
-            else:
-                resolve_result = await resolve_ingredient_for_user(
-                    db=db,
-                    user_id=user_id,
-                    ingredient_name=ing.get("ingredient_name") or "",
-                    try_usda=True,
-                )
-                if resolve_result.status == "manual_required":
-                    db.rollback()
-                    return {"status": "manual_required", "ingredient_name": resolve_result.ingredient_name}
-                ingredient = resolve_result.ingredient
-
-            grams = unit_to_grams(ing.get("amount"), ing.get("unit"), ingredient.ingredient_name)
-            resolved_items.append({"ingredient": ingredient, "amount": ing.get("amount"), "unit": ing.get("unit"), "grams": grams})
-
+        resolved_items = await _resolve_ingredients(db, user_id, ingredients)
         totals = calculate_recipe_nutrition(resolved_items)
         recipe.recipe_name = name
         recipe.recipe_category = recipe_category
@@ -346,6 +308,9 @@ async def update_custom_recipe(
 
         db.commit()
         return {"status": "success", "message": "Tarif guncellendi.", "recipe_id": recipe_id, "nutrition": totals}
+    except _ManualRequired as exc:
+        db.rollback()
+        return {"status": "manual_required", "ingredient_name": exc.name}
     except HTTPException:
         db.rollback()
         raise

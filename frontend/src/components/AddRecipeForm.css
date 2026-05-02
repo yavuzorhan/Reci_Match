@@ -1,0 +1,409 @@
+.arf-wrapper {
+  max-width: 64rem;
+  width: 100%;
+  margin: 0 auto;
+  background-color: rgba(13, 28, 45, 0.4);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #d4e4fa;
+}
+
+.arf-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #d4e4fa;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.arf-section {
+  margin-bottom: 2.5rem;
+}
+
+.arf-section-title {
+  font-size: 1.25rem;
+  color: #44e2cd; /* secondary */
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+
+.arf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .arf-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.arf-grid-2-span {
+  grid-column: 1 / -1;
+}
+
+.arf-label {
+  font-size: 0.875rem;
+  color: #bbcabf; /* on-surface-variant */
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+}
+
+.arf-label-error {
+  color: #ffb4ab; /* error */
+}
+
+.arf-input, .arf-select, .arf-textarea {
+  width: 100%;
+  background-color: rgba(5, 20, 36, 0.8); /* surface-dim/80 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #d4e4fa; /* on-surface */
+  transition: all 0.2s;
+  outline: none;
+}
+
+.arf-input::placeholder, .arf-textarea::placeholder {
+  color: rgba(187, 202, 191, 0.5);
+}
+
+.arf-input:focus, .arf-select:focus, .arf-textarea:focus {
+  border-color: #4edea3; /* primary */
+  box-shadow: 0 0 0 1px #4edea3;
+}
+
+.arf-select-wrapper {
+  position: relative;
+}
+
+.arf-select {
+  appearance: none;
+}
+
+.arf-select-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bbcabf;
+  pointer-events: none;
+}
+
+.arf-image-upload {
+  width: 100%;
+  height: 12rem;
+  border-radius: 0.75rem;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  background-color: rgba(5, 20, 36, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.arf-image-upload:hover {
+  background-color: rgba(5, 20, 36, 0.8);
+  border-color: rgba(78, 222, 163, 0.5);
+}
+
+.arf-image-upload-icon-wrapper {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 9999px;
+  background-color: #1c2b3c; /* surface-container-high */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.arf-image-upload:hover .arf-image-upload-icon-wrapper {
+  background-color: rgba(78, 222, 163, 0.1);
+}
+
+.arf-image-upload-icon {
+  font-size: 1.875rem;
+  color: #bbcabf;
+  transition: all 0.2s;
+}
+
+.arf-image-upload:hover .arf-image-upload-icon {
+  color: #4edea3;
+}
+
+.arf-image-upload-text {
+  font-size: 1rem;
+  color: #bbcabf;
+}
+
+.arf-image-preview-wrapper {
+  position: relative;
+  width: 100%;
+  height: 12rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.arf-image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.arf-image-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: rgba(5, 20, 36, 0.8);
+  color: #ffb4ab;
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s;
+}
+
+.arf-image-remove:hover {
+  background-color: #ffb4ab;
+  color: #051424;
+}
+
+.arf-search-wrapper {
+  position: relative;
+}
+
+.arf-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bbcabf;
+}
+
+.arf-search-input {
+  width: 100%;
+  background-color: rgba(39, 54, 71, 0.5); /* surface-container-highest/50 */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  padding: 1rem 1rem 1rem 3rem;
+  font-size: 1rem;
+  color: #d4e4fa;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.arf-search-input:focus {
+  border-color: #4edea3;
+  box-shadow: 0 0 0 1px #4edea3;
+}
+
+.arf-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #122131; /* surface-container */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  margin-top: 0.5rem;
+  max-height: 15rem;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.arf-search-dropdown-item {
+  padding: 0.75rem 1rem;
+  color: #d4e4fa;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
+}
+
+.arf-search-dropdown-item:hover {
+  background-color: rgba(78, 222, 163, 0.1);
+  color: #4edea3;
+}
+
+.arf-chips-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background-color: rgba(39, 54, 71, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 100px;
+}
+
+.arf-chip-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.arf-chip-name {
+  color: #10b981; /* primary-container */
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex: 2;
+}
+
+.arf-chip-input {
+  flex: 1;
+  background-color: rgba(5, 20, 36, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  color: #d4e4fa;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.arf-chip-input:focus {
+  border-color: #10b981;
+}
+
+.arf-chip-close {
+  color: #10b981;
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.arf-chip-close:hover {
+  color: #fff;
+}
+
+.arf-hint {
+  font-size: 0.875rem;
+  color: rgba(187, 202, 191, 0.7);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.arf-info {
+  font-size: 0.875rem;
+  color: rgba(78, 222, 163, 0.7);
+  margin-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.arf-footer {
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.arf-btn-cancel {
+  padding: 0.875rem 2rem;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: #bbcabf;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.arf-btn-cancel:hover {
+  color: #d4e4fa;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.arf-btn-submit {
+  padding: 0.875rem 2.5rem;
+  border-radius: 0.75rem;
+  background-color: #4edea3;
+  color: #003824;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 10px 15px -3px rgba(78, 222, 163, 0.2);
+}
+
+.arf-btn-submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.arf-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.arf-error-banner {
+  background-color: rgba(147, 0, 10, 0.2);
+  color: #ffb4ab;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(147, 0, 10, 0.5);
+  margin-bottom: 1.5rem;
+}
+
+.arf-custom-ing-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+  background-color: #051424;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.arf-custom-ing-input, .arf-custom-ing-select {
+  flex: 1;
+  min-width: 150px;
+  background-color: rgba(5, 20, 36, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  color: #d4e4fa;
+  font-size: 0.875rem;
+}
+
+.arf-custom-ing-btn {
+  background-color: #4edea3;
+  color: #003824;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.arf-custom-ing-btn:disabled {
+  opacity: 0.5;
+}

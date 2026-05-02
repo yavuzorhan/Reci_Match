@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { User, Settings, Lock, Mail, Key, ShieldCheck, Activity, Target, Save, Fingerprint, Bell, Trash2, Heart, Scale, Ruler } from 'lucide-react';
+import { API_BASE } from '../config';
 import IngredientPicker from '../components/IngredientPicker';
 
 const ProfileEdit = () => {
@@ -28,7 +29,7 @@ const ProfileEdit = () => {
     if (!user) return;
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/profile`, {
+      const response = await fetch(`${API_BASE}/api/users/${user.id}/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -57,7 +58,7 @@ const ProfileEdit = () => {
     setEmailLoading(true);
     setEmailMessage('');
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/request-otp`, {
+      const resp = await fetch(`${API_BASE}/api/users/${user.id}/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email })
@@ -82,7 +83,7 @@ const ProfileEdit = () => {
     setEmailLoading(true);
     setEmailMessage('');
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/update-email`, {
+      const resp = await fetch(`${API_BASE}/api/users/${user.id}/update-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ new_email: emailData.newEmail, code: emailData.otp })
@@ -107,7 +108,7 @@ const ProfileEdit = () => {
     setPasswordLoading(true);
     setPasswordMessage('');
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/request-otp`, {
+      const resp = await fetch(`${API_BASE}/api/users/${user.id}/request-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email })
@@ -135,7 +136,7 @@ const ProfileEdit = () => {
     setPasswordLoading(true);
     setPasswordMessage('');
     try {
-      const resp = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/update-password`, {
+      const resp = await fetch(`${API_BASE}/api/users/${user.id}/update-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, code: passwordData.otp, new_password: passwordData.newPassword })
@@ -157,7 +158,7 @@ const ProfileEdit = () => {
 
   const syncDisliked = async (newIds) => {
     try {
-      await fetch(`http://127.0.0.1:8000/api/users/${user.id}/disliked-ingredients`, {
+      await fetch(`${API_BASE}/api/users/${user.id}/disliked-ingredients`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ingredient_ids: newIds })
@@ -173,7 +174,7 @@ const ProfileEdit = () => {
       {/* PREMIUM HEADER */}
       <header style={{ marginBottom: '3rem', animation: 'fadeInDown 0.6s ease-out' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-          <div style={{ background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', padding: '8px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary-color)', padding: '8px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Activity size={16} fill="currentColor" />
             HESAP YÖNETİMİ
           </div>
@@ -214,7 +215,7 @@ const ProfileEdit = () => {
                   display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px', borderRadius: '18px', border: 'none', cursor: 'pointer', transition: 'all 0.3s', fontWeight: '800', fontSize: '1rem',
                   background: activeTab === item.id ? 'var(--primary-color)' : 'transparent',
                   color: activeTab === item.id ? 'white' : 'var(--text-secondary)',
-                  boxShadow: activeTab === item.id ? '0 10px 20px rgba(217, 154, 43, 0.2)' : 'none'
+                  boxShadow: activeTab === item.id ? '0 10px 20px rgba(16, 185, 129, 0.2)' : 'none'
                 }}
               >
                 {item.icon} {item.label}
@@ -228,7 +229,7 @@ const ProfileEdit = () => {
           {activeTab === 'profile' ? (
             <form onSubmit={handleSaveProfile} style={{ display: 'grid', gap: '2.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ padding: '10px', background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
+                <div style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
                   <Fingerprint size={24} />
                 </div>
                 <div>
@@ -290,7 +291,7 @@ const ProfileEdit = () => {
                 </div>
               </div>
 
-              <button type="submit" className="primary-btn" style={{ padding: '18px 40px', borderRadius: '18px', fontWeight: '900', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '10px', width: 'fit-content', alignSelf: 'flex-end', boxShadow: '0 15px 25px rgba(217, 154, 43, 0.2)' }}>
+              <button type="submit" className="primary-btn" style={{ padding: '18px 40px', borderRadius: '18px', fontWeight: '900', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '10px', width: 'fit-content', alignSelf: 'flex-end', boxShadow: '0 15px 25px rgba(16, 185, 129, 0.2)' }}>
                 <Save size={20} /> Güncelleme Yap
               </button>
             </form>
@@ -298,7 +299,7 @@ const ProfileEdit = () => {
             <div style={{ display: 'grid', gap: '3rem' }}>
               <section>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
-                  <div style={{ padding: '10px', background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
+                  <div style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
                     <Mail size={24} />
                   </div>
                   <div>
@@ -346,7 +347,7 @@ const ProfileEdit = () => {
 
               <section>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '2rem' }}>
-                  <div style={{ padding: '10px', background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
+                  <div style={{ padding: '10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary-color)', borderRadius: '12px' }}>
                     <Key size={24} />
                   </div>
                   <div>
@@ -423,9 +424,9 @@ const ProfileEdit = () => {
             color: var(--text-primary); font-weight: 600; font-size: 1rem; transition: all 0.3s; width: 100%;
         }
         .input-group-premium input:focus, .input-group-premium select:focus {
-            border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 4px rgba(217, 154, 43, 0.1);
+            border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
         }
-        .profile-nav-btn:hover:not(.active) { background: rgba(217, 154, 43, 0.05) !important; color: var(--primary-color) !important; }
+        .profile-nav-btn:hover:not(.active) { background: rgba(16, 185, 129, 0.05) !important; color: var(--primary-color) !important; }
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       ` }} />

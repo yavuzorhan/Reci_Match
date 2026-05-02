@@ -24,15 +24,7 @@ import {
 import Layout from '../components/Layout';
 import RecipeRevisionModal from '../components/RecipeRevisionModal';
 import { useApp } from '../context/AppContext';
-import { getHealthGrade, getHealthTone } from '../utils/recipeInsights';
-
-const stripHtml = (value) => (
-  (value || '')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-);
+import { getHealthGrade, getHealthTone, stripHtml } from '../utils/recipeInsights';
 
 const splitPreparationSteps = (value) => {
   const cleaned = stripHtml(value)
@@ -164,9 +156,6 @@ const RecipeDetailDb = () => {
   const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
   const qualityPoints = useMemo(() => getQualityPoints(recipe, healthGrade), [recipe, healthGrade]);
   const canEdit = recipe?.user_id === user?.id;
-  const matchScoreParam = new URLSearchParams(location.search).get('match_score');
-  const rawMatchScore = location.state?.score ?? recipe?.score ?? (matchScoreParam ? Number(matchScoreParam) : null);
-  const canRevise = rawMatchScore != null && Number(rawMatchScore) >= 90;
 
   // Ingredients are now normalized in AppContext.fetchRecipeById
   const displayIngredients = useMemo(() => {
@@ -281,8 +270,8 @@ const RecipeDetailDb = () => {
                 disabled={actionLoading}
                 style={{
                   position: 'absolute', top: '25px', right: '25px',
-                  background: isFavorite ? '#ef4444' : 'rgba(255,255,255,0.9)',
-                  color: isFavorite ? 'white' : '#ef4444',
+                  background: isFavorite ? 'var(--favorite-wine)' : 'rgba(255,255,255,0.92)',
+                  color: isFavorite ? 'white' : 'var(--favorite-wine)',
                   border: 'none', padding: '16px', borderRadius: '20px',
                   cursor: 'pointer', boxShadow: '0 12px 24px rgba(0,0,0,0.15)',
                   display: 'grid', placeItems: 'center', transition: 'all 0.2s'
@@ -297,7 +286,7 @@ const RecipeDetailDb = () => {
                 <h1 style={{ fontSize: '3rem', fontWeight: '950', marginBottom: '1rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>{recipe.name}</h1>
                 
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <span style={{ background: 'rgba(217, 154, 43, 0.1)', color: 'var(--primary-color)', padding: '6px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800' }}>
+                  <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary-color)', padding: '6px 16px', borderRadius: '99px', fontSize: '0.85rem', fontWeight: '800' }}>
                     {recipe.recipe_category || 'Genel'}
                   </span>
                   {(healthLabels || []).map(label => (
@@ -425,7 +414,7 @@ const RecipeDetailDb = () => {
                       { label: 'Enerji', val: `${adjustValue(recipe.calorie)} kcal`, icon: <Flame size={14} />, col: '#ef4444' },
                       { label: 'Protein', val: `${adjustValue(recipe.protein)}g`, icon: <Activity size={14} />, col: '#3b82f6' },
                       { label: 'Karb.', val: `${adjustValue(recipe.carbohydrate)}g`, icon: <Dna size={14} />, col: '#10b981' },
-                      { label: 'Yağ', val: `${adjustValue(recipe.fat)}g`, icon: <Activity size={14} />, col: '#f59e0b' }
+                      { label: 'Yağ', val: `${adjustValue(recipe.fat)}g`, icon: <Activity size={14} />, col: '#44e2cd' }
                     ].map(stat => (
                       <div key={stat.label} style={{ background: 'var(--background-elevated)', padding: '18px 12px', borderRadius: '20px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
                           <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: '800', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stat.label}</div>
@@ -444,18 +433,16 @@ const RecipeDetailDb = () => {
                     <span style={{ fontWeight: '800', fontSize: '1rem', display: 'flex', gap: '6px', alignItems: 'center' }}>
                       {item.name}
                       {item.nutrition_data_source === 'ai' && (
-                        <Info size={15} title="Bu deger AI tahminidir." style={{ color: '#f59e0b' }} />
+                        <Info size={15} title="Bu deger AI tahminidir." style={{ color: '#44e2cd' }} />
                       )}
                     </span>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '700' }}>{adjustValue(item.amount)} {item.unit}</span>
                   </div>
                 ))}
               </div>
-              {canRevise && (
-                <button className="primary-btn" onClick={() => setShowRevisionModal(true)} style={{ marginTop: '1rem', width: '100%' }}>
-                  🪄 Bu Tarifi Revize Et
-                </button>
-              )}
+              <button className="primary-btn" onClick={() => setShowRevisionModal(true)} style={{ marginTop: '1rem', width: '100%' }}>
+                🪄 Bu Tarifi Revize Et
+              </button>
             </div>
 
             <button

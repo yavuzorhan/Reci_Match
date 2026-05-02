@@ -84,7 +84,7 @@ export const getHealthGrade = (score = 0) => {
   return 'D kalite';
 };
 
-const stripHtml = (value) => (
+export const stripHtml = (value) => (
   (value || '')
     .replace(/<[^>]*>/g, ' ')
     .replace(/&nbsp;/g, ' ')

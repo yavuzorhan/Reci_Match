@@ -8,6 +8,10 @@ import {
   PackageOpen,
   Sparkles,
   UtensilsCrossed,
+  ChevronLeft,
+  ChevronRight,
+  Flame,
+  Search
 } from 'lucide-react';
 
 import Layout from '../components/Layout';
@@ -17,11 +21,11 @@ import {
   applyRecipeFilters,
   buildRecipeShortSummary,
   getHealthGrade,
-  getHealthTone,
 } from '../utils/recipeInsights';
+import RecipeCard from '../components/RecipeCard';
 
 const Recommendations = () => {
-  const { fetchRecommendedRecipes, selectedIngredients } = useApp();
+  const { fetchRecommendedRecipes, selectedIngredients, favorites, toggleFavorite } = useApp();
   const [recipes, setRecipes] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -67,322 +71,361 @@ const Recommendations = () => {
 
   return (
     <Layout>
-      <header style={{ marginBottom: '3rem', animation: 'fadeInDown 0.6s ease-out' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-          <div
-            style={{
-              background: 'rgba(255, 159, 67, 0.1)',
-              color: '#ff9f43',
-              padding: '8px 16px',
-              borderRadius: '99px',
-              fontSize: '0.85rem',
-              fontWeight: '800',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
-          >
-            <Sparkles size={16} fill="currentColor" />
-            AKILLI EŞLEŞTİRME
+      <div className="noct-rec-container">
+        {/* Header Section */}
+        <header className="noct-header">
+          <div className="noct-header-left">
+            <div className="noct-badge">
+              <Sparkles size={14} className="noct-glow-icon" />
+              AKILLI EŞLEŞTİRME
+            </div>
+            <h1 className="noct-title">Sana Özel Öneriler</h1>
+            <p className="noct-subtitle">{headerText}</p>
+          </div>
+          
+          <div className="noct-header-right">
+            <button onClick={() => navigate('/select-ingredients')} className="noct-back-btn">
+              <ChevronLeft size={18} />
+              Malzeme Seçimine Dön
+            </button>
+          </div>
+        </header>
+
+        {/* Filters Section */}
+        <div className="noct-filters-row glass-panel">
+          <div className="noct-filter-label">
+            <Filter size={16} />
+            <span>FİLTRELE</span>
+          </div>
+          <div className="noct-filter-list">
+            {RECIPE_FILTER_OPTIONS.map((option) => {
+              const isActive = activeFilters.includes(option.value);
+              return (
+                <button
+                  key={option.value}
+                  onClick={() => toggleFilter(option.value)}
+                  className={`noct-filter-pill ${isActive ? 'is-active' : ''}`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <h1
-          style={{
-            fontSize: '2.55rem',
-            fontWeight: '950',
-            color: 'var(--text-primary)',
-            letterSpacing: '-0.04em',
-            marginBottom: '12px',
-            lineHeight: 1.05,
-          }}
-        >
-          Sana Özel
-          <br />
-          Tarif Önerileri
-        </h1>
-
-        <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '680px', lineHeight: '1.6' }}>
-          {headerText}
-        </p>
-      </header>
-
-      {!selectedIngredients.length && (
-        <div
-          className="card"
-          style={{
-            marginBottom: '2rem',
-            background: 'rgba(255, 71, 87, 0.05)',
-            border: '1px solid rgba(255, 71, 87, 0.2)',
-            color: '#ff4757',
-            padding: '20px',
-            borderRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px',
-          }}
-        >
-          <PackageOpen size={24} />
-          <p style={{ fontWeight: '700' }}>Henüz malzeme seçmedin. Önce malzeme seçerek öneri alabilirsin.</p>
+        {/* Content Section */}
+        <div className="noct-content">
+          {!selectedIngredients.length ? (
+            <div className="noct-empty-warning glass-panel">
+              <PackageOpen size={32} />
+              <div className="noct-warning-text">
+                <h3>Henüz malzeme seçmediniz</h3>
+                <p>Öneri alabilmek için önce mutfağınızdaki malzemeleri seçmelisiniz.</p>
+              </div>
+              <button onClick={() => navigate('/select-ingredients')} className="noct-warning-btn">
+                Malzeme Seç
+              </button>
+            </div>
+          ) : loading ? (
+            <div className="noct-loading-state">
+              <div className="noct-loader">
+                <Sparkles size={48} className="noct-spin-glow" />
+              </div>
+              <h3>Tarifler Analiz Ediliyor...</h3>
+              <p>Mutfak kütüphanemiz taranıyor.</p>
+            </div>
+          ) : error ? (
+            <div className="noct-error-state glass-panel">
+              <p>{error}</p>
+            </div>
+          ) : recipes.length > 0 ? (
+            <div className="noct-recipe-grid">
+              {recipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  isFavorite={favorites?.includes?.(Number(recipe.id))}
+                  onFavorite={async (event, id) => {
+                    event.stopPropagation();
+                    if (toggleFavorite) {
+                      try {
+                        await toggleFavorite(id);
+                      } catch (err) {
+                        alert(err.message || 'Favori güncellenemedi.');
+                      }
+                    }
+                  }}
+                  onClick={(recipe) => navigate(`/recipe/${recipe.id}`, { state: { matchScore: recipe.score } })}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="noct-no-results glass-panel">
+              <Search size={64} opacity={0.1} />
+              <h3>Şu an uygun tarif bulunamadı</h3>
+              <p>Farklı malzemeler seçerek veya filtreleri değiştirerek tekrar deneyebilirsiniz.</p>
+              <button onClick={() => navigate('/select-ingredients')} className="noct-primary-btn">
+                Malzemeleri Güncelle
+              </button>
+            </div>
+          )}
         </div>
-      )}
-
-      <div
-        className="no-scrollbar"
-        style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '3rem', overflowX: 'auto', paddingBottom: '10px' }}
-      >
-        <div
-          style={{
-            padding: '10px 18px',
-            background: 'var(--background-elevated)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            color: 'var(--text-secondary)',
-            fontWeight: '800',
-            fontSize: '0.85rem',
-          }}
-        >
-            <Filter size={16} /> FİLTRELE
-        </div>
-
-        {RECIPE_FILTER_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => toggleFilter(option.value)}
-            style={{
-              padding: '12px 28px',
-              borderRadius: '16px',
-              border: '1px solid transparent',
-              cursor: 'pointer',
-              transition: 'all 0.3s',
-              fontWeight: '800',
-              fontSize: '1rem',
-              whiteSpace: 'nowrap',
-              background: activeFilters.includes(option.value) ? 'var(--primary-color)' : 'var(--card-bg)',
-              color: activeFilters.includes(option.value) ? 'white' : 'var(--text-secondary)',
-              boxShadow: activeFilters.includes(option.value) ? '0 8px 20px rgba(217, 154, 43, 0.2)' : 'none',
-            }}
-          >
-            {option.label}
-          </button>
-        ))}
       </div>
 
-      {loading ? (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '100px 0',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-          }}
-        >
-          <Sparkles size={54} className="spin-slow" color="var(--primary-color)" />
-          <h3 style={{ fontWeight: '900', opacity: 0.6, letterSpacing: '1px' }}>ANALİZ EDİLİYOR...</h3>
-        </div>
-      ) : error ? (
-        <div className="card" style={{ textAlign: 'center', padding: '50px', color: '#ff4757', fontWeight: '700' }}>
-          {error}
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '2.5rem' }}>
-          {recipes.map((recipe) => {
-            const tone = getHealthTone(recipe.health_score);
-            const grade = getHealthGrade(recipe.health_score);
+      <style dangerouslySetInnerHTML={{ __html: `
+        .layout-content:has(.noct-rec-container) {
+          background-color: #0c0814 !important;
+          background-image:
+            radial-gradient(circle at 10% 20%, rgba(100, 31, 224, 0.12) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(68, 226, 205, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, rgba(147, 0, 10, 0.03) 0%, transparent 60%) !important;
+          color: #d4e4fa;
+          padding: 0;
+        }
 
-            return (
-              <article
-                key={recipe.id}
-                onClick={() => navigate(`/recipe/${recipe.id}?match_score=${recipe.score ?? ''}`, { state: { score: recipe.score } })}
-                className="premium-recipe-card"
-                style={{
-                  cursor: 'pointer',
-                  background: 'var(--card-bg)',
-                  borderRadius: '36px',
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-color)',
-                  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                <div style={{ height: '260px', position: 'relative', overflow: 'hidden' }}>
-                  {recipe.image_url ? (
-                    <img
-                      src={recipe.image_url}
-                      alt={recipe.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s' }}
-                      className="card-thumb"
-                    />
-                  ) : (
-                    <div
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        background: 'linear-gradient(135deg, #fff5f5 0%, #fff0f0 100%)',
-                        display: 'grid',
-                        placeItems: 'center',
-                      }}
-                    >
-                      <Sparkles size={64} color="var(--primary-color)" style={{ opacity: 0.2 }} />
-                    </div>
-                  )}
+        .noct-rec-container {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          padding: 32px 32px 60px;
+          min-height: 100vh;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
 
-                  <div style={{ position: 'absolute', top: '20px', left: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <div
-                      style={{
-                        background: 'rgba(255,255,255,0.92)',
-                        backdropFilter: 'blur(10px)',
-                        padding: '8px 16px',
-                        borderRadius: '14px',
-                        fontSize: '0.8rem',
-                        fontWeight: '950',
-                        color: 'var(--primary-color)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                      }}
-                    >
-                      <UtensilsCrossed size={14} />
-                      {recipe.cooking_type || 'Kişiye Özel'}
-                    </div>
+        .noct-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
 
-                  </div>
+        .noct-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 16px;
+          background: rgba(16, 185, 129, 0.1);
+          border: 1px solid rgba(16, 185, 129, 0.2);
+          border-radius: 99px;
+          color: #10b981;
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          margin-bottom: 12px;
+        }
 
-                  {recipe.score !== undefined && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '20px',
-                        right: '20px',
-                        background: 'var(--primary-color)',
-                        color: 'white',
-                        padding: '10px 20px',
-                        borderRadius: '18px',
-                        fontSize: '1rem',
-                        fontWeight: '950',
-                        boxShadow: '0 10px 25px rgba(217, 154, 43, 0.3)',
-                      }}
-                    >
-                      %{recipe.score} Uyum
-                    </div>
-                  )}
-                </div>
+        .noct-title {
+          font-size: 40px;
+          font-weight: 700;
+          color: #d4e4fa;
+          margin: 0;
+          letter-spacing: -0.04em;
+        }
 
-                <div style={{ padding: '2.2rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '14px', alignItems: 'flex-start', marginBottom: '12px' }}>
-                    <h3
-                      style={{
-                        fontSize: '1.7rem',
-                        fontWeight: '950',
-                        color: 'var(--text-primary)',
-                        letterSpacing: '-0.02em',
-                        lineHeight: '1.2',
-                        margin: 0,
-                      }}
-                    >
-                      {recipe.name}
-                    </h3>
+        .noct-subtitle {
+          color: #bbcabf;
+          font-size: 18px;
+          max-width: 700px;
+          margin: 12px 0 0 0;
+          line-height: 1.6;
+        }
 
-                  </div>
+        .noct-back-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 10px 20px;
+          border-radius: 12px;
+          color: #d4e4fa;
+          font-weight: 600;
+          cursor: pointer;
+          transition: 0.2s;
+        }
 
-                  <p
-                    style={{
-                      color: 'var(--text-secondary)',
-                      fontSize: '1.05rem',
-                      lineHeight: '1.6',
-                      marginBottom: '2.2rem',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    {buildRecipeShortSummary(recipe, 'Seçtiğiniz malzemelerle hazırlayabileceğiniz özel bir tarif önerisi.')}
-                  </p>
+        .noct-back-btn:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '2.2rem', marginTop: 'auto' }}>
-                    <Metric label="Kalori" value={Math.round(recipe.calorie || 0)} color="#ff4757" />
-                    <Metric label="Protein" value={`${Math.round(recipe.protein || 0)}g`} color="#1e90ff" />
-                    <Metric label="Süre" value={`${recipe.total_time_minutes || 25}'`} color="var(--text-primary)" />
-                    <Metric label="Kalite" value={grade.split(' ')[0]} color={tone.chip} />
-                  </div>
+        .glass-panel {
+          background-color: rgba(28, 43, 60, 0.15);
+          backdrop-filter: blur(48px);
+          -webkit-backdrop-filter: blur(48px);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+          border-radius: 24px;
+        }
 
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
-                    {!!recipe.matched_ingredients?.length && (
-                      <p style={{ color: 'var(--primary-color)', fontSize: '0.9rem', marginBottom: '8px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <CheckCircle2 size={16} /> {recipe.matched_ingredients.map((item) => item.name).slice(0, 4).join(', ')}
-                      </p>
-                    )}
-                    {!!recipe.missing_ingredients?.length && (
-                      <p style={{ color: '#ff4757', fontSize: '0.85rem', fontWeight: '600', opacity: 0.8 }}>
-                        Eksik: {recipe.missing_ingredients.map((item) => item.name).slice(0, 3).join(', ')}
-                      </p>
-                    )}
-                  </div>
+        .noct-filters-row {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          padding: 16px 24px;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
 
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ color: 'var(--primary-color)', fontSize: '0.95rem', fontWeight: '950', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      TARİFE GİT <MoveRight size={18} />
-                    </div>
-                    <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'var(--background-elevated)', display: 'grid', placeItems: 'center', border: '1px solid var(--border-color)' }}>
-                      <ArrowRight size={20} />
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
+        .noct-filters-row::-webkit-scrollbar { display: none; }
 
-      {!loading && !error && recipes.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '100px 0', background: 'var(--card-bg)', borderRadius: '40px', border: '2px dashed var(--border-color)' }}>
-          <PackageOpen size={80} style={{ marginBottom: '24px', opacity: 0.2, margin: '0 auto' }} />
-          <h2 style={{ fontWeight: '900' }}>Şu an uygun tarif bulunamadı</h2>
-          <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '10px auto 30px' }}>
-            Farklı malzemeler seçerek ya da filtreleri gevşeterek yeni öneriler alabilirsin.
-          </p>
-          <button onClick={() => navigate('/select-ingredients')} className="primary-btn" style={{ padding: '15px 40px', borderRadius: '20px' }}>
-            Malzeme Seçmeye Git
-          </button>
-        </div>
-      )}
+        .noct-filter-label {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #bbcabf;
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          flex-shrink: 0;
+        }
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            .premium-recipe-card:hover {
-              transform: translateY(-15px);
-              border-color: var(--primary-color) !important;
-              box-shadow: 0 40px 80px rgba(217, 154, 43, 0.12);
-            }
-            .premium-recipe-card:hover .card-thumb { transform: scale(1.1); }
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .spin-slow { animation: spin 4s linear infinite; }
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-            @keyframes fadeInDown {
-              from { opacity: 0; transform: translateY(-30px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-          `,
-        }}
-      />
+        .noct-filter-list {
+          display: flex;
+          gap: 10px;
+        }
+
+        .noct-filter-pill {
+          padding: 10px 24px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 12px;
+          color: #bbcabf;
+          font-weight: 700;
+          font-size: 14px;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        .noct-filter-pill:hover {
+          background: rgba(255, 255, 255, 0.06);
+          color: #d4e4fa;
+        }
+
+        .noct-filter-pill.is-active {
+          background: #10b981;
+          color: #003824;
+          border-color: #10b981;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .noct-recipe-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 32px;
+        }
+
+        .noct-loading-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 100px 0;
+          gap: 20px;
+        }
+
+        .noct-spin-glow {
+          color: #10b981;
+          filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.5));
+          animation: spin 4s linear infinite;
+        }
+
+        .noct-loading-state h3 {
+          font-size: 24px;
+          font-weight: 700;
+          color: #d4e4fa;
+          margin: 0;
+        }
+
+        .noct-loading-state p {
+          color: #bbcabf;
+          margin: 0;
+        }
+
+        .noct-empty-warning {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          padding: 32px;
+          border-color: rgba(255, 179, 175, 0.2) !important;
+          background: rgba(255, 179, 175, 0.05) !important;
+        }
+
+        .noct-warning-text h3 {
+          font-size: 20px;
+          font-weight: 600;
+          color: #ffb3af;
+          margin: 0;
+        }
+
+        .noct-warning-text p {
+          color: #ffb3af;
+          opacity: 0.8;
+          margin: 4px 0 0 0;
+        }
+
+        .noct-warning-btn {
+          margin-left: auto;
+          background: #ffb3af;
+          color: #650911;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+
+        .noct-no-results {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 100px 40px;
+          text-align: center;
+          gap: 16px;
+        }
+
+        .noct-no-results h3 {
+          font-size: 24px;
+          font-weight: 600;
+          color: #d4e4fa;
+          margin: 10px 0 0 0;
+        }
+
+        .noct-no-results p {
+          color: #bbcabf;
+          max-width: 400px;
+          margin: 0 0 20px 0;
+        }
+
+        .noct-primary-btn {
+          background: #10b981;
+          color: #003824;
+          border: none;
+          padding: 14px 32px;
+          border-radius: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: 0.2s;
+        }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+          .noct-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+          }
+          .noct-header-right { width: 100%; }
+          .noct-back-btn { width: 100%; justify-content: center; }
+          .noct-title { font-size: 32px; }
+          .noct-subtitle { font-size: 16px; }
+        }
+      `}} />
     </Layout>
   );
 };
-
-const Metric = ({ label, value, color }) => (
-  <div style={{ textAlign: 'center', padding: '14px', background: 'var(--background-elevated)', borderRadius: '20px', border: '1px solid var(--border-color)' }}>
-    <div style={{ fontSize: '0.7rem', fontWeight: '800', opacity: 0.5, marginBottom: '4px' }}>{label.toUpperCase()}</div>
-    <div style={{ fontSize: '1.1rem', fontWeight: '950', color }}>{value}</div>
-  </div>
-);
 
 export default Recommendations;

@@ -40,7 +40,7 @@
 
 .search-bar input:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 10px 25px rgba(217, 154, 43, 0.12);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.12);
   background: color-mix(in srgb, var(--background-elevated) 90%, white 10%);
   color: var(--text-primary);
   outline: none;
@@ -48,13 +48,13 @@
 
 .layout-shell[data-theme="dark"] .search-bar input {
   background: rgba(3, 28, 23, 0.86);
-  color: #f6ead5;
-  border-color: rgba(217, 154, 43, 0.32);
+  color: #d4e4fa;
+  border-color: rgba(16, 185, 129, 0.32);
 }
 
 .layout-shell[data-theme="dark"] .search-bar input:focus {
   background: rgba(6, 39, 32, 0.96);
-  color: #f6ead5;
+  color: #d4e4fa;
   border-color: var(--primary-color);
 }
 
@@ -89,16 +89,16 @@
 }
 
 .category-btn.active {
-  background: linear-gradient(135deg, #e2a33a, #a96d16);
-  color: #fff4d8;
+  background: linear-gradient(135deg, #10b981, #0f766e);
+  color: #e6fff7;
   border-color: var(--primary-color);
-  box-shadow: 0 8px 18px rgba(217, 154, 43, 0.25);
+  box-shadow: 0 8px 18px rgba(16, 185, 129, 0.25);
 }
 
 .category-btn:hover:not(.active) {
   border-color: var(--primary-color);
   color: var(--primary-color);
-  background: rgba(217, 154, 43, 0.08);
+  background: rgba(16, 185, 129, 0.08);
   transform: translateY(-2px);
 }
 
@@ -107,6 +107,30 @@
   padding: 1.5rem;
   border-radius: 24px;
   border: 1px solid var(--border-color);
+}
+
+.selected-area-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.selected-area-head p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.selected-area-head span {
+  max-width: 30rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .selected-tray {
@@ -127,11 +151,11 @@
   font-weight: 800;
   animation: scaleIn 0.2s ease-out;
   border: 1px solid var(--border-strong);
-  box-shadow: 0 4px 12px rgba(217, 154, 43, 0.18);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.18);
 }
 
 .selected-chip button {
-  background: rgba(217, 154, 43, 0.16);
+  background: rgba(16, 185, 129, 0.16);
   border: none;
   color: white;
   padding: 4px;
@@ -189,7 +213,7 @@
 }
 
 .selected .checkbox-circle {
-  background: linear-gradient(135deg, #f1c16b, #d99a2b);
+  background: linear-gradient(135deg, #62fae3, #10b981);
   border-color: var(--primary-color);
 }
 

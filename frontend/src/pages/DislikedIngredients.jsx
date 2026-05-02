@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import IngredientPicker from '../components/IngredientPicker';
+import { API_BASE } from '../config';
 
 const DislikedIngredients = () => {
   const { user, setDislikedIngredients } = useApp();
@@ -11,7 +12,7 @@ const DislikedIngredients = () => {
 
   const fetchDisliked = async () => {
     try {
-      const resp = await fetch(`http://localhost:8000/api/users/${user.id}/disliked-ingredients`);
+      const resp = await fetch(`${API_BASE}/api/users/${user.id}/disliked-ingredients`);
       if (resp.ok) {
         const ids = await resp.json();
         setSelectedIds(ids);
@@ -30,7 +31,7 @@ const DislikedIngredients = () => {
   const handleFinish = async () => {
     if (user?.id) {
       try {
-        const response = await fetch(`http://localhost:8000/api/users/${user.id}/disliked-ingredients`, {
+        const response = await fetch(`${API_BASE}/api/users/${user.id}/disliked-ingredients`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ingredient_ids: selectedIds })

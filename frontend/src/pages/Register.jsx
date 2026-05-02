@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, ChefHat, ShieldCheck, Sparkles } from 'lucide-react';
+import { API_BASE } from '../config';
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirm: '' });
@@ -29,7 +30,7 @@ const Register = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/register', {
+      const response = await fetch(`${API_BASE}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

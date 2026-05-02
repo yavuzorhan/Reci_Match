@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, ArrowLeft, ArrowRight, Target, UserRound, Utensils } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { API_BASE } from '../config';
 
 const ProfileSetup = () => {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const ProfileSetup = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/users/${user.id}/profile`, {
+      const response = await fetch(`${API_BASE}/api/users/${user.id}/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

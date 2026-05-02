@@ -1,198 +1,205 @@
-"""
-Mevcut DB'deki tariflerin health_score ve health_grade değerlerini
-beklenen aralıklarla karşılaştırır.
-
-Kullanım:
-  python backend/scripts/health_score_validation.py
-  python backend/scripts/health_score_validation.py --report health_validation.md
-"""
+"""Validate persisted recipe health scores against expected grade ranges."""
 from __future__ import annotations
 
-import argparse
 import sys
+from datetime import date
 from pathlib import Path
+from typing import Any
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT_DIR))
 
 from app.db.database import SessionLocal  # noqa: E402
-from app.db.models import Recipe  # noqa: E402
+from app.repositories import recipe_repository  # noqa: E402
 
 
-# Grade sırası: A en iyi (4), D en kötü (1)
-GRADE_ORDER = {"A": 4, "B": 3, "C": 2, "D": 1}
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
-# (tarif adı arama terimi, beklenen min grade, beklenen max grade)
+
 TEST_CASES = [
-    # Sağlıklı/dengeli — A veya B beklenir
-    ("Mercimek Çorbası",           "A", "B"),
-    ("Bulgur Pilavı",              "A", "B"),
-    ("Izgara Tavuk",               "A", "B"),
-    ("Haşlama Tavuk",              "A", "B"),
-    ("Zeytinyağlı Taze Fasulye",   "A", "B"),
-    ("Mercimek Köftesi",           "A", "B"),
-    ("Kısır",                      "A", "B"),
-
-    # Orta — B veya C beklenir
-    ("Tavuk Pilav",                "B", "B"),   # mevcut hedef B
-    ("Menemen",                    "B", "C"),
-    ("Mücver",                     "B", "C"),
-
-    # Ağır — C beklenir
-    ("Ali Nazik",                  "C", "C"),   # mevcut hedef C
-    ("Sütlaç",                     "C", "C"),   # mevcut hedef C
-    ("Ballı Tarçınlı Elma Cipsi",  "B", "B"),   # mevcut hedef B
-    ("Patatesli Börek",            "C", "C"),
-
-    # En ağır — C veya D beklenir
-    ("Baklava",                    "C", "D"),
-    ("Kızarmış Patates",           "C", "D"),
+    ("Mercimek Çorbası", "A", "B"),
+    ("Bulgur Pilavı", "A", "B"),
+    ("Zeytinyağlı Taze Fasulye", "A", "B"),
+    ("Sade Yoğurt", "A", "A"),
+    ("Domates Çorbası", "A", "B"),
+    ("Menemen", "B", "C"),
+    ("Tavuk Pilav", "B", "B"),
+    ("Ballı Tarçınlı Elma Cipsi", "B", "B"),
+    ("Ali Nazik", "C", "C"),
+    ("Sütlaç", "C", "C"),
+    ("Patatesli Börek", "C", "D"),
+    ("Kızarmış Patates", "C", "D"),
+    ("Baklava", "C", "D"),
+    ("Çikolatalı Kek", "D", "D"),
 ]
 
-
-def grade_in_range(actual_grade: str, min_grade: str, max_grade: str) -> bool:
-    """Aktüel grade beklenen aralıkta mı? A en iyi (4), D en kötü (1)."""
-    actual = GRADE_ORDER.get(actual_grade, 0)
-    min_val = GRADE_ORDER.get(min_grade, 0)
-    max_val = GRADE_ORDER.get(max_grade, 0)
-    # min_grade (üst sınır) >= actual >= max_grade (alt sınır)
-    return max_val <= actual <= min_val
+GRADE_ORDER = {"A": 4, "B": 3, "C": 2, "D": 1}
+REPORT_PATH = Path.cwd() / "health_score_validation_report.md"
 
 
-def find_recipe_by_name(db, name: str) -> Recipe | None:
-    return (
-        db.query(Recipe)
-        .filter(Recipe.recipe_name.ilike(f"%{name}%"))
-        .filter(Recipe.is_active.is_(True))
-        .first()
-    )
+def grade_in_range(actual: str | None, min_g: str, max_g: str) -> bool:
+    if actual not in GRADE_ORDER:
+        return False
+    return GRADE_ORDER[min_g] >= GRADE_ORDER[actual] >= GRADE_ORDER[max_g]
 
 
-def run_validation(db) -> list[dict]:
+def ingredient_names(recipe: Any) -> list[str]:
+    names = []
+    for link in recipe.ingredients or []:
+        ingredient = getattr(link, "ingredient", None)
+        if ingredient and ingredient.ingredient_name:
+            names.append(ingredient.ingredient_name)
+    return names
+
+
+def build_result(search_term: str, min_grade: str, max_grade: str, recipe: Any | None) -> dict[str, Any]:
+    if recipe is None:
+        return {
+            "search_term": search_term,
+            "status": "SKIP",
+            "expected_min": min_grade,
+            "expected_max": max_grade,
+            "expected": f"{min_grade}-{max_grade}",
+            "recipe": None,
+        }
+
+    status = "PASS" if grade_in_range(recipe.health_grade, min_grade, max_grade) else "FAIL"
+    return {
+        "search_term": search_term,
+        "status": status,
+        "expected_min": min_grade,
+        "expected_max": max_grade,
+        "expected": f"{min_grade}-{max_grade}",
+        "recipe": recipe,
+        "recipe_id": recipe.recipe_id,
+        "recipe_name": recipe.recipe_name,
+        "health_score": recipe.health_score,
+        "health_grade": recipe.health_grade,
+        "ingredients": ingredient_names(recipe),
+        "applied_caps": recipe.health_explanation or "",
+    }
+
+
+def run_validation(db: Any) -> list[dict[str, Any]]:
     results = []
-    for recipe_name, min_grade, max_grade in TEST_CASES:
-        recipe = find_recipe_by_name(db, recipe_name)
-        if not recipe:
-            results.append({
-                "name": recipe_name,
-                "status": "SKIP",
-                "actual_grade": None,
-                "actual_score": None,
-                "expected": f"[{min_grade}-{max_grade}]",
-                "found_name": None,
-            })
-            continue
-
-        actual_grade = recipe.health_grade
-        actual_score = recipe.health_score
-
-        if actual_grade and grade_in_range(actual_grade, min_grade, max_grade):
-            status = "PASS"
-        else:
-            status = "FAIL"
-
-        results.append({
-            "name": recipe_name,
-            "status": status,
-            "actual_grade": actual_grade,
-            "actual_score": actual_score,
-            "expected": f"[{min_grade}-{max_grade}]",
-            "found_name": recipe.recipe_name,
-        })
-
+    for search_term, min_grade, max_grade in TEST_CASES:
+        recipe = recipe_repository.find_active_recipe_by_name_for_health_validation(db, search_term)
+        results.append(build_result(search_term, min_grade, max_grade, recipe))
     return results
 
 
-def print_results(results: list[dict]) -> None:
-    print("\n=== Health Score Validation ===\n")
-
-    for r in results:
-        icon = {"PASS": "✅", "FAIL": "❌", "SKIP": "⚠️ "}.get(r["status"], "   ")
-
-        if r["status"] == "SKIP":
-            print(f"{icon} {r['name']:40} → DB'de bulunamadı")
-            continue
-
-        score_str = str(r["actual_score"]) if r["actual_score"] is not None else "--"
-        grade_str = r["actual_grade"] or "--"
-        found_note = f"  (eşleşme: '{r['found_name']}')" if r["found_name"] != r["name"] else ""
-        print(
-            f"{icon} {r['name']:40}"
-            f" score={score_str:>3}  grade={grade_str}"
-            f"  beklenen={r['expected']}"
-            f"{found_note}"
-        )
-
-    total = len(results)
-    passed = sum(1 for r in results if r["status"] == "PASS")
-    failed = sum(1 for r in results if r["status"] == "FAIL")
-    skipped = sum(1 for r in results if r["status"] == "SKIP")
-    tested = total - skipped
-
-    print(f"\nSonuç: {passed}/{tested} PASS | {failed} FAIL | {skipped} SKIP")
-
-    if tested > 0:
-        rate = passed / tested * 100
-        print(f"Başarı oranı: %{round(rate)}")
-        if rate < 60:
-            print(
-                "\n⚠️  Başarı oranı düşük. "
-                "recipe_health.py hard cap parametrelerini gözden geçir."
-            )
-
-    if failed:
-        print("\nFAIL listesi:")
-        for r in results:
-            if r["status"] == "FAIL":
-                score_str = str(r["actual_score"]) if r["actual_score"] is not None else "--"
-                print(
-                    f"  - {r['name']}: "
-                    f"grade={r['actual_grade'] or '--'} score={score_str}"
-                    f" → beklenen {r['expected']}"
-                )
+def summarize(results: list[dict[str, Any]]) -> dict[str, Any]:
+    pass_count = sum(1 for result in results if result["status"] == "PASS")
+    fail_count = sum(1 for result in results if result["status"] == "FAIL")
+    skip_count = sum(1 for result in results if result["status"] == "SKIP")
+    tested_count = pass_count + fail_count
+    success_rate = round((pass_count / tested_count) * 100) if tested_count else 0
+    fail_rate = (fail_count / tested_count) * 100 if tested_count else 0
+    return {
+        "pass": pass_count,
+        "fail": fail_count,
+        "skip": skip_count,
+        "tested": tested_count,
+        "success_rate": success_rate,
+        "fail_rate": fail_rate,
+    }
 
 
-def generate_markdown_report(results: list[dict], path: str) -> None:
-    total = len(results)
-    passed = sum(1 for r in results if r["status"] == "PASS")
-    failed = sum(1 for r in results if r["status"] == "FAIL")
-    skipped = sum(1 for r in results if r["status"] == "SKIP")
+def print_result_line(result: dict[str, Any]) -> None:
+    if result["status"] == "SKIP":
+        print(f"⚠️  {result['search_term']:<28} beklenen=[{result['expected']}] → SKIP (DB'de yok)")
+        return
 
+    icon = "✅" if result["status"] == "PASS" else "❌"
+    print(
+        f"{icon} {result['search_term']:<28} "
+        f"score={result['health_score']}  grade={result['health_grade']}  "
+        f"beklenen=[{result['expected']}] → {result['status']}"
+    )
+
+
+def print_summary(results: list[dict[str, Any]]) -> None:
+    summary = summarize(results)
+    for result in results:
+        print_result_line(result)
+
+    print()
+    print("========================")
+    print(f"PASS: {summary['pass']}  FAIL: {summary['fail']}  SKIP: {summary['skip']}")
+    print(f"Başarı oranı: %{summary['success_rate']} (SKIP hariç)")
+
+    failed_results = [result for result in results if result["status"] == "FAIL"]
+    if not failed_results:
+        return
+
+    print()
+    print("FAIL olan tarifler:")
+    for result in failed_results:
+        print(f"recipe_id={result['recipe_id']}  \"{result['recipe_name']}\"")
+        print(f"  Mevcut: score={result['health_score']}, grade={result['health_grade']}")
+        print(f"  Beklenen: {result['expected']}")
+        print(f"  Malzemeler: [{', '.join(result['ingredients'])}]")
+        print(f"  applied_caps: {result['applied_caps']}")
+
+
+def observation_for_fail_rate(fail_rate: float) -> str:
+    if fail_rate > 30:
+        return "Hard cap eşikleri gözden geçirilmeli"
+    if fail_rate >= 10:
+        return "Bazı edge case'ler var, elle incelenmeli"
+    return "Algoritma tutarlı çalışıyor"
+
+
+def write_markdown_report(results: list[dict[str, Any]]) -> None:
+    summary = summarize(results)
+    failed_results = [result for result in results if result["status"] == "FAIL"]
     lines = [
         "# Health Score Validation Raporu",
+        f"Tarih: {date.today().isoformat()}",
         "",
-        f"- Toplam test: {total}",
-        f"- PASS: {passed}  FAIL: {failed}  SKIP: {skipped}",
+        "## Özet",
+        f"PASS: {summary['pass']}  FAIL: {summary['fail']}  SKIP: {summary['skip']}",
+        f"Başarı oranı: %{summary['success_rate']} (SKIP hariç)",
         "",
-        "| Tarif | Score | Grade | Beklenen | Sonuç |",
-        "|-------|------:|------:|----------|-------|",
+        "## FAIL Listesi",
+        "| Tarif | Score | Grade | Beklenen | Recipe ID |",
+        "|---|---:|:---:|:---:|---:|",
     ]
-    for r in results:
-        grade = r["actual_grade"] or "—"
-        score = str(r["actual_score"]) if r["actual_score"] is not None else "—"
-        icon = {"PASS": "✅", "FAIL": "❌", "SKIP": "⚠️"}.get(r["status"], "")
-        lines.append(f"| {r['name']} | {score} | {grade} | {r['expected']} | {icon} {r['status']} |")
 
-    Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"\nRapor yazıldı: {path}")
+    if failed_results:
+        for result in failed_results:
+            lines.append(
+                f"| {result['recipe_name']} | {result['health_score']} | "
+                f"{result['health_grade']} | {result['expected']} | {result['recipe_id']} |"
+            )
+    else:
+        lines.append("| - | - | - | - | - |")
+
+    lines.extend([
+        "",
+        "## Gözlemler",
+        observation_for_fail_rate(summary["fail_rate"]),
+        "",
+    ])
+
+    REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="DB'deki tariflerin health_score/grade değerlerini doğrular."
-    )
-    parser.add_argument("--report", type=str, help="Markdown raporu kaydet (ör. health_validation.md)")
-    args = parser.parse_args()
-
+def main() -> int:
     db = SessionLocal()
     try:
         results = run_validation(db)
-        print_results(results)
-        if args.report:
-            generate_markdown_report(results, args.report)
+        print_summary(results)
+        write_markdown_report(results)
+        print()
+        print(f"Markdown rapor: {REPORT_PATH}")
+        return 0
     finally:
         db.close()
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

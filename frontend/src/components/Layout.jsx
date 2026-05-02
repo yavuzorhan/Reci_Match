@@ -2,13 +2,13 @@ import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Heart,
+  Leaf,
   LayoutDashboard,
   LogOut,
   Menu,
   NotebookText,
   Package,
   ShoppingBasket,
-  UserCircle,
   X,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -30,10 +30,9 @@ const Layout = ({ children, variant = 'default' }) => {
     { name: 'Ana Menü', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
     { name: 'Dolabım', icon: <Package size={20} />, path: '/pantry' },
     { name: 'Tarifler', icon: <ShoppingBasket size={20} />, path: '/recipes' },
-    // Sağlıklı Menü removed from sidebar - keeping path for highlighting if relevant but user said "remove from left menu"
+    { name: 'Sağlıklı Tarifler', icon: <Leaf size={20} />, path: '/healthy-menu' },
     { name: 'Haftalık Kayıt', icon: <NotebookText size={20} />, path: '/weekly-logs' },
     { name: 'Favoriler', icon: <Heart size={20} />, path: '/favorites' },
-    // Profili Düzenle removed from here - moving to sidebar-actions bottom
   ]), []);
 
   useLayoutEffect(() => {
@@ -44,20 +43,18 @@ const Layout = ({ children, variant = 'default' }) => {
 
     const activeItem = menuItems.find((item) => location.pathname.startsWith(item.path));
     if (!activeItem) {
-        updatePill(prev => ({ ...prev, opacity: 0 }));
-        return () => window.cancelAnimationFrame(frameId);
+      updatePill(prev => ({ ...prev, opacity: 0 }));
+      return () => window.cancelAnimationFrame(frameId);
     }
 
     const navElement = navRef.current;
     const activeElement = itemRefs.current[activeItem.path];
-
     if (!navElement || !activeElement) {
       return () => window.cancelAnimationFrame(frameId);
     }
 
     const navRect = navElement.getBoundingClientRect();
     const activeRect = activeElement.getBoundingClientRect();
-
     updatePill({
       opacity: 1,
       transform: `translateY(${activeRect.top - navRect.top}px)`,
@@ -68,8 +65,21 @@ const Layout = ({ children, variant = 'default' }) => {
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
+  const isNocturnalExperience = location.pathname.startsWith('/dashboard')
+    || location.pathname.startsWith('/pantry')
+    || location.pathname.startsWith('/recipes')
+    || location.pathname.startsWith('/favorites')
+    || location.pathname.startsWith('/healthy-menu')
+    || location.pathname.startsWith('/weekly-logs')
+    || location.pathname.startsWith('/select-ingredients')
+    || location.pathname.startsWith('/recommendations');
+
   return (
-    <div className="layout-shell" data-theme={isDarkMode ? 'dark' : 'light'} data-layout-variant={resolvedVariant}>
+    <div
+      className={`layout-shell ${isNocturnalExperience ? 'noct-layout' : ''}`}
+      data-theme={isDarkMode ? 'dark' : 'light'}
+      data-layout-variant={resolvedVariant}
+    >
       <button
         className="mobile-menu-button"
         onClick={() => setMobileMenuOpen((prev) => !prev)}
@@ -85,7 +95,7 @@ const Layout = ({ children, variant = 'default' }) => {
       />
 
       <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
-        <div className="brand-mark" style={{ marginBottom: '2.5rem' }}>
+        <div className="brand-mark">
           <img className="brand-symbol" src={reciMatchMiniLogo} alt="" aria-hidden="true" />
           <span className="brand-divider" aria-hidden="true" />
           <div className="brand-wordmark" aria-label="ReciMatch Beslenme Asistanı">
@@ -115,7 +125,7 @@ const Layout = ({ children, variant = 'default' }) => {
               key={item.path}
               to={item.path}
               onClick={closeMobileMenu}
-              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              className={({ isActive }) => `nav-item ${item.path === '/favorites' ? 'nav-item-favorites' : ''} ${isActive ? 'active' : ''}`}
               ref={(element) => {
                 itemRefs.current[item.path] = element;
               }}
@@ -126,27 +136,7 @@ const Layout = ({ children, variant = 'default' }) => {
           ))}
         </nav>
 
-        <div className="sidebar-actions" style={{ marginTop: 'auto', display: 'grid', gap: '0.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
-          <NavLink
-            to="/profile-edit"
-            onClick={closeMobileMenu}
-            className={({ isActive }) => `sidebar-action-button profile-edit-btn ${isActive ? 'active' : ''}`}
-            style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.8rem', 
-                padding: '0.95rem 1rem', 
-                borderRadius: '18px', 
-                textDecoration: 'none',
-                color: 'var(--text-secondary)',
-                fontWeight: '700',
-                fontSize: '0.9rem'
-            }}
-          >
-            <UserCircle size={20} />
-            <span>Profili Düzenle</span>
-          </NavLink>
-
+        <div className="sidebar-actions">
           <button onClick={() => setUser(null)} className="sidebar-action-button logout-button">
             <LogOut size={20} />
             <span>Çıkış Yap</span>
@@ -157,13 +147,6 @@ const Layout = ({ children, variant = 'default' }) => {
       <main className="layout-content" onClick={mobileMenuOpen ? closeMobileMenu : undefined}>
         {children}
       </main>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .profile-edit-btn:hover { background: var(--menu-item-hover-bg); color: var(--text-primary) !important; }
-        .profile-edit-btn.active { background: var(--menu-item-active-bg); border-color: var(--menu-item-active-border); color: var(--primary-color) !important; }
-        .layout-shell[data-theme="dark"] .profile-edit-btn.active,
-        .layout-shell[data-theme="dark"] .profile-edit-btn:hover { color: #ffffff !important; }
-      ` }} />
     </div>
   );
 };

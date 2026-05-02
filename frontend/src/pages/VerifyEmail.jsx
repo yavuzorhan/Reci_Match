@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, MailCheck, ShieldCheck, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { API_BASE } from '../config';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -28,7 +29,7 @@ const VerifyEmail = () => {
     setMessage('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/verify', {
+      const response = await fetch(`${API_BASE}/api/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
