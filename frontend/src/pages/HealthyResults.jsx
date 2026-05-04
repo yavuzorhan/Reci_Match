@@ -17,7 +17,6 @@ import { useApp } from '../context/AppContext';
 import {
   RECIPE_FILTER_OPTIONS,
   applyRecipeFilters,
-  buildRecipeShortSummary,
 } from '../utils/recipeInsights';
 import RecipeCard from '../components/RecipeCard';
 

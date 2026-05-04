@@ -7,12 +7,10 @@ import {
   Flame,
   Heart,
   Leaf,
-  Moon,
   MoreHorizontal,
   NotebookText,
   Plus,
   Sparkles,
-  Sun,
   Utensils,
 } from 'lucide-react';
 
@@ -48,8 +46,6 @@ const Dashboard = () => {
     recipeCache,
     favorites,
     fetchRecommendedRecipes,
-    isDarkMode,
-    toggleDarkMode,
     toggleFavorite,
   } = useApp();
   const navigate = useNavigate();
@@ -149,22 +145,6 @@ const Dashboard = () => {
             <img src={reciMatchLogo} alt="Logo" className="topbar-logo" />
             <span>ReciMatch</span>
           </div>
-          <div className="noct-topbar-actions">
-            <button
-              type="button"
-              className="noct-icon-button"
-              onClick={toggleDarkMode}
-              aria-label={isDarkMode ? 'Açık temaya geç' : 'Koyu temaya geç'}
-              title={isDarkMode ? 'Açık tema' : 'Koyu tema'}
-            >
-              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <span className="noct-separator" />
-            <button type="button" className="noct-profile-button" onClick={() => navigate('/profile-edit')}>
-              <span className="noct-avatar">{(firstName[0] || 'A').toUpperCase()}</span>
-              <span>Profil</span>
-            </button>
-          </div>
         </header>
 
         <main className="noct-main">
@@ -197,21 +177,6 @@ const Dashboard = () => {
 
                 </div>
 
-                <aside className="noct-insight">
-                  <div className="insight-dot">
-                    <Sparkles size={16} />
-                  </div>
-                  <span>AI Insight</span>
-                  <p>
-                    {pantryIds.length
-                      ? 'Öneriler dolabındaki kayıtlı malzemeler üzerinden canlı olarak hesaplanıyor.'
-                      : 'Dolabına malzeme eklediğinde burada gerçek eşleşme içgörüsü görünecek.'}
-                  </p>
-                  <div className="insight-meter">
-                    <i />
-                    <small>{pantryIds.length ? 'Active' : 'Waiting'}</small>
-                  </div>
-                </aside>
               </section>
 
               <section className="noct-section">

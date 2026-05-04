@@ -29,7 +29,7 @@
   height: 80px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 32px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   background: rgba(12, 8, 20, 0.28);
@@ -165,6 +165,7 @@
   position: relative;
   z-index: 1;
   flex: 1;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -216,17 +217,22 @@
 }
 
 .noct-search-box {
-  width: min(100%, 760px);
-  min-height: 64px;
+  width: 100%;
+  min-height: 72px;
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 8px 8px 24px;
+  padding: 10px 10px 10px 24px;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(5, 20, 36, 0.60);
   box-shadow: inset 0 2px 12px rgba(0,0,0,0.2);
   cursor: pointer;
+}
+
+.noct-search-box:hover {
+  border-color: rgba(78, 222, 163, 0.34);
+  background: rgba(5, 20, 36, 0.72);
 }
 
 .noct-search-box > svg {
@@ -258,6 +264,13 @@
   white-space: nowrap;
 }
 
+.noct-search-box button {
+  align-self: stretch;
+  flex: 0 0 clamp(190px, 32%, 300px);
+  border-radius: calc(var(--radius-lg) - 4px);
+  font-size: 16px;
+}
+
 .noct-chip-row {
   display: flex;
   flex-wrap: wrap;
@@ -276,68 +289,6 @@
   font-size: 14px;
   font-weight: 600;
   backdrop-filter: blur(16px);
-}
-
-.noct-insight {
-  position: relative;
-  z-index: 1;
-  width: 256px;
-  margin-left: auto;
-  padding: 24px;
-  border-radius: var(--radius-xl);
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(24px);
-}
-
-.insight-dot {
-  position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
-  background: var(--noct-accent);
-  color: var(--noct-dark-green);
-  box-shadow: 0 12px 24px rgba(78,222,163,0.28);
-}
-
-.noct-insight span {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--noct-accent);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.noct-insight p {
-  margin: 0;
-  color: var(--noct-text-secondary);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.insight-meter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.insight-meter i {
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--noct-accent) 66%, rgba(255,255,255,0.10) 66%);
-}
-
-.insight-meter small {
-  color: var(--noct-text-muted);
-  font-size: 10px;
 }
 
 .noct-section {
@@ -827,7 +778,6 @@
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-icon-button,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-profile-button,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero p,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight p,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-match-state,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-section-head button,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-panel-head button,
@@ -892,7 +842,6 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box > svg,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-meter small,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-panel-head > svg {
   color: #6c7a71;
 }
@@ -902,24 +851,10 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box button,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-match-state button,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-dot {
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-match-state button {
   background: var(--noct-accent-hover);
   color: #ffffff;
   box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22);
-}
-
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight {
-  border-color: rgba(187, 202, 191, 0.60);
-  background: rgba(238, 246, 238, 0.74);
-}
-
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight span {
-  color: var(--noct-mid-green);
-}
-
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-meter i {
-  background: linear-gradient(90deg, var(--noct-accent-hover) 66%, #dde4dd 66%);
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-ring circle {
@@ -1017,9 +952,6 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .noct-insight {
-    display: none;
-  }
 }
 
 @media (max-width: 980px) {
@@ -1049,6 +981,8 @@
   }
 
   .noct-search-box button {
+    flex-basis: auto;
+    min-height: 52px;
     justify-content: center;
   }
 

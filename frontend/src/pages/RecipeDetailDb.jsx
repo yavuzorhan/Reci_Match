@@ -58,6 +58,12 @@ const getIngredientAmount = (ingredient, multiplier) => {
   return `${formatNumber(adjusted)} ${ingredient.unit || ''}`.trim();
 };
 
+const normalizePortion = (value) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 1;
+  return Math.min(20, Math.max(1, Math.trunc(number)));
+};
+
 const getHealthLabels = (recipe) => {
   const labels = [];
   if (!recipe) return labels;
@@ -153,6 +159,7 @@ const RecipeDetailPage = () => {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [mealType, setMealType] = useState('Öğle');
+  const [servingCount, setServingCount] = useState(1);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
 
   const isHealthyExperience = location.pathname.startsWith('/healthy-menu');
@@ -184,9 +191,8 @@ const RecipeDetailPage = () => {
 
   const isFavorite = (favorites || []).includes(Number(id));
   const canEdit = recipe?.user_id === user?.id;
-  const originalServing = recipe?.serving || 1;
-  const currentServing = 20;
-  const servingMultiplier = currentServing / originalServing;
+  const currentServing = normalizePortion(servingCount);
+  const servingMultiplier = currentServing;
   const preparationSteps = useMemo(() => {
     const steps = splitPreparationSteps(recipe?.preparation);
     return steps.length ? steps : getFallbackSteps();
@@ -218,17 +224,23 @@ const RecipeDetailPage = () => {
     }
   };
 
+  const handleServingChange = (event) => {
+    setServingCount(normalizePortion(event.target.value));
+  };
+
   const markAsDone = async () => {
     if (!recipe) return;
+    const recipeId = recipe.id || recipe.recipe_id || Number(id);
     try {
       setActionLoading(true);
       await addDailyLog({
-        recipeId: recipe.id,
+        recipeId,
         mealType,
         servingCount: currentServing,
         servingMultiplier,
+        calorieIntake: (Number(recipe.calorie) || 0) * currentServing,
       });
-      alert(`Afiyet olsun! ${currentServing} kişilik kayıt eklendi.`);
+      alert(`Afiyet olsun! ${currentServing} porsiyon kayıt eklendi.`);
     } catch (err) {
       alert(err.message || 'Günlük kayıt eklenemedi.');
     } finally {
@@ -430,8 +442,10 @@ const RecipeDetailPage = () => {
 
                 <label>
                   <span>Porsiyon</span>
-                  <select value={20} disabled>
-                    <option value={20}>20 Porsiyon</option>
+                  <select value={currentServing} onChange={handleServingChange}>
+                    {Array.from({ length: 20 }, (_, index) => index + 1).map((portion) => (
+                      <option key={portion} value={portion}>{portion} Porsiyon</option>
+                    ))}
                   </select>
                 </label>
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import { API_BASE } from '../config';
 
@@ -15,6 +16,12 @@ const withProxiedImage = (recipe) => {
 const withProxiedImages = (recipes) => {
   if (Array.isArray(recipes)) return recipes.map(withProxiedImage);
   return recipes;
+};
+
+const normalizeServingPortion = (value) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 1;
+  return Math.min(20, Math.max(1, Math.trunc(number)));
 };
 
 export const AppProvider = ({ children }) => {
@@ -125,6 +132,7 @@ export const AppProvider = ({ children }) => {
   }, [fetchJson, user]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUserPreferences();
   }, [fetchUserPreferences]);
 
@@ -218,21 +226,44 @@ export const AppProvider = ({ children }) => {
     );
   }, [favorites, fetchJson, user]);
 
-  const addDailyLog = useCallback(async ({ recipeId, mealType = 'Akşam Yemeği', servingCount = 1, servingMultiplier = 1, logDate = null, entrySource = 'daily' }) => {
+  const addDailyLog = useCallback(async ({
+    recipeId,
+    mealType = 'Akşam Yemeği',
+    servingCount = null,
+    servingMultiplier = null,
+    portion = null,
+    serving = null,
+    servings = null,
+    logDate = null,
+    loggedAt = null,
+    entrySource = 'daily',
+    calorieIntake = null,
+  }) => {
     if (!user?.id) throw new Error('Giriş yapmalısınız.');
+    const numericRecipeId = Number(recipeId);
+    if (!Number.isFinite(numericRecipeId) || numericRecipeId <= 0) {
+      throw new Error('Geçerli bir tarif seçmelisiniz.');
+    }
+
+    const resolvedServing = normalizeServingPortion(servingCount ?? portion ?? serving ?? servings ?? servingMultiplier ?? 1);
     const cachedRecipe = recipeCache[recipeId];
-    const multiplier = servingMultiplier || 1;
+    const multiplier = resolvedServing;
+    const recipeCalories = Number(cachedRecipe?.calorie) || 0;
+    const resolvedCalorieIntake = calorieIntake != null && Number.isFinite(Number(calorieIntake))
+      ? Number(calorieIntake)
+      : recipeCalories * resolvedServing;
+
     const data = await fetchJson(`${API_BASE}/api/users/${user.id}/daily-logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        recipe_id: Number(recipeId),
+        recipe_id: numericRecipeId,
         meal_type: mealType,
-        serving_count: servingCount,
-        serving_multiplier: servingMultiplier,
-        log_date: logDate,
+        serving_count: resolvedServing,
+        serving_multiplier: multiplier,
+        log_date: logDate || loggedAt,
         entry_source: entrySource,
-        calorie_intake: cachedRecipe ? (cachedRecipe.calorie ?? 0) * multiplier : null,
+        calorie_intake: resolvedCalorieIntake,
         protein: cachedRecipe ? (cachedRecipe.protein ?? 0) * multiplier : null,
         carbohydrate: cachedRecipe ? (cachedRecipe.carbohydrate ?? 0) * multiplier : null,
         fat: cachedRecipe ? (cachedRecipe.fat ?? 0) * multiplier : null,

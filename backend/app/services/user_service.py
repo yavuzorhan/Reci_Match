@@ -1,7 +1,7 @@
 """
 Kullanıcı (User) profil iş mantığı - profil, favoriler ve günlük kayıtlar.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -190,9 +190,10 @@ def add_daily_log(
     recipe = _ensure_recipe_exists(recipe_id, db)
 
     if log_date:
-        from datetime import date
-
-        target_date = date.fromisoformat(log_date)
+        try:
+            target_date = date.fromisoformat(str(log_date).split("T")[0])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Geçersiz günlük kayıt tarihi.")
         now = datetime.combine(target_date, datetime.now().time())
     else:
         now = _local_now()
@@ -205,13 +206,9 @@ def add_daily_log(
         db=db,
     )
 
-    original_serving = recipe.serving or 1
-    resolved_serving_count = max(1, int(round(serving_count))) if serving_count else original_serving
-    resolved_multiplier = (
-        serving_multiplier
-        if serving_multiplier and serving_multiplier > 0
-        else (resolved_serving_count / original_serving)
-    )
+    portion_source = serving_count if serving_count is not None else serving_multiplier
+    resolved_serving_count = _normalize_serving_count(portion_source)
+    resolved_multiplier = float(resolved_serving_count)
     adjusted_calorie = (float(recipe.calorie) if recipe.calorie is not None else 0) * resolved_multiplier
     adjusted_protein = (float(recipe.protein) if recipe.protein is not None else 0) * resolved_multiplier
     adjusted_carbohydrate = (float(recipe.carbohydrate) if recipe.carbohydrate is not None else 0) * resolved_multiplier
@@ -289,10 +286,10 @@ def update_daily_log(
     if meal_type:
         log.meal_type = meal_type
 
-    if serving_count is not None and serving_count > 0:
-        log.serving_count = serving_count
-        original_serving = recipe.serving or 1
-        multiplier = serving_count / original_serving
+    if serving_count is not None:
+        normalized_serving_count = _normalize_serving_count(serving_count)
+        log.serving_count = normalized_serving_count
+        multiplier = float(normalized_serving_count)
         log.serving_multiplier = round(multiplier, 2)
         log.calorie_intake = round((float(recipe.calorie) if recipe.calorie else 0) * multiplier, 2)
         log.protein_intake = round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2)
@@ -324,6 +321,25 @@ def update_daily_log(
 
 
 # ─── Private Helpers ────────────────────────────────────────────────────────
+
+def _normalize_serving_count(value) -> int:
+    if value is None:
+        return 1
+
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında bir sayı olmalıdır.")
+
+    if number < 1 or number > 20:
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında olmalıdır.")
+
+    normalized = int(round(number))
+    if normalized < 1 or normalized > 20:
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında olmalıdır.")
+
+    return normalized
+
 
 def _ensure_user_exists(user_id: int, db: Session):
     user = user_repository.find_user_by_id(db, user_id)

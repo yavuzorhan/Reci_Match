@@ -1,14 +1,16 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Heart,
   Leaf,
   LayoutDashboard,
   LogOut,
   Menu,
+  Moon,
   NotebookText,
   Package,
   ShoppingBasket,
+  Sun,
   User,
   X,
 } from 'lucide-react';
@@ -17,8 +19,9 @@ import reciMatchLogo from '../assets/recimatch-logo.png';
 import './Layout.css';
 
 const Layout = ({ children, variant = 'default' }) => {
-  const { setUser, isDarkMode } = useApp();
+  const { setUser, isDarkMode, toggleDarkMode } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navRef = useRef(null);
   const itemRefs = useRef({});
@@ -35,7 +38,6 @@ const Layout = ({ children, variant = 'default' }) => {
     { name: 'Sağlıklı Tarifler', icon: <Leaf size={20} />, path: '/healthy-menu' },
     { name: 'Haftalık Kayıt', icon: <NotebookText size={20} />, path: '/weekly-logs' },
     { name: 'Favoriler', icon: <Heart size={20} />, path: '/favorites' },
-    { name: 'Profil', icon: <User size={20} />, path: '/profile-edit' },
   ]), []);
 
   useLayoutEffect(() => {
@@ -144,6 +146,25 @@ const Layout = ({ children, variant = 'default' }) => {
         </nav>
 
         <div className="sidebar-actions">
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/profile-edit');
+              closeMobileMenu();
+            }}
+            className="sidebar-action-button profile-action-button"
+          >
+            <User size={20} />
+            <span>Profil</span>
+          </button>
+          <button
+            type="button"
+            onClick={toggleDarkMode}
+            className="sidebar-action-button theme-toggle"
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            <span>{isDarkMode ? 'Açık Tema' : 'Koyu Tema'}</span>
+          </button>
           <button onClick={() => setUser(null)} className="sidebar-action-button logout-button">
             <LogOut size={20} />
             <span>Çıkış Yap</span>

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './RecipeListDb.css';
-import { useNavigate } from 'react-router-dom';
 import {
   Book,
   BookOpen,
@@ -24,8 +23,6 @@ import { useApp } from '../context/AppContext';
 import {
   RECIPE_FILTER_OPTIONS,
   applyRecipeFilters,
-  buildRecipeShortSummary,
-  getHealthGrade,
 } from '../utils/recipeInsights';
 import RecipeCard from '../components/RecipeCard';
 
@@ -48,7 +45,6 @@ const RecipeListDb = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingRecipe, setEditingRecipe] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (activeTab === 'add' || activeTab === 'edit') return;

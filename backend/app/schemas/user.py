@@ -1,7 +1,7 @@
 """
 Kullanıcı (User) profili ile ilgili Pydantic şemaları.
 """
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class ProfileUpdateRequest(BaseModel):
@@ -19,14 +19,31 @@ class FavoriteCreateRequest(BaseModel):
 
 
 class DailyLogCreateRequest(BaseModel):
-    recipe_id: int
-    meal_type: str = "Akşam Yemeği"
-    serving_count: int | None = None
-    serving_multiplier: float | None = None
-    log_date: str | None = None
-    entry_source: str | None = "daily"
+    model_config = ConfigDict(populate_by_name=True)
+
+    recipe_id: int = Field(validation_alias=AliasChoices("recipe_id", "recipeId"))
+    meal_type: str = Field(default="Akşam Yemeği", validation_alias=AliasChoices("meal_type", "mealType"))
+    serving_count: int | float | str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("serving_count", "servingCount", "portion", "serving", "servings"),
+    )
+    serving_multiplier: float | str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("serving_multiplier", "servingMultiplier"),
+    )
+    log_date: str | None = Field(default=None, validation_alias=AliasChoices("log_date", "logDate", "loggedAt"))
+    entry_source: str | None = Field(default="daily", validation_alias=AliasChoices("entry_source", "entrySource"))
+    calorie_intake: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("calorie_intake", "calorieIntake"),
+    )
 
 
 class DailyLogUpdateRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     meal_type: str | None = None
-    serving_count: int | None = None
+    serving_count: int | float | str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("serving_count", "servingCount", "portion", "serving", "servings"),
+    )

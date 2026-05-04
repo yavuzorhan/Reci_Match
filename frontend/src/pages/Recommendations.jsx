@@ -20,8 +20,6 @@ import { useApp } from '../context/AppContext';
 import {
   RECIPE_FILTER_OPTIONS,
   applyRecipeFilters,
-  buildRecipeShortSummary,
-  getHealthGrade,
 } from '../utils/recipeInsights';
 import RecipeCard from '../components/RecipeCard';
 

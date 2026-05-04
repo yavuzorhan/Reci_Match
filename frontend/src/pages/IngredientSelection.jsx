@@ -44,7 +44,7 @@ const IngredientSelection = () => {
       }
     };
     fetchIngredients();
-  }, [user]);
+  }, [user, activeCategory]);
 
   const allIngredients = useMemo(() => {
     return (categories || []).flatMap(cat => (cat.ingredients || []).map(ing => ({ ...ing, categoryName: cat.name })));

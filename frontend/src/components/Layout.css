@@ -110,7 +110,6 @@
 .layout-shell[data-theme="light"].noct-layout .layout-content :where(
   p, small, label,
   .noct-hero p,
-  .noct-insight p,
   .noct-match-state,
   .noct-section-head button,
   .noct-panel-head button,
