@@ -1,0 +1,748 @@
+.layout-shell[data-theme="light"].noct-layout .layout-content {
+  background-color: #f4fbf4 !important;
+  background-image:
+    radial-gradient(circle at 10% 18%, rgba(111, 251, 190, 0.28) 0%, transparent 38%),
+    radial-gradient(circle at 90% 78%, rgba(109, 245, 225, 0.20) 0%, transparent 40%),
+    linear-gradient(180deg, #f4fbf4 0%, #eef6ee 100%) !important;
+  color: #161d19 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .sidebar {
+  background: rgba(255, 255, 255, 0.76) !important;
+  border-right: 1px solid rgba(187, 202, 191, 0.58) !important;
+  box-shadow: 0 12px 34px rgba(0, 108, 73, 0.08) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .brand-wordmark-reci,
+.layout-shell[data-theme="light"].noct-layout .brand-wordmark-match {
+  color: var(--noct-mid-green) !important;
+  text-shadow: none !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .brand-wordmark p,
+.layout-shell[data-theme="light"].noct-layout .nav-item,
+.layout-shell[data-theme="light"].noct-layout .sidebar-action-button {
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .brand-wordmark p span,
+.layout-shell[data-theme="light"].noct-layout .brand-wordmark p span:last-child {
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.38)) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .sidebar-nav {
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .nav-active-pill {
+  background: rgba(16, 185, 129, 0.14) !important;
+  box-shadow: inset 2px 0 0 var(--noct-accent-hover) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .nav-item:hover,
+.layout-shell[data-theme="light"].noct-layout .sidebar-action-button:hover {
+  color: var(--noct-mid-green) !important;
+  background: rgba(16, 185, 129, 0.10) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .nav-item.active,
+.layout-shell[data-theme="light"].noct-layout .nav-item.active .nav-icon {
+  color: var(--noct-mid-green) !important;
+  filter: none !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .sidebar-actions {
+  border-top-color: rgba(187, 202, 191, 0.58) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .logout-button {
+  color: #ba1a1a !important;
+  border-color: rgba(186, 26, 26, 0.14) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout :where(
+  .noct-dashboard,
+  .pantry-noct,
+  .recipes-noct,
+  .recipe-detail-page,
+  .fav-wrapper,
+  .healthy-page,
+  .healthy-results-wrapper,
+  .noct-weekly-logs,
+  .noct-rec-container,
+  .noct-selection-page,
+  .profile-page
+) {
+  color: #161d19 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  h1, h2, h3, h4, h5,
+  .noct-hero h1,
+  .pantry-title-row h1,
+  .pantry-panel-head h2,
+  .pantry-category-head h3,
+  .pantry-preview-title h2,
+  .recipes-shell h1,
+  .recipes-card-body h2,
+  .recipe-detail-page h1,
+  .recipe-detail-page h2,
+  .recipe-detail-page h3,
+  .healthy-recipes-heading h1,
+  .healthy-card-body h3,
+  .profile-topbar h1,
+  .profile-identity-card h2,
+  .profile-card-title h3,
+  .noct-panel-head h2,
+  .noct-section-head h2,
+  .noct-log-row strong,
+  .noct-ring-wrap strong,
+  .recipes-metric strong,
+  .profile-macro strong,
+  .profile-security-copy h4
+) {
+  color: #161d19 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  p, small, label,
+  .noct-hero p,
+  .noct-insight p,
+  .noct-match-state,
+  .noct-section-head button,
+  .noct-panel-head button,
+  .noct-macro-list > div > div,
+  .noct-ring-wrap span,
+  .noct-log-row small,
+  .pantry-noct-header p,
+  .pantry-best-match p,
+  .pantry-ai-tip p,
+  .recipes-card-body p,
+  .recipes-metric small,
+  .healthy-recipes-heading small,
+  .healthy-card-meta,
+  .healthy-state-card span,
+  .recipe-detail-page .muted,
+  .profile-topbar p,
+  .profile-identity-card p,
+  .profile-security-intro,
+  .profile-security-copy p,
+  .profile-macro div,
+  .profile-field > span
+) {
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .glass-panel,
+  .pantry-glass,
+  .recipes-glass,
+  .recipes-form-panel,
+  .recipes-search-panel,
+  .recipes-state,
+  .recipes-empty,
+  .healthy-filter-panel,
+  .healthy-recipe-card,
+  .healthy-state-card,
+  .profile-glass-card,
+  .noct-summary-row,
+  .noct-progress-card,
+  .noct-meals-card,
+  .noct-modal-content,
+  .revision-panel
+) {
+  background: rgba(255, 255, 255, 0.74) !important;
+  background-color: rgba(255, 255, 255, 0.74) !important;
+  border-color: rgba(187, 202, 191, 0.58) !important;
+  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-topbar,
+  .healthy-topbar,
+  .profile-topbar,
+  .recipe-detail-topbar
+) {
+  background: rgba(255, 255, 255, 0.72) !important;
+  border-bottom-color: rgba(187, 202, 191, 0.58) !important;
+  box-shadow: 0 8px 24px rgba(0, 108, 73, 0.05) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  input,
+  select,
+  textarea,
+  .healthy-search,
+  .noct-search-box,
+  .pantry-noct .search-bar,
+  .recipes-search-row,
+  .profile-inline-auth input
+) {
+  background: rgba(255, 255, 255, 0.84) !important;
+  border-color: var(--noct-text-secondary) !important;
+  color: #161d19 !important;
+  box-shadow: none !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(input, textarea)::placeholder {
+  color: #6c7a71 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  input:focus,
+  select:focus,
+  textarea:focus,
+  .healthy-search:focus-within,
+  .pantry-noct .search-bar:focus-within,
+  .recipes-search-row:focus-within
+) {
+  border-color: rgba(16, 185, 129, 0.62) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-assistant-button,
+  .noct-profile-button,
+  .healthy-assistant-button,
+  .healthy-icon-button,
+  .healthy-avatar,
+  .profile-notification,
+  .pantry-chip,
+  .pantry-suggestion-row button,
+  .recipes-tabs button,
+  .recipes-filter-label,
+  .recipes-filter-row button,
+  .recipes-metric,
+  .healthy-chip,
+  .healthy-card-tags span,
+  .profile-tag,
+  .disliked-preview span,
+  .profile-security-row,
+  .noct-log-row
+) {
+  background: #eef6ee !important;
+  border-color: rgba(187, 202, 191, 0.68) !important;
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-icon-button,
+  .noct-assistant-button,
+  .noct-profile-button,
+  .healthy-assistant-button,
+  .healthy-icon-button,
+  .healthy-avatar
+):hover {
+  background: rgba(16, 185, 129, 0.10) !important;
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .profile-save-button,
+  .pantry-save,
+  .pantry-find-btn,
+  .recipes-search-button,
+  .recipes-detail-button,
+  .healthy-inspect-button,
+  .noct-search-box button,
+  .noct-match-state button,
+  .recipe-detail-primary-button,
+  .revision-save-button
+) {
+  background: var(--noct-accent-hover) !important;
+  border-color: rgba(16, 185, 129, 0.32) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-live-badge,
+  .healthy-chip.selected,
+  .healthy-chip.active,
+  .pantry-noct .category-btn.active,
+  .pantry-noct .ingredient-card.selected,
+  .pantry-noct .selected-chip,
+  .profile-tag.active
+) {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.26) !important;
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-live-badge span,
+  .profile-notification span,
+  .pantry-match-meter b,
+  .noct-macro-list b,
+  .profile-macro b
+) {
+  background-color: var(--noct-accent-hover);
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-assistant-button svg,
+  .noct-section-head h2 svg,
+  .noct-empty-log svg,
+  .noct-log-row > span,
+  .pantry-panel-head svg,
+  .pantry-category-head svg,
+  .pantry-ai-tip svg,
+  .recipes-empty svg,
+  .healthy-panel-heading svg,
+  .healthy-state-card svg,
+  .profile-card-title,
+  .profile-security-copy > span,
+  .profile-goal-head strong
+) {
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-macro-list i,
+  .profile-macro i,
+  .pantry-match-meter i,
+  .healthy-card-fallback,
+  .recipes-card-fallback
+) {
+  background: #dde4dd !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-card-overlay,
+  .healthy-card-overlay,
+  .recipes-media-overlay
+) {
+  background: linear-gradient(180deg, transparent 42%, rgba(22, 29, 25, 0.56)) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipes-card-badges span,
+  .healthy-card-badges span,
+  .noct-card-badges span,
+  .recipes-heart,
+  .healthy-heart,
+  .noct-card-heart
+) {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(187, 202, 191, 0.68) !important;
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipes-heart.active,
+  .recipes-heart:hover,
+  .healthy-heart.active,
+  .healthy-heart:hover,
+  .profile-card-title.danger-title,
+  .profile-tag.danger,
+  .profile-tag.danger:hover,
+  .profile-security-row.danger .profile-security-copy > span,
+  .profile-security-row.danger > button
+) {
+  color: #ba1a1a !important;
+  border-color: rgba(186, 26, 26, 0.22) !important;
+  background: #ffdad6 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-summary-value,
+  .noct-day-cal strong,
+  .noct-card-title,
+  .noct-meal-name,
+  .noct-meal-energy,
+  .noct-macro-info span,
+  .pantry-title-row h1,
+  .pantry-panel-head h2,
+  .pantry-preview-title h2,
+  .pantry-category-head h3,
+  .pantry-best-row h3,
+  .pantry-ai-tip h3,
+  .pantry-empty-wide strong,
+  .recipes-title-row h1,
+  .recipes-empty h2,
+  .recipes-card-body h2
+) {
+  color: #161d19 !important;
+  text-shadow: none !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-summary-label,
+  .noct-summary-value i,
+  .noct-day-name,
+  .noct-day-cal span,
+  .noct-day-status,
+  .noct-status-ok,
+  .noct-meals-title-group p,
+  .noct-macro-info small,
+  .noct-meal-time,
+  .noct-meal-desc,
+  .noct-meal-macros,
+  .noct-meal-energy span,
+  .noct-action-btn,
+  .noct-empty-meals,
+  .pantry-noct-header p,
+  .pantry-empty-wide,
+  .pantry-best-match p,
+  .pantry-ai-tip p,
+  .pantry-match-meter small,
+  .pantry-noct .search-bar svg,
+  .pantry-noct .selected-area-head span,
+  .recipes-title-row span,
+  .recipes-header p,
+  .recipes-filter-label,
+  .recipes-filter-row button,
+  .recipes-state,
+  .recipes-empty,
+  .recipes-empty p,
+  .recipes-card-body p,
+  .recipes-metric small
+) {
+  color: #3c4a42 !important;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-summary-divider,
+  .noct-progress-bar-bg,
+  .noct-macro-bar,
+  .noct-meal-time,
+  .noct-action-btn,
+  .pantry-noct .selected-area,
+  .pantry-category-head,
+  .recipes-tabs,
+  .recipes-search-box,
+  .recipes-filter-row button
+) {
+  border-color: rgba(108, 122, 113, 0.24) !important;
+  background-color: rgba(221, 228, 221, 0.58) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-day-pill,
+  .noct-meal-item,
+  .pantry-category-card,
+  .pantry-more-panel,
+  .pantry-noct .category-btn,
+  .pantry-noct .ingredient-card,
+  .recipes-tabs button,
+  .recipes-filter-row button,
+  .recipes-metric
+) {
+  background: rgba(238, 246, 238, 0.82) !important;
+  border-color: rgba(187, 202, 191, 0.72) !important;
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-day-pill.is-selected,
+  .noct-day-pill.is-today,
+  .recipes-tabs button.active,
+  .recipes-filter-row button.active,
+  .pantry-noct .category-btn.active,
+  .pantry-noct .ingredient-card.selected,
+  .pantry-noct .selected-chip
+) {
+  background: rgba(16, 185, 129, 0.13) !important;
+  border-color: rgba(16, 185, 129, 0.34) !important;
+  color: var(--noct-mid-green) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.10) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-summary-value.noct-text-primary,
+  .noct-text-primary,
+  .noct-status-badge.is-ok,
+  .noct-meal-macros i,
+  .pantry-panel-head span,
+  .pantry-title-row span,
+  .pantry-best-match > span,
+  .pantry-suggestion-row button,
+  .recipes-filter-row button.active,
+  .recipes-empty svg,
+  .recipes-detail-button
+) {
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-progress-bar-bg,
+  .noct-macro-bar,
+  .pantry-match-meter i
+) {
+  background: #dde4dd !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-progress-bar-fill,
+  .noct-status-badge.is-ok,
+  .pantry-match-meter b
+) {
+  background: var(--noct-accent-hover) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .noct-progress-bar-fill.is-over,
+  .noct-status-over,
+  .noct-status-badge.is-over,
+  .noct-action-btn.remove,
+  .recipes-state.error
+) {
+  color: #ba1a1a !important;
+  background-color: #ffdad6 !important;
+  border-color: rgba(186, 26, 26, 0.22) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .pantry-noct .selected-area p,
+  .pantry-noct .ingredient-name,
+  .pantry-chip,
+  .pantry-noct .search-bar input,
+  .recipes-search-box input,
+  .recipes-metric strong
+) {
+  color: #161d19 !important;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .pantry-panel-glow,
+  .hero-glow
+) {
+  opacity: 0.42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-detail-page,
+  .recipe-heading h1,
+  .recipe-panel h2,
+  .recipe-panel-title h2,
+  .recipe-quality-head h2,
+  .recipe-ingredient-row span,
+  .recipe-nutrition-grid strong,
+  .recipe-detail-state h2
+) {
+  color: #161d19 !important;
+  text-shadow: none !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-topbar,
+  .recipe-hero-card,
+  .recipe-panel,
+  .recipe-save-card,
+  .recipe-nutrition-card,
+  .recipe-quality-card
+) {
+  background: rgba(255, 255, 255, 0.74) !important;
+  border-color: rgba(187, 202, 191, 0.58) !important;
+  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipe-topbar {
+  border-bottom-color: rgba(187, 202, 191, 0.58) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-back-button,
+  .recipe-icon-button,
+  .recipe-assistant-button,
+  .recipe-secondary-button,
+  .recipe-favorite-button,
+  .recipe-pill,
+  .recipe-meal-grid button,
+  .recipe-save-card select,
+  .recipe-ingredient-row,
+  .recipe-step-row,
+  .recipe-nutrition-grid div,
+  .recipe-stat-row span
+) {
+  background: #eef6ee !important;
+  border-color: rgba(187, 202, 191, 0.70) !important;
+  color: #3c4a42 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-back-button:hover,
+  .recipe-icon-button:hover,
+  .recipe-assistant-button:hover,
+  .recipe-secondary-button:hover,
+  .recipe-meal-grid button:hover
+) {
+  background: rgba(16, 185, 129, 0.10) !important;
+  border-color: rgba(16, 185, 129, 0.26) !important;
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-pill.primary,
+  .recipe-meal-grid button.active,
+  .recipe-save-card select:disabled,
+  .recipe-ingredient-row.available,
+  .recipe-step-row > span,
+  .recipe-quality-badge,
+  .recipe-quality-tags span
+) {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-ingredient-row.optional
+) {
+  background: rgba(109, 245, 225, 0.18) !important;
+  border-color: rgba(0, 107, 95, 0.20) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-quality-head span,
+  .recipe-field-label,
+  .recipe-save-card label > span,
+  .recipe-ingredient-grid h3,
+  .recipe-ingredient-row small,
+  .recipe-note,
+  .recipe-step-row p,
+  .recipe-quality-card p,
+  .recipe-quality-card > small,
+  .recipe-nutrition-grid span,
+  .recipe-detail-state,
+  .recipe-estimate-note span
+) {
+  color: #3c4a42 !important;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-panel-title svg,
+  .recipe-assistant-button svg,
+  .recipe-stat-row svg,
+  .recipe-ingredient-row.available svg,
+  .recipe-ingredient-row.optional svg,
+  .recipe-detail-state svg,
+  .recipe-quality-card > strong,
+  .recipe-quality-badge,
+  .recipe-pill.primary
+) {
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-primary-button,
+  .recipe-primary-button.wide,
+  .recipe-revision-button,
+  .recipe-revision-button.wide
+) {
+  background: var(--noct-accent-hover) !important;
+  border-color: rgba(16, 185, 129, 0.32) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-primary-button:hover,
+  .recipe-revision-button:hover
+) {
+  background: var(--noct-mid-green) !important;
+  color: #ffffff !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-quality-meter,
+  .recipe-note
+) {
+  border-color: rgba(187, 202, 191, 0.58) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipe-quality-meter {
+  background: #dde4dd !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipe-quality-meter i {
+  background: linear-gradient(90deg, var(--noct-mid-green), var(--noct-accent-hover)) !important;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.28) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipe-hero-overlay {
+  background: linear-gradient(to top, rgba(22, 29, 25, 0.82), rgba(22, 29, 25, 0.24), transparent 58%) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-hero-content p,
+  .recipe-stat-row span
+) {
+  color: #ffffff !important;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.34);
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipe-image-fallback {
+  color: rgba(0, 108, 73, 0.35) !important;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(16, 185, 129, 0.16), transparent 30%),
+    linear-gradient(145deg, #eef6ee, #dde4dd) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-avatar
+) {
+  background: linear-gradient(135deg, #e8f0e9, rgba(111, 251, 190, 0.38)) !important;
+  border-color: rgba(16, 185, 129, 0.24) !important;
+  color: var(--noct-mid-green) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-divider
+) {
+  background: rgba(187, 202, 191, 0.70) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content :where(
+  .recipe-favorite-button,
+  .recipe-favorite-button.active,
+  .recipe-estimate-note
+) {
+  color: #ba1a1a !important;
+  background: #ffdad6 !important;
+  border-color: rgba(186, 26, 26, 0.22) !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-page {
+  color: var(--noct-text-primary) !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-topbar {
+  background: rgba(12, 8, 20, 0.28) !important;
+  border-bottom-color: rgba(255,255,255,0.05) !important;
+  box-shadow: none !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-glass-card {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  background: rgba(28, 43, 60, 0.10) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25) !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-page :where(h1, h2, h3, h4, strong, b) {
+  color: var(--noct-text-primary) !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-page :where(p, small, label, .profile-field > span, .profile-macro div, .profile-security-copy p) {
+  color: var(--noct-text-secondary) !important;
+}
+
+.layout-shell[data-theme="dark"] .profile-field input,
+.layout-shell[data-theme="dark"] .profile-field select,
+.layout-shell[data-theme="dark"] .profile-inline-auth input {
+  background: #122131 !important;
+  border-color: #3c4a42 !important;
+  color: var(--noct-text-primary) !important;
+}

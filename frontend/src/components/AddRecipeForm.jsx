@@ -191,7 +191,13 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
     e.preventDefault();
     if (!formData.name) return setError('Tarif adı zorunludur.');
     if (ingredients.length === 0) return setError('En az bir malzeme eklemelisiniz.');
-    
+
+    const servingCount = parseInt(formData.serving) || 1;
+    if (servingCount < 1 || servingCount > 20) {
+      alert('Porsiyon sayısı 1 ile 20 arasında olmalıdır.');
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
@@ -269,13 +275,15 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label className="arf-label">Porsiyon</label>
-                <input 
-                  className="arf-input" 
-                  placeholder="2" 
-                  type="number" 
-                  name="serving" 
-                  value={formData.serving} 
-                  onChange={handleChange} 
+                <input
+                  className="arf-input"
+                  placeholder="2"
+                  type="number"
+                  name="serving"
+                  min="1"
+                  max="20"
+                  value={formData.serving}
+                  onChange={handleChange}
                 />
               </div>
               <div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import './HealthyResults.css';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -269,43 +270,6 @@ const HealthyResults = () => {
       )}
       </div>
 
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            .layout-content:has(.healthy-results-wrapper) {
-              background-color: #0c0814 !important;
-              background-image:
-                radial-gradient(circle at 10% 20%, rgba(100, 31, 224, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(68, 226, 205, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(147, 0, 10, 0.03) 0%, transparent 60%) !important;
-              color: #d4e4fa;
-              padding: 0;
-            }
-
-            .healthy-results-wrapper {
-              font-family: 'Plus Jakarta Sans', sans-serif;
-              padding: 32px 32px 40px;
-              min-height: 100vh;
-              width: 100%;
-            }
-
-            .no-scrollbar::-webkit-scrollbar {
-              display: none;
-            }
-            .spin-slow {
-              animation: spin 4s linear infinite;
-            }
-            @keyframes spin {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-            }
-            @keyframes fadeInDown {
-              from { opacity: 0; transform: translateY(-20px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-          `,
-        }}
-      />
     </Layout>
   );
 };

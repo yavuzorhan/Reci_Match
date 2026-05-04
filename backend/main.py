@@ -12,6 +12,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 
 from app.routers import auth, ingredients, recipes, users
 
@@ -22,6 +24,17 @@ app = FastAPI(
     description="Malzeme bazlı tarif öneri, kişisel beslenme profili ve günlük kalori takibi.",
     version="1.0.0",
 )
+
+class UTF8Middleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        if 'content-type' in response.headers:
+            ct = response.headers['content-type']
+            if 'application/json' in ct and 'charset' not in ct:
+                response.headers['content-type'] = 'application/json; charset=utf-8'
+        return response
+
+app.add_middleware(UTF8Middleware)
 
 # ─── CORS Middleware ─────────────────────────────────────────────────────────
 

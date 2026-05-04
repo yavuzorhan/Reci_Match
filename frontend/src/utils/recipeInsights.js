@@ -19,13 +19,7 @@ export const normalizeCookingType = (value) => {
     .replaceAll('ü', 'u')
     .replaceAll('ş', 's')
     .replaceAll('ö', 'o')
-    .replaceAll('ç', 'c')
-    .replaceAll('Ä±', 'i')
-    .replaceAll('ÄŸ', 'g')
-    .replaceAll('Ã¼', 'u')
-    .replaceAll('ÅŸ', 's')
-    .replaceAll('Ã¶', 'o')
-    .replaceAll('Ã§', 'c');
+    .replaceAll('ç', 'c');
 
   if (normalized.includes('firin')) return 'firin';
   if (normalized.includes('tava')) return 'tava';

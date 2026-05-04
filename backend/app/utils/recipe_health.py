@@ -1264,12 +1264,6 @@ def _fold_text(value: str) -> str:
         ("ö", "o"), ("Ö", "o"),
         ("ü", "u"), ("Ü", "u"),
         ("ç", "c"), ("Ç", "c"),
-        ("Ä±", "i"), ("Ä°", "i"),
-        ("ÄŸ", "g"), ("Ä", "g"),
-        ("ÅŸ", "s"), ("Å", "s"),
-        ("Ã¶", "o"), ("Ã–", "o"),
-        ("Ã¼", "u"), ("Ãœ", "u"),
-        ("Ã§", "c"), ("Ã‡", "c"),
     ):
         normalized = normalized.replace(source.lower(), target)
     normalized = unicodedata.normalize("NFKD", normalized)

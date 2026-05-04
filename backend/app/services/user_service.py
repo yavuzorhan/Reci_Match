@@ -144,6 +144,21 @@ def get_daily_logs(user_id: int, db: Session) -> list[dict]:
 
         multiplier = float(log.serving_multiplier) if log.serving_multiplier is not None else 1
 
+        if log.protein_intake is not None:
+            protein = float(log.protein_intake)
+        else:
+            protein = round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2)
+
+        if log.carbohydrate_intake is not None:
+            carbohydrate = float(log.carbohydrate_intake)
+        else:
+            carbohydrate = round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2)
+
+        if log.fat_intake is not None:
+            fat = float(log.fat_intake)
+        else:
+            fat = round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2)
+
         result.append({
             "id": log.log_id,
             "recipeId": log.recipe_id,
@@ -154,9 +169,9 @@ def get_daily_logs(user_id: int, db: Session) -> list[dict]:
             "servingCount": log.serving_count,
             "servingMultiplier": multiplier,
             "calorieIntake": float(log.calorie_intake) if log.calorie_intake is not None else 0,
-            "protein": round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2),
-            "carbohydrate": round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2),
-            "fat": round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2),
+            "protein": protein,
+            "carbohydrate": carbohydrate,
+            "fat": fat,
         })
     return result
 
@@ -198,6 +213,9 @@ def add_daily_log(
         else (resolved_serving_count / original_serving)
     )
     adjusted_calorie = (float(recipe.calorie) if recipe.calorie is not None else 0) * resolved_multiplier
+    adjusted_protein = (float(recipe.protein) if recipe.protein is not None else 0) * resolved_multiplier
+    adjusted_carbohydrate = (float(recipe.carbohydrate) if recipe.carbohydrate is not None else 0) * resolved_multiplier
+    adjusted_fat = (float(recipe.fat) if recipe.fat is not None else 0) * resolved_multiplier
     resolved_entry_source = (entry_source or "daily").strip().lower()
 
     log = user_repository.create_daily_log(
@@ -209,6 +227,9 @@ def add_daily_log(
         meal_type=normalized_meal_type,
         entry_source=resolved_entry_source,
         calorie_intake=round(adjusted_calorie, 2),
+        protein_intake=round(adjusted_protein, 2),
+        carbohydrate_intake=round(adjusted_carbohydrate, 2),
+        fat_intake=round(adjusted_fat, 2),
         serving_count=resolved_serving_count,
         serving_multiplier=round(resolved_multiplier, 2),
     )
@@ -235,9 +256,9 @@ def add_daily_log(
             "servingCount": log.serving_count,
             "servingMultiplier": multiplier,
             "calorieIntake": float(log.calorie_intake) if log.calorie_intake is not None else 0,
-            "protein": round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2),
-            "carbohydrate": round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2),
-            "fat": round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2),
+            "protein": float(log.protein_intake) if log.protein_intake is not None else round(adjusted_protein, 2),
+            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round(adjusted_carbohydrate, 2),
+            "fat": float(log.fat_intake) if log.fat_intake is not None else round(adjusted_fat, 2),
         },
     }
 
@@ -274,6 +295,9 @@ def update_daily_log(
         multiplier = serving_count / original_serving
         log.serving_multiplier = round(multiplier, 2)
         log.calorie_intake = round((float(recipe.calorie) if recipe.calorie else 0) * multiplier, 2)
+        log.protein_intake = round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2)
+        log.carbohydrate_intake = round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2)
+        log.fat_intake = round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2)
 
     db.commit()
     db.refresh(log)
@@ -292,9 +316,9 @@ def update_daily_log(
             "servingCount": log.serving_count,
             "servingMultiplier": multiplier,
             "calorieIntake": float(log.calorie_intake) if log.calorie_intake is not None else 0,
-            "protein": round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2),
-            "carbohydrate": round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2),
-            "fat": round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2),
+            "protein": float(log.protein_intake) if log.protein_intake is not None else round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2),
+            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2),
+            "fat": float(log.fat_intake) if log.fat_intake is not None else round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2),
         }
     }
 

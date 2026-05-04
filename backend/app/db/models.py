@@ -330,6 +330,9 @@ class DailyLog(Base):
     meal_type = Column(String(30), nullable=True)
     entry_source = Column(String(20), nullable=True)
     calorie_intake = Column(Numeric(6, 2), nullable=True)
+    protein_intake = Column(Numeric(6, 2), nullable=True)
+    carbohydrate_intake = Column(Numeric(6, 2), nullable=True)
+    fat_intake = Column(Numeric(6, 2), nullable=True)
     serving_count = Column(Integer, nullable=True)
     serving_multiplier = Column(Numeric(6, 2), nullable=True)
 

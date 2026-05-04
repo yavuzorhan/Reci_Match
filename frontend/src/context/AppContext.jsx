@@ -220,6 +220,8 @@ export const AppProvider = ({ children }) => {
 
   const addDailyLog = useCallback(async ({ recipeId, mealType = 'Akşam Yemeği', servingCount = 1, servingMultiplier = 1, logDate = null, entrySource = 'daily' }) => {
     if (!user?.id) throw new Error('Giriş yapmalısınız.');
+    const cachedRecipe = recipeCache[recipeId];
+    const multiplier = servingMultiplier || 1;
     const data = await fetchJson(`${API_BASE}/api/users/${user.id}/daily-logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -230,11 +232,15 @@ export const AppProvider = ({ children }) => {
         serving_multiplier: servingMultiplier,
         log_date: logDate,
         entry_source: entrySource,
+        calorie_intake: cachedRecipe ? (cachedRecipe.calorie ?? 0) * multiplier : null,
+        protein: cachedRecipe ? (cachedRecipe.protein ?? 0) * multiplier : null,
+        carbohydrate: cachedRecipe ? (cachedRecipe.carbohydrate ?? 0) * multiplier : null,
+        fat: cachedRecipe ? (cachedRecipe.fat ?? 0) * multiplier : null,
       }),
     });
     setDailyLogs(prev => [data.log, ...prev]);
     return data.log;
-  }, [fetchJson, user]);
+  }, [fetchJson, user, recipeCache]);
 
   const removeDailyLog = useCallback(async (logId) => {
     if (!user?.id) throw new Error('Giriş yapmalısınız.');
@@ -364,9 +370,9 @@ export const AppProvider = ({ children }) => {
       const multiplier = log.servingMultiplier || 1;
       return {
         calories: acc.calories + (log.calorieIntake || rec?.calorie || 0),
-        protein: acc.protein + ((rec?.protein || 10) * multiplier),
-        carb: acc.carb + ((rec?.carbohydrate || 20) * multiplier),
-        fat: acc.fat + ((rec?.fat || 5) * multiplier)
+        protein: acc.protein + ((log.protein ?? (rec?.protein ?? 0)) * multiplier),
+        carb: acc.carb + ((log.carbohydrate ?? (rec?.carbohydrate ?? 0)) * multiplier),
+        fat: acc.fat + ((log.fat ?? (rec?.fat ?? 0)) * multiplier)
       };
     }, { calories: 0, protein: 0, carb: 0, fat: 0 });
 

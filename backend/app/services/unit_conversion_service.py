@@ -106,9 +106,6 @@ def _normalize_alias(value: str) -> str:
         ("\u0131", "i"), ("\u0130", "i"), ("\u011f", "g"), ("\u011e", "g"),
         ("\u015f", "s"), ("\u015e", "s"), ("\u00f6", "o"), ("\u00d6", "o"),
         ("\u00fc", "u"), ("\u00dc", "u"), ("\u00e7", "c"), ("\u00c7", "c"),
-        ("Ä±", "i"), ("Ä°", "i"), ("ÄŸ", "g"), ("Ä", "g"),
-        ("ÅŸ", "s"), ("Å", "s"), ("Ã¶", "o"), ("Ã–", "o"),
-        ("Ã¼", "u"), ("Ãœ", "u"), ("Ã§", "c"), ("Ã‡", "c"),
     )
     for source, target in replacements:
         normalized = normalized.replace(source.lower(), target)

@@ -1,0 +1,559 @@
+.layout-content:has(.healthy-page) {
+  padding: 0;
+  background:
+    radial-gradient(circle at 14% 6%, rgba(16,185,129,0.09), transparent 34%),
+    radial-gradient(circle at 92% 18%, rgba(78,222,163,0.07), transparent 30%),
+    #050b14 !important;
+  color: #cfe8dc;
+}
+
+.layout-shell:has(.healthy-page) .sidebar {
+  background: rgba(7, 16, 27, 0.94);
+  border-right: 1px solid rgba(16,185,129,0.12);
+  backdrop-filter: blur(30px);
+  box-shadow: none;
+}
+
+.layout-shell:has(.healthy-page) .brand-wordmark-reci,
+.layout-shell:has(.healthy-page) .brand-wordmark-match {
+  color: var(--noct-accent-hover);
+  text-shadow: none;
+}
+
+.layout-shell:has(.healthy-page) .brand-wordmark p::before {
+  content: "Premium Nutrition";
+  color: rgba(207,232,220,0.46);
+}
+
+.layout-shell:has(.healthy-page) .brand-wordmark p {
+  font-size: 0;
+}
+
+.layout-shell:has(.healthy-page) .brand-wordmark p span {
+  display: none;
+}
+
+.layout-shell:has(.healthy-page) .nav-active-pill {
+  border-radius: var(--radius-md);
+  background: rgba(16,185,129,0.10);
+  box-shadow: inset 3px 0 0 var(--noct-accent-hover);
+}
+
+.layout-shell:has(.healthy-page) .nav-item,
+.layout-shell:has(.healthy-page) .sidebar-action-button {
+  color: rgba(207,232,220,0.56) !important;
+}
+
+.layout-shell:has(.healthy-page) .nav-item:hover,
+.layout-shell:has(.healthy-page) .sidebar-action-button:hover {
+  color: #cfe8dc !important;
+  background: rgba(16,185,129,0.06);
+}
+
+.layout-shell:has(.healthy-page) .nav-item.active {
+  color: var(--noct-accent-hover) !important;
+}
+
+.healthy-page {
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  color: #cfe8dc;
+}
+
+.healthy-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 32px;
+  border-bottom: 1px solid rgba(16,185,129,0.12);
+  background: rgba(5, 17, 15, 0.72);
+  backdrop-filter: blur(20px);
+}
+
+.healthy-topbar-title,
+.healthy-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.healthy-topbar-title span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(16,185,129,0.22);
+  background: rgba(16,185,129,0.10);
+  color: var(--noct-accent-hover);
+}
+
+.healthy-topbar-title strong {
+  color: #cfe8dc;
+  font-size: 20px;
+  font-weight: 850;
+}
+
+.healthy-assistant-button,
+.healthy-icon-button,
+.healthy-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--noct-border);
+  background: rgba(13,31,26,0.70);
+  color: rgba(207,232,220,0.78);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.healthy-assistant-button {
+  min-height: 40px;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--noct-accent-hover);
+  color: var(--noct-dark-green);
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(16,185,129,0.16);
+}
+
+.healthy-icon-button,
+.healthy-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+}
+
+.healthy-icon-button:hover {
+  color: var(--noct-accent-hover);
+  border-color: rgba(16,185,129,0.26);
+  background: rgba(16,185,129,0.08);
+}
+
+.healthy-avatar {
+  border-color: rgba(16,185,129,0.24);
+  background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(78,222,163,0.08));
+  color: #cfe8dc;
+  font-weight: 950;
+}
+
+.healthy-main {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.healthy-filter-panel,
+.healthy-recipe-card {
+  border: 1px solid rgba(16,185,129,0.13);
+  background: rgba(13,31,26,0.82);
+  box-shadow: 0 20px 52px rgba(0,0,0,0.30);
+  backdrop-filter: blur(24px);
+}
+
+.healthy-filter-panel {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+  border-radius: 20px;
+  padding: 22px;
+}
+
+.healthy-panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: var(--noct-accent-hover);
+}
+
+.healthy-panel-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 850;
+}
+
+.healthy-search {
+  position: relative;
+  display: block;
+  margin-bottom: 22px;
+}
+
+.healthy-search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 42px 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: #091f18;
+  color: #cfe8dc;
+  font-size: 15px;
+  outline: none;
+}
+
+.healthy-search input::placeholder {
+  color: rgba(207,232,220,0.38);
+}
+
+.healthy-search input:focus {
+  border-color: rgba(16,185,129,0.45);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.10);
+}
+
+.healthy-search svg {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(207,232,220,0.44);
+}
+
+.healthy-filter-section {
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--noct-border);
+}
+
+.healthy-filter-section h3 {
+  margin: 0 0 11px;
+  color: rgba(207,232,220,0.56);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.healthy-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.healthy-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(9,31,24,0.78);
+  color: rgba(207,232,220,0.76);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.healthy-chip.filter {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.healthy-chip.selected,
+.healthy-chip.active {
+  border-color: rgba(16,185,129,0.28);
+  background: rgba(16,185,129,0.12);
+  color: var(--noct-accent);
+}
+
+.healthy-chip.filter:hover {
+  border-color: rgba(16,185,129,0.28);
+  color: #cfe8dc;
+}
+
+.healthy-recipes-area {
+  min-width: 0;
+}
+
+.healthy-recipes-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.healthy-recipes-heading span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  color: var(--noct-accent);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.healthy-recipes-heading h1 {
+  margin: 0;
+  color: var(--noct-accent-hover);
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.healthy-recipes-heading small {
+  color: rgba(207,232,220,0.58);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.healthy-recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.healthy-recipe-card {
+  overflow: hidden;
+  border-radius: 22px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.healthy-recipe-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(16,185,129,0.26);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.34), 0 0 24px rgba(16,185,129,0.08);
+}
+
+.healthy-card-media {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
+}
+
+.healthy-card-media img,
+.healthy-card-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.healthy-card-fallback {
+  display: grid;
+  place-items: center;
+  color: rgba(78,222,163,0.35);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(16,185,129,0.18), transparent 32%),
+    linear-gradient(145deg, #10231d, #050b14);
+}
+
+.healthy-recipe-card:hover .healthy-card-media img {
+  transform: scale(1.06);
+}
+
+.healthy-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(5,11,20,0.22), transparent 44%, rgba(5,11,20,0.32));
+}
+
+.healthy-card-badges {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.healthy-card-badges span {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(5,11,20,0.70);
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+  backdrop-filter: blur(12px);
+}
+
+.healthy-card-badges .grade-a {
+  border-color: rgba(16,185,129,0.30);
+  background: var(--noct-accent-hover);
+  color: var(--noct-dark-green);
+}
+
+.healthy-card-badges .grade-b {
+  border-color: rgba(78,222,163,0.32);
+  background: var(--noct-accent);
+  color: var(--noct-dark-green);
+}
+
+.healthy-heart {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(5,11,20,0.52);
+  color: white;
+  backdrop-filter: blur(14px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.healthy-heart:hover,
+.healthy-heart.active {
+  background: rgba(16,185,129,0.92);
+  border-color: rgba(16,185,129,0.92);
+  color: var(--noct-dark-green);
+}
+
+.healthy-card-body {
+  padding: 22px;
+}
+
+.healthy-card-body h3 {
+  margin: 0 0 12px;
+  color: #cfe8dc;
+  font-size: 23px;
+  line-height: 1.25;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.healthy-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: rgba(207,232,220,0.56);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.healthy-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.healthy-card-meta svg {
+  color: var(--noct-accent);
+}
+
+.healthy-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 18px;
+}
+
+.healthy-card-tags span {
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(78,222,163,0.18);
+  background: rgba(78,222,163,0.08);
+  color: var(--noct-accent);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.healthy-inspect-button {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--noct-accent-hover);
+  color: var(--noct-dark-green);
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(16,185,129,0.16);
+  transition: all 0.2s ease;
+}
+
+.healthy-inspect-button:hover {
+  background: var(--noct-accent);
+  transform: translateY(-1px);
+}
+
+.healthy-state-card {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  text-align: center;
+  border: 1px solid rgba(16,185,129,0.13);
+  border-radius: 22px;
+  background: rgba(13,31,26,0.72);
+  color: rgba(207,232,220,0.70);
+}
+
+.healthy-state-card svg {
+  color: var(--noct-accent-hover);
+}
+
+.healthy-state-card strong {
+  color: #cfe8dc;
+  font-size: 18px;
+}
+
+.healthy-state-card span {
+  color: rgba(207,232,220,0.52);
+  font-size: 14px;
+}
+
+.healthy-state-card.error {
+  border-color: rgba(255,138,138,0.22);
+  color: #ffb4ab;
+}
+
+.healthy-spin {
+  animation: healthySpin 3.5s linear infinite;
+}
+
+@keyframes healthySpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1180px) {
+  .healthy-main {
+    grid-template-columns: 1fr;
+  }
+
+  .healthy-filter-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 860px) {
+  .healthy-topbar {
+    padding: 0 16px;
+  }
+
+  .healthy-assistant-button {
+    display: none;
+  }
+
+  .healthy-main {
+    padding: 24px 16px;
+  }
+
+  .healthy-recipe-grid {
+    grid-template-columns: 1fr;
+  }
+}
