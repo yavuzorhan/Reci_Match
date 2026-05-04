@@ -13,6 +13,12 @@ from app.repositories import recipe_repository
 from app.schemas.recipe_revision import RecipeRevisionRequest, RevisedRecipePayload
 from app.services import recipe_service
 
+try:
+    import google.generativeai as genai
+    _GEMINI_AVAILABLE = True
+except ImportError:
+    _GEMINI_AVAILABLE = False
+
 
 REVISION_RESPONSE_SCHEMA = {
     "type": "object",
@@ -123,14 +129,18 @@ def _hash_modifications(modifications: dict) -> str:
 
 
 def _revise_with_gemini(recipe_json: dict, modifications: dict) -> dict:
-    try:
-        import google.generativeai as genai
-    except ImportError as exc:
-        raise HTTPException(status_code=503, detail="Gemini paketi yuklu degil.") from exc
+    if not _GEMINI_AVAILABLE:
+        raise HTTPException(
+            status_code=503,
+            detail="Gemini paketi yüklü değil. Lütfen: pip install google-generativeai"
+        )
 
     api_key = (getenv("GEMINI_API_KEY") or "").strip()
     if not api_key:
-        raise HTTPException(status_code=503, detail="GEMINI_API_KEY tanimli degil.")
+        raise HTTPException(
+            status_code=503,
+            detail="GEMINI_API_KEY .env dosyasında tanımlı değil."
+        )
 
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(

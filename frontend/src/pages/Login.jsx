@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles, Stars } from 'lucide-react';
+import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles, Sun, Moon } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { setUser, setProfile } = useApp();
+  const { setUser, setProfile, isDarkMode, toggleDarkMode } = useApp();
   const navigate = useNavigate();
 
   const parseResponse = async (response) => {
@@ -51,15 +52,24 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
+      <button 
+        type="button" 
+        className="auth-theme-toggle" 
+        onClick={toggleDarkMode}
+        aria-label="Temayı Değiştir"
+      >
+        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 
       <div className="register-layout">
         <section className="register-showcase">
-          <div className="showcase-badge">
-            <Stars size={16} />
-            <span>ReciMatch</span>
+          <div className="brand-hero">
+            <img src={reciMatchLogo} alt="ReciMatch Logo" className="hero-logo" />
+            <h2 className="hero-title">ReciMatch</h2>
           </div>
 
           <h1>Tarif akışını kaldığın yerden devam ettir.</h1>
@@ -70,21 +80,21 @@ const Login = () => {
 
           <div className="showcase-grid">
             <div className="showcase-card">
-              <Sparkles size={20} />
+              <Sparkles size={24} />
               <div>
                 <strong>Akıcı deneyim</strong>
                 <span>Seçilen malzemeler, favoriler ve hedeflerin tek hesapta toplanır.</span>
               </div>
             </div>
             <div className="showcase-card">
-              <ShieldCheck size={20} />
+              <ShieldCheck size={24} />
               <div>
                 <strong>Güvenli erişim</strong>
                 <span>Onaylı hesabına hızlı ve güvenli şekilde geri dönersin.</span>
               </div>
             </div>
             <div className="showcase-card">
-              <LockKeyhole size={20} />
+              <LockKeyhole size={24} />
               <div>
                 <strong>Kişisel alan</strong>
                 <span>Tarif geçmişin ve beslenme düzenin sana özel olarak saklanır.</span>
@@ -103,7 +113,7 @@ const Login = () => {
           <form onSubmit={handleLogin} className="register-form">
             {error && <div className="auth-message error">{error}</div>}
 
-            <div>
+            <div className="auth-input-group">
               <label>E-posta</label>
               <input
                 type="email"
@@ -114,7 +124,7 @@ const Login = () => {
               />
             </div>
 
-            <div>
+            <div className="auth-input-group">
               <label>Şifre</label>
               <input
                 type="password"
@@ -127,11 +137,11 @@ const Login = () => {
 
             <button type="submit" className="primary-btn register-submit" disabled={loading}>
               <span>{loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}</span>
-              <ArrowRight size={18} />
+              <ArrowRight size={20} />
             </button>
           </form>
 
-          <p className="register-footer" style={{ marginTop: '1rem' }}>
+          <p className="register-footer" style={{ marginTop: '1.5rem' }}>
             <Link to="/forgot-password">Şifremi Unuttum</Link>
           </p>
 
@@ -140,6 +150,207 @@ const Login = () => {
           </p>
         </section>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* --- BRAND HERO (KEPT AS IS) --- */
+        .brand-hero {
+          display: flex;
+          align-items: center;
+          gap: 1.2rem;
+          margin-bottom: 2rem;
+        }
+        .hero-logo {
+          width: 80px;
+          height: 80px;
+          object-fit: contain;
+          filter: drop-shadow(0 8px 16px rgba(16, 185, 129, 0.2));
+        }
+        .hero-title {
+          font-size: 2.8rem !important;
+          font-weight: 900 !important;
+          font-family: 'Plus Jakarta Sans', sans-serif !important;
+          margin: 0 !important;
+          letter-spacing: -1px;
+        }
+
+        /* --- THEME TOGGLE (KEPT AS IS) --- */
+        .auth-theme-toggle {
+          position: fixed;
+          top: 2rem;
+          right: 2rem;
+          z-index: 100;
+          width: 48px;
+          height: 48px;
+          display: grid;
+          place-items: center;
+          border-radius: 14px;
+          cursor: pointer;
+          backdrop-filter: blur(8px);
+          transition: all 0.2s ease;
+        }
+
+        /* --- AUTH SHELL BASE (KEPT AS IS) --- */
+        .auth-shell {
+          min-height: 100vh;
+          width: 100%;
+          display: grid;
+          place-items: center;
+          padding: 2rem;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          transition: background 0.3s ease;
+        }
+
+        .auth-orb {
+          position: absolute;
+          border-radius: 999px;
+          filter: blur(80px);
+          opacity: 0.4;
+          z-index: 0;
+        }
+        .auth-orb-one { width: 400px; height: 400px; top: -100px; left: -100px; }
+        .auth-orb-two { width: 500px; height: 500px; bottom: -150px; right: -150px; }
+
+        .register-layout {
+          position: relative;
+          z-index: 1;
+          max-width: 1200px;
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
+          gap: 4rem;
+          align-items: center;
+        }
+
+        .register-showcase h1 {
+          font-size: 3.5rem;
+          line-height: 1.1;
+          margin-bottom: 1.5rem;
+          font-weight: 800;
+        }
+        .register-showcase p {
+          font-size: 1.2rem;
+          line-height: 1.6;
+          margin-bottom: 2.5rem;
+        }
+
+        .showcase-grid { display: grid; gap: 1.5rem; }
+        .showcase-card {
+          display: flex;
+          gap: 1.2rem;
+          padding: 1.5rem;
+          border-radius: 20px;
+          transition: transform 0.2s ease;
+        }
+        .showcase-card strong { display: block; font-size: 1.1rem; margin-bottom: 0.3rem; }
+        .showcase-card span { font-size: 0.95rem; line-height: 1.4; }
+
+        .register-panel.card {
+          padding: 3rem !important;
+          border-radius: 32px !important;
+        }
+        .register-panel-head { margin-bottom: 2.5rem; }
+        .panel-kicker { font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 0.5rem; }
+        .register-panel h2 { font-size: 2.2rem; margin-bottom: 0.8rem; font-weight: 800; }
+
+        .auth-input-group { margin-bottom: 1.5rem; }
+        .auth-input-group label { display: block; margin-bottom: 0.6rem; font-weight: 700; font-size: 0.9rem; }
+        .auth-input-group input {
+          width: 100%;
+          padding: 1rem 1.2rem;
+          border-radius: 16px;
+          font-size: 1rem;
+          transition: all 0.2s ease;
+          outline: none;
+        }
+
+        .primary-btn.register-submit {
+          width: 100%;
+          height: 60px;
+          border-radius: 18px;
+          font-size: 1.1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-top: 1rem;
+        }
+
+        .register-footer { text-align: center; font-size: 0.95rem; font-weight: 600; }
+        .register-footer a { text-decoration: none; transition: color 0.2s; }
+
+        /* --- NOCTURNAL DARK THEME - READABILITY FIX --- */
+        .auth-shell[data-theme="dark"] {
+          background-color: #0c0814 !important;
+          background-image:
+            radial-gradient(circle at 10% 20%, rgba(100, 31, 224, 0.12) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 40%) !important;
+          color: #ffffff; /* Global readability */
+        }
+        .auth-shell[data-theme="dark"] .auth-orb-one { background: rgba(100, 31, 224, 0.15); }
+        .auth-shell[data-theme="dark"] .auth-orb-two { background: rgba(16, 185, 129, 0.1); }
+        .auth-shell[data-theme="dark"] .auth-theme-toggle { background: rgba(255,255,255,0.05); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .auth-shell[data-theme="dark"] .hero-title { color: #ffffff !important; }
+        .auth-shell[data-theme="dark"] .register-showcase h1 { color: #ffffff !important; }
+        .auth-shell[data-theme="dark"] .register-showcase p { color: #e2e8f0 !important; }
+        
+        .auth-shell[data-theme="dark"] .showcase-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); }
+        .auth-shell[data-theme="dark"] .showcase-card strong { color: #ffffff !important; }
+        .auth-shell[data-theme="dark"] .showcase-card span { color: #cbd5e1 !important; }
+        .auth-shell[data-theme="dark"] .showcase-card svg { color: #4edea3; }
+        
+        .auth-shell[data-theme="dark"] .register-panel.card {
+          background-color: #122131 !important; 
+          border: 1px solid rgba(255, 255, 255, 0.12) !important;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+        }
+        .auth-shell[data-theme="dark"] .panel-kicker { color: #4edea3 !important; }
+        .auth-shell[data-theme="dark"] .register-panel h2 { color: #ffffff !important; }
+        .auth-shell[data-theme="dark"] .panel-copy { color: #cbd5e1 !important; }
+        .auth-shell[data-theme="dark"] label { color: #f1f5f9 !important; }
+        .auth-shell[data-theme="dark"] input { background: #1a2a3a; border: 1px solid #3c4a42; color: #ffffff; }
+        .auth-shell[data-theme="dark"] input::placeholder { color: rgba(255, 255, 255, 0.35) !important; }
+        .auth-shell[data-theme="dark"] .primary-btn { background: #4edea3; color: #003824; font-weight: 800; }
+        .auth-shell[data-theme="dark"] .register-footer, .auth-shell[data-theme="dark"] .register-footer a { color: #94a3b8 !important; }
+        .auth-shell[data-theme="dark"] .register-footer a:hover { color: #4edea3 !important; }
+
+        /* --- FRESH LIGHT THEME - READABILITY FIX --- */
+        .auth-shell[data-theme="light"] {
+          background-color: #f4fbf4 !important;
+          background-image:
+            radial-gradient(circle at 10% 18%, rgba(111, 251, 190, 0.28) 0%, transparent 38%),
+            radial-gradient(circle at 90% 78%, rgba(109, 245, 225, 0.20) 0%, transparent 40%) !important;
+          color: #002114;
+        }
+        .auth-shell[data-theme="light"] .hero-title { color: #002114 !important; }
+        .auth-shell[data-theme="light"] .register-showcase h1 { color: #002114 !important; }
+        .auth-shell[data-theme="light"] .register-showcase p { color: #374151 !important; }
+        
+        .auth-shell[data-theme="light"] .showcase-card { background: #ffffff; border: 1px solid #bbcabf; }
+        .auth-shell[data-theme="light"] .showcase-card strong { color: #002114 !important; }
+        .auth-shell[data-theme="light"] .showcase-card span { color: #4b5563 !important; }
+        .auth-shell[data-theme="light"] .showcase-card svg { color: #006c49; }
+
+        .auth-shell[data-theme="light"] .register-panel.card {
+          background-color: #ffffff !important;
+          border: 1px solid #bbcabf !important;
+        }
+        .auth-shell[data-theme="light"] .panel-kicker { color: #006c49 !important; }
+        .auth-shell[data-theme="light"] .register-panel h2 { color: #002114 !important; }
+        .auth-shell[data-theme="light"] .panel-copy { color: #4b5563 !important; }
+        .auth-shell[data-theme="light"] label { color: #1f2937 !important; }
+        .auth-shell[data-theme="light"] input { background: #f9fafb; border: 1px solid #bbcabf; color: #111827; }
+        .auth-shell[data-theme="light"] input::placeholder { color: #9ca3af !important; }
+        .auth-shell[data-theme="light"] .primary-btn { background: #006c49; color: #ffffff; font-weight: 800; }
+        .auth-shell[data-theme="light"] .register-footer, .auth-shell[data-theme="light"] .register-footer a { color: #6b7280 !important; }
+        .auth-shell[data-theme="light"] .register-footer a:hover { color: #006c49 !important; }
+
+        @media (max-width: 1024px) {
+          .register-layout { grid-template-columns: 1fr; gap: 3rem; }
+          .register-showcase { text-align: center; }
+          .brand-hero { justify-content: center; }
+        }
+      ` }} />
     </div>
   );
 };

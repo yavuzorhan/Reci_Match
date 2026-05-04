@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { 
@@ -33,18 +33,60 @@ const MealIcon = ({ type, size = 16, className = "" }) => {
   return <Utensils size={size} className={className} />;
 };
 
+const toNumber = (value) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+};
+
+const getLogMultiplier = (log) => {
+  const multiplier = toNumber(log?.servingMultiplier ?? log?.serving_multiplier);
+  return multiplier > 0 ? multiplier : 1;
+};
+
+const getLogMacroValue = (log, recipe, logKey, recipeKey) => {
+  const logValue = log?.[logKey];
+  if (logValue !== null && logValue !== undefined && logValue !== '') {
+    return toNumber(logValue);
+  }
+
+  return toNumber(recipe?.[recipeKey]) * getLogMultiplier(log);
+};
+
+const getLogNutrition = (log, recipe) => ({
+  calories: getLogMacroValue(log, recipe, 'calorieIntake', 'calorie'),
+  protein: getLogMacroValue(log, recipe, 'protein', 'protein'),
+  carb: getLogMacroValue(log, recipe, 'carbohydrate', 'carbohydrate'),
+  fat: getLogMacroValue(log, recipe, 'fat', 'fat'),
+});
+
+const days = [
+  { name: 'Pzt', fullName: 'Pazartesi', index: 1 },
+  { name: 'Sal', fullName: 'Salı', index: 2 },
+  { name: 'Çar', fullName: 'Çarşamba', index: 3 },
+  { name: 'Per', fullName: 'Perşembe', index: 4 },
+  { name: 'Cum', fullName: 'Cuma', index: 5 },
+  { name: 'Cmt', fullName: 'Cumartesi', index: 6 },
+  { name: 'Paz', fullName: 'Pazar', index: 0 },
+];
+
 const WeeklyLogs = () => {
-  const { dailyLogs, removeDailyLog, updateDailyLog, fetchAllRecipes, recipeCache, addDailyLog, profile } = useApp();
+  const { dailyLogs, removeDailyLog, fetchAllRecipes, recipeCache, addDailyLog, profile } = useApp();
+  const activeDayIndex = new Date().getDay();
   const [viewDate, setViewDate] = useState(new Date());
   const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({});
   const [showAddModal, setShowAddModal] = useState(false);
   const [targetDateISO, setTargetDateISO] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [selectedDayIndex, setSelectedDayIndex] = useState(activeDayIndex);
 
-  const calorieTarget = profile?.daily_calorie || 2000;
+  const calorieTarget = toNumber(profile?.daily_calorie) || 2000;
+  const macroTargets = useMemo(() => ({
+    protein: Math.round((calorieTarget * 0.25) / 4),
+    carb: Math.round((calorieTarget * 0.45) / 4),
+    fat: Math.round((calorieTarget * 0.30) / 9),
+  }), [calorieTarget]);
 
   const weekRange = useMemo(() => {
     const start = new Date(viewDate);
@@ -82,19 +124,6 @@ const WeeklyLogs = () => {
 
   const startEdit = (log) => {
     setEditingId(log.id);
-    setEditData({
-      meal_type: log.mealType,
-      serving_count: log.servingCount
-    });
-  };
-
-  const saveEdit = async (id) => {
-    try {
-      await updateDailyLog(id, editData);
-      setEditingId(null);
-    } catch (err) {
-      alert(err.message || 'Güncelleme başarısız.');
-    }
   };
 
   const handleSearch = async () => {
@@ -132,16 +161,6 @@ const WeeklyLogs = () => {
     }
   };
 
-  const days = [
-    { name: 'Pzt', fullName: 'Pazartesi', index: 1 },
-    { name: 'Sal', fullName: 'Salı', index: 2 },
-    { name: 'Çar', fullName: 'Çarşamba', index: 3 },
-    { name: 'Per', fullName: 'Perşembe', index: 4 },
-    { name: 'Cum', fullName: 'Cuma', index: 5 },
-    { name: 'Cmt', fullName: 'Cumartesi', index: 6 },
-    { name: 'Paz', fullName: 'Pazar', index: 0 },
-  ];
-
   const groupedLogs = useMemo(() => {
     const grouped = {};
     (dailyLogs || []).forEach((log) => {
@@ -163,22 +182,24 @@ const WeeklyLogs = () => {
     return grouped;
   }, [dailyLogs, weekRange]);
 
-  const getDayTotals = (dayIndex) => {
+  const getDayTotals = useCallback((dayIndex) => {
     const logs = groupedLogs[dayIndex] || [];
     return logs.reduce((acc, log) => {
       const recipe = recipeCache[log.recipeId];
-      const cal = log.calorieIntake || recipe?.calorie || 0;
-      const pro = log.protein || recipe?.protein || 0;
-      const carb = log.carbohydrate || recipe?.carbohydrate || 0;
-      const fat = log.fat || recipe?.fat || 0;
+      const nutrition = getLogNutrition(log, recipe);
       return {
-        calories: acc.calories + cal,
-        protein: acc.protein + pro,
-        carb: acc.carb + carb,
-        fat: acc.fat + fat
+        calories: acc.calories + nutrition.calories,
+        protein: acc.protein + nutrition.protein,
+        carb: acc.carb + nutrition.carb,
+        fat: acc.fat + nutrition.fat
       };
     }, { calories: 0, protein: 0, carb: 0, fat: 0 });
-  };
+  }, [groupedLogs, recipeCache]);
+
+  const selectedDayTotals = useMemo(
+    () => getDayTotals(selectedDayIndex),
+    [getDayTotals, selectedDayIndex]
+  );
 
   const weekStats = useMemo(() => {
     let total = 0;
@@ -201,10 +222,9 @@ const WeeklyLogs = () => {
       average: daysWithLogs > 0 ? Math.round(total / daysWithLogs) : 0,
       goalPercentage: daysWithLogs > 0 ? Math.round((goalMetCount / daysWithLogs) * 100) : 0
     };
-  }, [groupedLogs, calorieTarget]);
+  }, [getDayTotals, calorieTarget]);
 
   const todayStr = new Date().toISOString().split('T')[0];
-  const activeDayIndex = new Date().getDay();
 
   return (
     <Layout>
@@ -274,7 +294,12 @@ const WeeklyLogs = () => {
               const isEmpty = totals.calories === 0;
 
               return (
-                <div key={day.name} className={`noct-day-pill ${isToday ? 'is-today' : ''} ${isEmpty ? 'is-empty' : ''}`}>
+                <div
+                  key={day.name}
+                  className={`noct-day-pill ${isToday ? 'is-today' : ''} ${isEmpty ? 'is-empty' : ''} ${selectedDayIndex === day.index ? 'is-selected' : ''}`}
+                  onClick={() => setSelectedDayIndex(day.index)}
+                  style={{ cursor: 'pointer' }}
+                >
                   {isToday && <div className="noct-today-indicator"></div>}
                   <div className="noct-day-name">{day.name.toUpperCase()}</div>
                   <div className="noct-day-cal">
@@ -305,14 +330,23 @@ const WeeklyLogs = () => {
         <div className="noct-meals-card glass-panel">
           <div className="noct-meals-header">
             <div className="noct-meals-title-group">
-              <h2 className="noct-card-title">Bugünkü Öğünler</h2>
-              <p className="noct-card-subtitle">{new Date().toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+              <h2 className="noct-card-title">
+                {selectedDayIndex === activeDayIndex ? 'Bugünkü Öğünler' : 'Seçili Günün Öğünleri'}
+              </h2>
+              <p className="noct-card-subtitle">
+                {(() => {
+                  const mondayTime = weekRange.monday.getTime();
+                  const offset = selectedDayIndex === 0 ? 6 : selectedDayIndex - 1;
+                  const selectedDate = new Date(mondayTime + offset * 86400000);
+                  return selectedDate.toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' });
+                })()}
+              </p>
             </div>
 
             <div className="noct-macros-mini">
               {['Protein', 'Karb.', 'Yağ'].map((macro, i) => {
-                const consumed = [getDayTotals(activeDayIndex).protein, getDayTotals(activeDayIndex).carb, getDayTotals(activeDayIndex).fat][i];
-                const target = [120, 220, 70][i]; // Placeholder targets if profile not specific
+                const consumed = [selectedDayTotals.protein, selectedDayTotals.carb, selectedDayTotals.fat][i];
+                const target = [macroTargets.protein, macroTargets.carb, macroTargets.fat][i];
                 const p = Math.min(100, (consumed / target) * 100);
                 const colors = ['#3cddc7', '#4edea3', '#ffb3af'];
                 return (
@@ -330,16 +364,16 @@ const WeeklyLogs = () => {
             </div>
 
             <div className="noct-calories-summary">
-              <div className="noct-cal-main">{Math.round(getDayTotals(activeDayIndex).calories)} <span>/ {Math.round(calorieTarget)} kcal</span></div>
-              <div className="noct-cal-remain">{Math.round(calorieTarget - getDayTotals(activeDayIndex).calories)} kcal kaldı</div>
+              <div className="noct-cal-main">{Math.round(selectedDayTotals.calories)} <span>/ {Math.round(calorieTarget)} kcal</span></div>
+              <div className="noct-cal-remain">{Math.round(calorieTarget - selectedDayTotals.calories)} kcal kaldı</div>
             </div>
           </div>
 
           <div className="noct-meals-list">
-            {(groupedLogs[activeDayIndex] || []).length > 0 ? (
-              groupedLogs[activeDayIndex].map((log) => {
+            {(groupedLogs[selectedDayIndex] || []).length > 0 ? (
+              groupedLogs[selectedDayIndex].map((log) => {
                 const recipe = recipeCache[log.recipeId];
-                const calories = log.calorieIntake || recipe?.calorie || 0;
+                const nutrition = getLogNutrition(log, recipe);
                 const isEditing = editingId === log.id;
 
                 return (
@@ -359,12 +393,12 @@ const WeeklyLogs = () => {
 
                     <div className="noct-meal-right">
                       <div className="noct-meal-macros">
-                        <span title="Protein"><i>P:</i> {Math.round(log.protein || 0)}g</span>
-                        <span title="Karbonhidrat"><i>C:</i> {Math.round(log.carbohydrate || 0)}g</span>
-                        <span title="Yağ"><i>F:</i> {Math.round(log.fat || 0)}g</span>
+                        <span title="Protein"><i>P:</i> {Math.round(nutrition.protein)}g</span>
+                        <span title="Karbonhidrat"><i>C:</i> {Math.round(nutrition.carb)}g</span>
+                        <span title="Yağ"><i>F:</i> {Math.round(nutrition.fat)}g</span>
                       </div>
                       <div className="noct-meal-energy">
-                        {Math.round(calories)} <span>kcal</span>
+                        {Math.round(nutrition.calories)} <span>kcal</span>
                       </div>
                       <div className="noct-meal-actions">
                         <button onClick={() => startEdit(log)} className="noct-action-btn"><Edit2 size={16} /></button>
@@ -626,6 +660,13 @@ const WeeklyLogs = () => {
 
         .noct-day-pill:hover {
           background: rgba(255, 255, 255, 0.06);
+          cursor: pointer;
+        }
+
+        .noct-day-pill.is-selected {
+          background: rgba(68, 226, 205, 0.08);
+          border-color: rgba(68, 226, 205, 0.35);
+          box-shadow: 0 0 0 2px rgba(68, 226, 205, 0.15);
         }
 
         .noct-day-pill.is-today {

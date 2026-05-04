@@ -19,6 +19,7 @@ import {
 import Layout from '../components/Layout';
 import RecipeCard from '../components/RecipeCard';
 import { useApp } from '../context/AppContext';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const clamp = (value, min = 0, max = 100) => Math.min(Math.max(value, min), max);
 const toNumber = (value) => Math.max(0, Number(value) || 0);
@@ -101,6 +102,12 @@ const Dashboard = () => {
   const circleRadius = 48;
   const circleLength = 2 * Math.PI * circleRadius;
   const circleOffset = circleLength - (circleLength * caloriePercent) / 100;
+  const calorieRingColor = (() => {
+    if (caloriePercent >= 100) return '#ef4444';
+    if (caloriePercent >= 90) return '#ff7043';
+    return '#4edea3';
+  })();
+  const isCalorieWarning = consumedCalories < calorieTarget && caloriePercent >= 90;
 
   const macros = useMemo(() => {
     const protein = toNumber(dashboardData.macros?.protein);
@@ -140,7 +147,10 @@ const Dashboard = () => {
     <Layout>
       <div className="noct-dashboard">
         <header className="noct-topbar">
-          <div />
+          <div className="noct-topbar-brand">
+            <img src={reciMatchLogo} alt="Logo" className="topbar-logo" />
+            <span>ReciMatch</span>
+          </div>
           <div className="noct-topbar-actions">
             <button
               type="button"
@@ -259,7 +269,7 @@ const Dashboard = () => {
                   <MoreHorizontal size={20} />
                 </div>
 
-                <div className="noct-ring-wrap">
+                <div className="noct-ring-wrap" style={{ '--calorie-ring-color': calorieRingColor }}>
                   <svg viewBox="0 0 100 100" className="noct-ring">
                     <circle cx="50" cy="50" r={circleRadius} />
                     <circle
@@ -269,12 +279,28 @@ const Dashboard = () => {
                       r={circleRadius}
                       strokeDasharray={circleLength}
                       strokeDashoffset={circleOffset}
+                      style={{ stroke: calorieRingColor, transition: 'stroke 0.4s ease, stroke-dashoffset 0.35s' }}
                     />
                   </svg>
                   <div>
                     <strong>{Math.round(consumedCalories).toLocaleString('tr-TR')}</strong>
                     <span>/ {Math.round(calorieTarget).toLocaleString('tr-TR')} KCAL</span>
                   </div>
+                  {isCalorieWarning && (
+                    <div style={{
+                      marginTop: '10px',
+                      padding: '8px 14px',
+                      borderRadius: '12px',
+                      background: 'rgba(255,112,67,0.10)',
+                      border: '1px solid rgba(255,112,67,0.25)',
+                      color: '#ff7043',
+                      fontSize: '0.78rem',
+                      fontWeight: '800',
+                      textAlign: 'center',
+                    }}>
+                      Hedefe yaklaşıyorsun!
+                    </div>
+                  )}
                 </div>
 
                 <div className="noct-macro-list">
@@ -334,7 +360,8 @@ const Dashboard = () => {
         </main>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .layout-content:has(.noct-dashboard) {
           background-color: #0c0814 !important;
           background-image:
@@ -372,6 +399,22 @@ const Dashboard = () => {
           border-bottom: 1px solid rgba(255,255,255,0.05);
           background: rgba(12, 8, 20, 0.28);
           backdrop-filter: blur(18px);
+        }
+
+        .noct-topbar-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: #d4e4fa;
+          font-weight: 700;
+          font-size: 1.1rem;
+        }
+
+        .topbar-logo {
+          width: 34px;
+          height: 34px;
+          object-fit: contain;
+          filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.4));
         }
 
         .noct-topbar-actions {
@@ -938,9 +981,9 @@ const Dashboard = () => {
         }
 
         .noct-ring .ring-progress {
-          stroke: #4edea3;
+          stroke: var(--calorie-ring-color, #4edea3);
           stroke-linecap: round;
-          transition: stroke-dashoffset 0.35s;
+          transition: stroke 0.4s ease, stroke-dashoffset 0.35s;
         }
 
         .noct-ring-wrap div {
@@ -1130,6 +1173,227 @@ const Dashboard = () => {
           color: #ffb4ab !important;
           background: transparent;
           border-color: rgba(255,255,255,0.05);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content {
+          background-color: #f4fbf4 !important;
+          background-image:
+            radial-gradient(circle at 10% 18%, rgba(111, 251, 190, 0.28) 0%, transparent 38%),
+            radial-gradient(circle at 90% 78%, rgba(109, 245, 225, 0.20) 0%, transparent 40%),
+            linear-gradient(180deg, #f4fbf4 0%, #eef6ee 100%) !important;
+          color: #161d19;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-dashboard,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero h1,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-section-head h2,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-panel-head h2,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-ring-wrap strong,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row strong,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row b {
+          color: #161d19;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .glass-panel {
+          background: rgba(255, 255, 255, 0.72);
+          border: 1px solid rgba(187, 202, 191, 0.55);
+          box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08);
+          backdrop-filter: blur(18px);
+          -webkit-backdrop-filter: blur(18px);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-topbar {
+          border-bottom: 1px solid rgba(187, 202, 191, 0.55);
+          background: rgba(255, 255, 255, 0.70);
+          box-shadow: 0 8px 24px rgba(0, 108, 73, 0.05);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-icon-button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-assistant-button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-profile-button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero p,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight p,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-match-state,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-section-head button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-panel-head button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-macro-list > div > div,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-ring-wrap span,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row small,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-empty-log {
+          color: #3c4a42;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-icon-button:hover,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-assistant-button:hover,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-profile-button:hover {
+          color: #006c49;
+          background: rgba(16, 185, 129, 0.10);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-separator {
+          background: rgba(187, 202, 191, 0.70);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-assistant-button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-profile-button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row {
+          border-color: rgba(187, 202, 191, 0.60);
+          background: rgba(238, 246, 238, 0.72);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-assistant-button svg,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-section-head h2 svg,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-empty-log svg,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row > span {
+          color: #006c49;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-avatar,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-log-row > span {
+          border-color: rgba(16, 185, 129, 0.24);
+          background: linear-gradient(135deg, #e8f0e9, rgba(111, 251, 190, 0.38));
+          color: #006c49;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-live-badge {
+          background: rgba(16, 185, 129, 0.12);
+          border-color: rgba(16, 185, 129, 0.24);
+          color: #006c49;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-live-badge span {
+          background: #10b981;
+          box-shadow: 0 0 14px rgba(16, 185, 129, 0.36);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero::after {
+          background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent, rgba(109, 245, 225, 0.10));
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .hero-glow {
+          background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box {
+          box-shadow: inset 0 2px 12px rgba(0, 108, 73, 0.06);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box > svg,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-meter small,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-panel-head > svg {
+          color: #6c7a71;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box span {
+          color: #3c4a42;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-match-state button,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-dot {
+          background: #10b981;
+          color: #ffffff;
+          box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight {
+          border-color: rgba(187, 202, 191, 0.60);
+          background: rgba(238, 246, 238, 0.74);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-insight span {
+          color: #006c49;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .insight-meter i {
+          background: linear-gradient(90deg, #10b981 66%, #dde4dd 66%);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-ring circle {
+          stroke: #dde4dd;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-macro-list i {
+          background: #dde4dd;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-empty-log {
+          border-color: rgba(187, 202, 191, 0.75);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-empty-log strong {
+          color: #161d19;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-glass {
+          background: rgba(255, 255, 255, 0.74);
+          border-color: rgba(187, 202, 191, 0.55);
+          box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card h3,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-title {
+          color: #161d19;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-meta,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-tag {
+          color: #3c4a42;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .sidebar {
+          background: rgba(255, 255, 255, 0.74) !important;
+          border-right: 1px solid rgba(187, 202, 191, 0.55) !important;
+          box-shadow: 0 12px 34px rgba(0, 108, 73, 0.08) !important;
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .brand-wordmark-reci,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .brand-wordmark-match {
+          color: #006c49 !important;
+          text-shadow: none !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .brand-wordmark p {
+          color: #6c7a71 !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .brand-wordmark p span,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .brand-wordmark p span:last-child {
+          background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.38));
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .nav-active-pill {
+          background: rgba(16, 185, 129, 0.14) !important;
+          box-shadow: inset 2px 0 0 #10b981 !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .nav-item,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .sidebar-action-button {
+          color: #3c4a42 !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .nav-item:hover,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .sidebar-action-button:hover {
+          color: #006c49 !important;
+          background: rgba(16, 185, 129, 0.10) !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .nav-item.active,
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .nav-item.active .nav-icon {
+          color: #006c49 !important;
+          filter: none;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .sidebar-actions {
+          border-top-color: rgba(187, 202, 191, 0.55) !important;
+        }
+
+        .layout-shell[data-theme="light"]:has(.noct-dashboard) .logout-button {
+          color: #ba1a1a !important;
+          border-color: rgba(186, 26, 26, 0.14) !important;
         }
 
         @media (max-width: 1280px) {

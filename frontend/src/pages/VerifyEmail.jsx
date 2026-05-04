@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowRight, MailCheck, ShieldCheck, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -60,7 +61,7 @@ const VerifyEmail = () => {
       <div className="register-layout">
         <section className="register-showcase">
           <div className="showcase-badge">
-            <Sparkles size={16} />
+            <img src={reciMatchLogo} alt="" className="badge-icon" />
             <span>ReciMatch</span>
           </div>
 

@@ -202,10 +202,20 @@ export const AppProvider = ({ children }) => {
   const toggleFavorite = useCallback(async (recipeId) => {
     if (!user?.id) return;
     const isFavorite = favorites.includes(recipeId);
-    await fetchJson(`${API_BASE}/api/users/${user.id}/favorites/${recipeId}`, {
-      method: isFavorite ? 'DELETE' : 'POST',
-    });
-    setFavorites(prev => isFavorite ? prev.filter(id => id !== recipeId) : [...prev, recipeId]);
+    if (isFavorite) {
+      await fetchJson(`${API_BASE}/api/users/${user.id}/favorites/${recipeId}`, {
+        method: 'DELETE',
+      });
+    } else {
+      await fetchJson(`${API_BASE}/api/users/${user.id}/favorites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipe_id: recipeId }),
+      });
+    }
+    setFavorites(prev =>
+      isFavorite ? prev.filter(id => id !== recipeId) : [...prev, recipeId]
+    );
   }, [favorites, fetchJson, user]);
 
   const addDailyLog = useCallback(async ({ recipeId, mealType = 'Akşam Yemeği', servingCount = 1, servingMultiplier = 1, logDate = null, entrySource = 'daily' }) => {

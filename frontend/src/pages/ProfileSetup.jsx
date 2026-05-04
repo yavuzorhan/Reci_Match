@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Activity, ArrowLeft, ArrowRight, Target, UserRound, Utensils } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const ProfileSetup = () => {
   const [formData, setFormData] = useState({
@@ -78,7 +79,7 @@ const ProfileSetup = () => {
       <div className="register-layout">
         <section className="register-showcase">
           <div className="showcase-badge">
-            <UserRound size={16} />
+            <img src={reciMatchLogo} alt="" className="badge-icon" />
             <span>ReciMatch Profili</span>
           </div>
 

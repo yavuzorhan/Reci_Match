@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, ChefHat, ShieldCheck, Sparkles } from 'lucide-react';
 import { API_BASE } from '../config';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirm: '' });
@@ -62,7 +63,7 @@ const Register = () => {
       <div className="register-layout">
         <section className="register-showcase">
           <div className="showcase-badge">
-            <Sparkles size={16} />
+            <img src={reciMatchLogo} alt="" className="badge-icon" />
             <span>ReciMatch</span>
           </div>
 

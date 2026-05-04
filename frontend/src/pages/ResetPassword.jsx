@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, KeyRound, ShieldCheck, Sparkles } from 'lucide-react';
 import { API_BASE } from '../config';
+import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -50,7 +51,7 @@ const ResetPassword = () => {
       <div className="register-layout">
         <section className="register-showcase">
           <div className="showcase-badge">
-            <Sparkles size={16} />
+            <img src={reciMatchLogo} alt="" className="badge-icon" />
             <span>ReciMatch</span>
           </div>
 
