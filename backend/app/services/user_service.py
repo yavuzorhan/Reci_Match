@@ -235,7 +235,7 @@ def add_daily_log(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Bugün için tüm öğün kayıtları dolu.")
+        raise HTTPException(status_code=400, detail="Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.")
 
     db.refresh(log)
 
@@ -373,7 +373,7 @@ def _normalize_meal_type(meal_type: str | None) -> str:
 
 
 def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, db: Session) -> str:
-    meal_order = ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği"]
+    meal_order = ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün"]
     used_meal_types = user_repository.find_daily_log_meal_types(db, user_id, log_date)
 
     if requested_meal_type not in used_meal_types:
@@ -383,7 +383,12 @@ def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, d
         if meal_name not in used_meal_types:
             return meal_name
 
-    raise HTTPException(status_code=400, detail="Bugün için tüm öğün kayıtları dolu.")
+    counter = 2
+    while True:
+        candidate = f"Ek Öğün {counter}"
+        if candidate not in used_meal_types:
+            return candidate
+        counter += 1
 
 
 def _local_now() -> datetime:

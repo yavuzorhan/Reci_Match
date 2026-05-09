@@ -230,7 +230,7 @@ const RecipeDetailPage = () => {
     if (!recipe) return;
     const recipeId = Number(recipe.id || recipe.recipe_id || id);
     if (!Number.isFinite(recipeId) || recipeId <= 0) {
-      alert('Tarif kimliği bulunamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+      alert('Tarif kimliği bulunamadı. Sayfayı yenileyip tekrar deneyin.');
       return;
     }
     try {
