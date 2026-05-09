@@ -406,3 +406,122 @@
   border: 1px solid rgba(16,185,129,0.18) !important;
   color: #1f332d !important;
 }
+
+/* ===================================================
+   FAVORİLER — KAPSAMLI AÇIK TEMA
+   =================================================== */
+
+/* Layout arka plan */
+.layout-shell[data-theme="light"] .layout-content:has(.fav-wrapper),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.fav-wrapper) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Başlık + açıklama */
+.layout-shell[data-theme="light"] .fav-title,
+.layout-shell:not([data-theme="dark"]) .fav-title {
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .fav-desc,
+.layout-shell:not([data-theme="dark"]) .fav-desc {
+  color: #4b6358 !important;
+}
+.layout-shell[data-theme="light"] .fav-count,
+.layout-shell:not([data-theme="dark"]) .fav-count {
+  background: rgba(16,185,129,0.10) !important;
+  border-color: rgba(16,185,129,0.20) !important;
+  color: #0f766e !important;
+}
+
+/* Arama + filtre kartı */
+.layout-shell[data-theme="light"] .fav-search-card,
+.layout-shell:not([data-theme="dark"]) .fav-search-card {
+  background: rgba(255,255,255,0.85) !important;
+  border: 1px solid rgba(16,185,129,0.18) !important;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.06) !important;
+  backdrop-filter: none !important;
+}
+.layout-shell[data-theme="light"] .fav-search-input,
+.layout-shell:not([data-theme="dark"]) .fav-search-input {
+  background: rgba(255,255,255,0.90) !important;
+  border-color: rgba(16,185,129,0.22) !important;
+  color: #1f332d !important;
+  box-shadow: none !important;
+}
+.layout-shell[data-theme="light"] .fav-search-input::placeholder,
+.layout-shell:not([data-theme="dark"]) .fav-search-input::placeholder {
+  color: #8a9e94 !important;
+}
+.layout-shell[data-theme="light"] .fav-search-icon,
+.layout-shell:not([data-theme="dark"]) .fav-search-icon {
+  color: #4b6358 !important;
+}
+
+/* Filtre butonları */
+.layout-shell[data-theme="light"] .fav-filter-btn,
+.layout-shell:not([data-theme="dark"]) .fav-filter-btn {
+  background: rgba(255,255,255,0.82) !important;
+  border-color: rgba(16,185,129,0.20) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .fav-filter-btn.active,
+.layout-shell:not([data-theme="dark"]) .fav-filter-btn.active {
+  background: linear-gradient(135deg,#10b981,#0f766e) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Tarif kartları */
+.layout-shell[data-theme="light"] .fav-card,
+.layout-shell:not([data-theme="dark"]) .fav-card {
+  background: rgba(255,255,255,0.92) !important;
+  border: 1px solid rgba(16,185,129,0.15) !important;
+  box-shadow: 0 8px 24px rgba(16,185,129,0.08) !important;
+  backdrop-filter: none !important;
+}
+.layout-shell[data-theme="light"] .fav-card:hover,
+.layout-shell:not([data-theme="dark"]) .fav-card:hover {
+  border-color: rgba(16,185,129,0.35) !important;
+}
+.layout-shell[data-theme="light"] .fav-card-title,
+.layout-shell:not([data-theme="dark"]) .fav-card-title {
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .fav-card-desc,
+.layout-shell:not([data-theme="dark"]) .fav-card-desc {
+  color: #4b6358 !important;
+}
+
+/* Metrik kutucukları */
+.layout-shell[data-theme="light"] .fav-metric,
+.layout-shell:not([data-theme="dark"]) .fav-metric {
+  background: rgba(16,185,129,0.07) !important;
+  border-color: rgba(16,185,129,0.14) !important;
+}
+.layout-shell[data-theme="light"] .fav-metric-val,
+.layout-shell:not([data-theme="dark"]) .fav-metric-val {
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .fav-metric-val-quality,
+.layout-shell:not([data-theme="dark"]) .fav-metric-val-quality {
+  color: #0f766e !important;
+}
+.layout-shell[data-theme="light"] .fav-metric-lbl,
+.layout-shell:not([data-theme="dark"]) .fav-metric-lbl {
+  color: #4b6358 !important;
+}
+
+/* Badge + butonlar */
+.layout-shell[data-theme="light"] .fav-badge-type,
+.layout-shell:not([data-theme="dark"]) .fav-badge-type {
+  background: rgba(255,255,255,0.88) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .fav-btn-remove,
+.layout-shell:not([data-theme="dark"]) .fav-btn-remove {
+  border-color: rgba(16,185,129,0.18) !important;
+  color: #4b6358 !important;
+}
