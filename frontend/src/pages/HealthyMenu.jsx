@@ -94,15 +94,6 @@ const normalizeRecipe = (recipe) => ({
   timeValue: toNumber(recipe.preparation_time || recipe.cooking_time || recipe.total_time_minutes || 0),
 });
 
-const TopBar = () => (
-  <header className="healthy-topbar">
-    <div className="healthy-topbar-title">
-      <span><Leaf size={20} /></span>
-      <strong>Sağlıklı Tarifler</strong>
-    </div>
-  </header>
-);
-
 const FilterPanel = ({ searchTerm, onSearchChange, activeFilters, onToggleFilter, selectedIngredients }) => (
   <aside className="healthy-filter-panel">
     <div className="healthy-panel-heading">
@@ -372,8 +363,6 @@ const HealthyMenu = () => {
   return (
     <Layout variant="healthy">
       <div className="healthy-page">
-        <TopBar />
-
         <main className="healthy-main">
           <FilterPanel
             searchTerm={searchTerm}
