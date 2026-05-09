@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './HealthyMenu.css';
 import { useNavigate } from 'react-router-dom';
 import {
-  Bell,
-  Bot,
   Clock3,
   Flame,
   Heart,
@@ -96,26 +94,11 @@ const normalizeRecipe = (recipe) => ({
   timeValue: toNumber(recipe.preparation_time || recipe.cooking_time || recipe.total_time_minutes || 0),
 });
 
-const TopBar = ({ userName }) => (
+const TopBar = () => (
   <header className="healthy-topbar">
     <div className="healthy-topbar-title">
-      <span>
-        <Leaf size={20} />
-      </span>
+      <span><Leaf size={20} /></span>
       <strong>Sağlıklı Tarifler</strong>
-    </div>
-
-    <div className="healthy-topbar-actions">
-      <button type="button" className="healthy-assistant-button">
-        <Bot size={18} />
-        AI Assistant
-      </button>
-      <button type="button" className="healthy-icon-button" aria-label="Bildirimler">
-        <Bell size={18} />
-      </button>
-      <button type="button" className="healthy-avatar" aria-label="Profil">
-        {(userName?.[0] || 'R').toLocaleUpperCase('tr-TR')}
-      </button>
     </div>
   </header>
 );
@@ -204,8 +187,24 @@ const RecipeCard = ({ recipe, isFavorite, onFavorite, onInspect }) => (
 
       <div className="healthy-card-meta">
         <span><Clock3 size={15} /> {recipe.time}</span>
-        <span><Flame size={15} /> {recipe.calories}</span>
-        <span><Zap size={15} /> {recipe.protein}</span>
+      </div>
+      <div className="healthy-card-nutrition">
+        <div className="healthy-nutrition-item">
+          <Flame size={14} />
+          <span>{recipe.calories}</span>
+          <small>kcal</small>
+        </div>
+        <div className="healthy-nutrition-item">
+          <Zap size={14} />
+          <span>{recipe.protein}</span>
+          <small>protein</small>
+        </div>
+        {recipe.carbValue > 0 && (
+          <div className="healthy-nutrition-item">
+            <span>{Math.round(recipe.carbValue)}g</span>
+            <small>karb</small>
+          </div>
+        )}
       </div>
 
       <div className="healthy-card-tags">
@@ -373,7 +372,7 @@ const HealthyMenu = () => {
   return (
     <Layout variant="healthy">
       <div className="healthy-page">
-        <TopBar userName={user?.name} />
+        <TopBar />
 
         <main className="healthy-main">
           <FilterPanel

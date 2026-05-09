@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, ChefHat, ShieldCheck, Sparkles } from 'lucide-react';
 import { API_BASE } from '../config';
+import { useApp } from '../context/AppContext';
 import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const Register = () => {
+  const { isDarkMode } = useApp();
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirm: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,7 +58,7 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-shell register-shell">
+    <div className="auth-shell register-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 

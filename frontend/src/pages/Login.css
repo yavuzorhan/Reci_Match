@@ -196,3 +196,15 @@
   .register-showcase { text-align: center; }
   .brand-hero { justify-content: center; }
 }
+
+/* FIX-01: Dark mod kayıt butonu */
+.auth-shell[data-theme="dark"] .primary-btn.register-submit {
+  background: linear-gradient(135deg, #4edea3, #10b981) !important;
+  color: #001a12 !important;
+  font-weight: 900 !important;
+  border: 1px solid rgba(78, 222, 163, 0.5) !important;
+  box-shadow: 0 14px 32px rgba(78, 222, 163, 0.28) !important;
+}
+.auth-shell[data-theme="dark"] .primary-btn.register-submit:hover {
+  background: linear-gradient(135deg, #6ffbbe, #4edea3) !important;
+}

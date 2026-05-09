@@ -240,3 +240,18 @@
   .profile-security-row { flex-direction: column; align-items: flex-start; }
   .profile-security-row button { width: 100%; }
 }
+
+/* FIX-08: danger-title arka plan */
+.profile-card-title.danger-title {
+  background: transparent !important;
+  padding: 0 !important;
+}
+.layout-shell[data-theme="light"] .profile-card-title.danger-title h3,
+.layout-shell:not([data-theme="dark"]) .profile-card-title.danger-title h3,
+.layout-shell[data-theme="light"] .profile-card-title.danger-title svg,
+.layout-shell:not([data-theme="dark"]) .profile-card-title.danger-title svg,
+.layout-shell[data-theme="light"] .profile-card-title.danger-title,
+.layout-shell:not([data-theme="dark"]) .profile-card-title.danger-title {
+  color: #ba1a1a !important;
+  background: transparent !important;
+}

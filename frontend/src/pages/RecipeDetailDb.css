@@ -787,3 +787,41 @@
     padding: 20px;
   }
 }
+
+/* FIX-16: Tarif kart besin değerleri okunabilirlik */
+.layout-shell[data-theme="light"] .recipe-detail-page,
+.layout-shell:not([data-theme="dark"]) .recipe-detail-page {
+  background: var(--bg-gradient) !important;
+  color: var(--text-primary) !important;
+}
+.layout-shell[data-theme="light"] .recipe-macro-grid,
+.layout-shell:not([data-theme="dark"]) .recipe-macro-grid {
+  background: rgba(255,255,255,0.88) !important;
+  border: 1px solid rgba(16,185,129,0.15) !important;
+}
+.layout-shell[data-theme="light"] .recipe-macro-item,
+.layout-shell[data-theme="light"] .recipe-macro-item strong,
+.layout-shell:not([data-theme="dark"]) .recipe-macro-item,
+.layout-shell:not([data-theme="dark"]) .recipe-macro-item strong { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .recipe-macro-item small,
+.layout-shell:not([data-theme="dark"]) .recipe-macro-item small { color: #4b6358 !important; }
+.layout-shell[data-theme="light"] .recipe-quality-card,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-card {
+  background: rgba(255,255,255,0.88) !important;
+  border: 1px solid rgba(16,185,129,0.15) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .recipe-quality-head h2,
+.layout-shell[data-theme="light"] .recipe-quality-card > strong,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-head h2,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-card > strong { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .recipe-quality-head span,
+.layout-shell[data-theme="light"] .recipe-quality-card > small,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-head span,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-card > small { color: #4b6358 !important; }
+.layout-shell[data-theme="light"] .recipe-panel,
+.layout-shell:not([data-theme="dark"]) .recipe-panel {
+  background: rgba(255,255,255,0.88) !important;
+  border: 1px solid rgba(16,185,129,0.15) !important;
+  color: #1f332d !important;
+}

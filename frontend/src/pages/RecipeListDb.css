@@ -474,3 +474,31 @@
     overflow-x: auto;
   }
 }
+
+/* FIX-07: Açık tema desteği */
+.layout-shell[data-theme="light"] .layout-content:has(.recipes-noct),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.recipes-noct) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+  color: var(--text-primary) !important;
+}
+.layout-shell[data-theme="light"] .recipes-title-row h1,
+.layout-shell:not([data-theme="dark"]) .recipes-title-row h1 { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .recipes-title-row span,
+.layout-shell:not([data-theme="dark"]) .recipes-title-row span {
+  background: rgba(16,185,129,0.1) !important;
+  border-color: rgba(16,185,129,0.2) !important;
+  color: #0f766e !important;
+}
+.layout-shell[data-theme="light"] .recipes-header p,
+.layout-shell:not([data-theme="dark"]) .recipes-header p { color: #4b6358 !important; }
+.layout-shell[data-theme="light"] .recipe-card,
+.layout-shell:not([data-theme="dark"]) .recipe-card {
+  background: rgba(255,255,255,0.92) !important;
+  border-color: rgba(16,185,129,0.15) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .recipe-card-meta,
+.layout-shell[data-theme="light"] .recipe-card-meta span,
+.layout-shell:not([data-theme="dark"]) .recipe-card-meta,
+.layout-shell:not([data-theme="dark"]) .recipe-card-meta span { color: #4b6358 !important; }

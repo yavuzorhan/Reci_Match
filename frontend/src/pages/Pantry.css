@@ -529,3 +529,55 @@
     padding: 24px;
   }
 }
+
+/* FIX-06: Açık tema desteği */
+.layout-shell[data-theme="light"] .pantry-noct,
+.layout-shell:not([data-theme="dark"]) .pantry-noct {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e8f5ed 52%, #ddf0e5 100%);
+  color: var(--text-primary);
+}
+.layout-shell[data-theme="light"] .pantry-glass,
+.layout-shell:not([data-theme="dark"]) .pantry-glass {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+  color: var(--text-primary);
+}
+.layout-shell[data-theme="light"] .pantry-noct-header span,
+.layout-shell:not([data-theme="dark"]) .pantry-noct-header span,
+.layout-shell[data-theme="light"] .pantry-noct-header h1,
+.layout-shell:not([data-theme="dark"]) .pantry-noct-header h1 {
+  color: #1f332d !important;
+  text-shadow: none;
+}
+.layout-shell[data-theme="light"] .pantry-best-match,
+.layout-shell:not([data-theme="dark"]) .pantry-best-match {
+  background: rgba(16, 185, 129, 0.07) !important;
+  border: 1px solid rgba(16, 185, 129, 0.18) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .pantry-best-match > span,
+.layout-shell:not([data-theme="dark"]) .pantry-best-match > span {
+  color: #0f766e !important;
+}
+.layout-shell[data-theme="light"] .pantry-best-match p,
+.layout-shell:not([data-theme="dark"]) .pantry-best-match p,
+.layout-shell[data-theme="light"] .pantry-noct-header p,
+.layout-shell:not([data-theme="dark"]) .pantry-noct-header p {
+  color: #4b6358 !important;
+}
+.layout-shell[data-theme="light"] .pantry-ai-tip,
+.layout-shell:not([data-theme="dark"]) .pantry-ai-tip {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .pantry-ai-tip h3,
+.layout-shell[data-theme="light"] .pantry-ai-tip p,
+.layout-shell:not([data-theme="dark"]) .pantry-ai-tip h3,
+.layout-shell:not([data-theme="dark"]) .pantry-ai-tip p { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .pantry-ai-tip svg,
+.layout-shell:not([data-theme="dark"]) .pantry-ai-tip svg { color: #0f766e !important; }
+.layout-shell[data-theme="light"] .pantry-preview-title h2,
+.layout-shell:not([data-theme="dark"]) .pantry-preview-title h2,
+.layout-shell[data-theme="light"] .pantry-panel-head h3,
+.layout-shell:not([data-theme="dark"]) .pantry-panel-head h3 { color: #1f332d !important; }

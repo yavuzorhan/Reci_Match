@@ -89,10 +89,10 @@ class YemekComScraper:
         )
         protein, fat, carbohydrate = self._parse_nutritional_value(content.get("NutritionalValue"))
 
-        total_calorie = round(per_serving_calorie * servings, 2) if per_serving_calorie is not None and servings else None
-        total_protein = round(protein * servings, 2) if protein is not None and servings else None
-        total_fat = round(fat * servings, 2) if fat is not None and servings else None
-        total_carbohydrate = round(carbohydrate * servings, 2) if carbohydrate is not None and servings else None
+        per_serving_calorie_normalized = round(per_serving_calorie, 2) if per_serving_calorie is not None else None
+        per_serving_protein = round(protein, 2) if protein is not None else None
+        per_serving_fat = round(fat, 2) if fat is not None else None
+        per_serving_carbohydrate = round(carbohydrate, 2) if carbohydrate is not None else None
 
         prep_time = self._parse_int(content.get("PrepTime"))
         cook_time = self._parse_int(content.get("CookTime"))
@@ -123,10 +123,10 @@ class YemekComScraper:
             "cooking_method": cooking_method,
             "total_time_minutes": total_time,
             "serving": servings,
-            "calorie": total_calorie,
-            "protein": total_protein,
-            "carbohydrate": total_carbohydrate,
-            "fat": total_fat,
+            "calorie": per_serving_calorie_normalized,
+            "protein": per_serving_protein,
+            "carbohydrate": per_serving_carbohydrate,
+            "fat": per_serving_fat,
             "ingredients": ingredients,
             "instructions": instructions,
             "image_url": image_url,

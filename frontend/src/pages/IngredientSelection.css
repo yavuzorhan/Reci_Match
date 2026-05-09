@@ -443,3 +443,51 @@
     font-size: 16px;
   }
 }
+
+/* FIX-09: Açık tema şeffaflık */
+.layout-shell[data-theme="light"] .layout-content:has(.noct-selection-container),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.noct-selection-container) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+}
+.layout-shell[data-theme="light"] .noct-chip-tray,
+.layout-shell:not([data-theme="dark"]) .noct-chip-tray {
+  background: rgba(255,255,255,0.78) !important;
+  border: 1px solid rgba(16,185,129,0.2) !important;
+  border-radius: var(--radius-lg);
+  padding: 12px;
+}
+.layout-shell[data-theme="light"] .noct-chip,
+.layout-shell:not([data-theme="dark"]) .noct-chip {
+  background: rgba(16,185,129,0.1) !important;
+  border-color: rgba(16,185,129,0.3) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .noct-ingredient-card,
+.layout-shell:not([data-theme="dark"]) .noct-ingredient-card {
+  background: rgba(255,255,255,0.85) !important;
+  border: 1px solid rgba(16,185,129,0.18) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .noct-ingredient-card.selected,
+.layout-shell:not([data-theme="dark"]) .noct-ingredient-card.selected {
+  background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(255,255,255,0.85)) !important;
+  border-color: rgba(16,185,129,0.5) !important;
+}
+.layout-shell[data-theme="light"] .noct-ingredient-card span,
+.layout-shell:not([data-theme="dark"]) .noct-ingredient-card span { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .noct-category-btn,
+.layout-shell:not([data-theme="dark"]) .noct-category-btn {
+  background: rgba(255,255,255,0.78) !important;
+  border-color: rgba(16,185,129,0.2) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .noct-category-btn.active,
+.layout-shell:not([data-theme="dark"]) .noct-category-btn.active {
+  background: linear-gradient(135deg,#10b981,#0f766e) !important;
+  color: white !important;
+}
+.layout-shell[data-theme="light"] .noct-title,
+.layout-shell:not([data-theme="dark"]) .noct-title { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .noct-subtitle,
+.layout-shell:not([data-theme="dark"]) .noct-subtitle { color: #4b6358 !important; }

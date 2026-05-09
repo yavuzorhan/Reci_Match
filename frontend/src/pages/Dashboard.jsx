@@ -17,8 +17,6 @@ import {
 import Layout from '../components/Layout';
 import RecipeCard from '../components/RecipeCard';
 import { useApp } from '../context/AppContext';
-import reciMatchLogo from '../assets/recimatch-logo.png';
-
 const clamp = (value, min = 0, max = 100) => Math.min(Math.max(value, min), max);
 const toNumber = (value) => Math.max(0, Number(value) || 0);
 
@@ -140,13 +138,6 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="noct-dashboard">
-        <header className="noct-topbar">
-          <div className="noct-topbar-brand">
-            <img src={reciMatchLogo} alt="Logo" className="topbar-logo" />
-            <span>ReciMatch</span>
-          </div>
-        </header>
-
         <main className="noct-main">
           <div className="noct-content-grid">
             <div className="noct-left-column">

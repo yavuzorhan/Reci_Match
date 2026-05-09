@@ -247,3 +247,37 @@
   .noct-title { font-size: 32px; }
   .noct-subtitle { font-size: 16px; }
 }
+
+/* FIX-10: Açık tema filtre paneli */
+.layout-shell[data-theme="light"] .layout-content:has(.noct-rec-container),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.noct-rec-container) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+}
+.layout-shell[data-theme="light"] .noct-filters-row.glass-panel,
+.layout-shell:not([data-theme="dark"]) .noct-filters-row.glass-panel {
+  background: rgba(255,255,255,0.85) !important;
+  border: 1px solid rgba(16,185,129,0.2) !important;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.06) !important;
+}
+.layout-shell[data-theme="light"] .noct-filter-label,
+.layout-shell:not([data-theme="dark"]) .noct-filter-label { color: #4b6358 !important; }
+.layout-shell[data-theme="light"] .noct-filter-pill,
+.layout-shell:not([data-theme="dark"]) .noct-filter-pill {
+  background: rgba(16,185,129,0.07) !important;
+  border: 1px solid rgba(16,185,129,0.18) !important;
+  color: #1f332d !important;
+}
+.layout-shell[data-theme="light"] .noct-filter-pill.active,
+.layout-shell:not([data-theme="dark"]) .noct-filter-pill.active {
+  background: linear-gradient(135deg,#10b981,#0f766e) !important;
+  color: white !important;
+}
+.layout-shell[data-theme="light"] .noct-title,
+.layout-shell:not([data-theme="dark"]) .noct-title { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .noct-badge,
+.layout-shell:not([data-theme="dark"]) .noct-badge {
+  background: rgba(16,185,129,0.1) !important;
+  border-color: rgba(16,185,129,0.25) !important;
+  color: #0f766e !important;
+}

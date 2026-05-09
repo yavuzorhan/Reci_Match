@@ -5,8 +5,6 @@ import {
   Activity,
   AlertCircle,
   ArrowLeft,
-  Bell,
-  Bot,
   Check,
   CheckCircle2,
   ChefHat,
@@ -230,7 +228,11 @@ const RecipeDetailPage = () => {
 
   const markAsDone = async () => {
     if (!recipe) return;
-    const recipeId = recipe.id || recipe.recipe_id || Number(id);
+    const recipeId = Number(recipe.id || recipe.recipe_id || id);
+    if (!Number.isFinite(recipeId) || recipeId <= 0) {
+      alert('Tarif kimliği bulunamadı. Lütfen sayfayı yenileyip tekrar deneyin.');
+      return;
+    }
     try {
       setActionLoading(true);
       await addDailyLog({
@@ -242,7 +244,7 @@ const RecipeDetailPage = () => {
       });
       alert(`Afiyet olsun! ${currentServing} porsiyon kayıt eklendi.`);
     } catch (err) {
-      alert(err.message || 'Günlük kayıt eklenemedi.');
+      alert(err?.message || 'Günlük kayıt eklenemedi. Lütfen tekrar deneyin.');
     } finally {
       setActionLoading(false);
     }
@@ -282,19 +284,9 @@ const RecipeDetailPage = () => {
             Tariflere Dön
           </button>
 
-          <div className="recipe-topbar-actions">
-            <button type="button" className="recipe-icon-button" aria-label="Bildirimler">
-              <Bell size={18} />
-            </button>
-            <span className="recipe-divider" />
-            <button type="button" className="recipe-assistant-button">
-              <Bot size={18} />
-              AI Assistant
-            </button>
-            <button type="button" className="recipe-avatar" onClick={() => navigate('/profile-edit')}>
+          <button type="button" className="recipe-avatar" onClick={() => navigate('/profile-edit')}>
               {(user?.name?.[0] || 'R').toLocaleUpperCase('tr-TR')}
             </button>
-          </div>
         </header>
 
         <main className="recipe-detail-main">

@@ -34,7 +34,7 @@ def send_email(subject: str, recipient: str, body: str):
 
     try:
         msg = MIMEMultipart()
-        msg['From'] = f"Akıllı Tarif Sistemi <{settings.FROM_EMAIL}>"
+        msg['From'] = f"ReciMatch <{settings.FROM_EMAIL}>"
         msg['To'] = recipient
         msg['Subject'] = subject
 
@@ -52,14 +52,14 @@ def send_email(subject: str, recipient: str, body: str):
         return False
 
 def send_verification_email(email: str, code: str):
-    subject = "Mail Doğrulama Kodu - Akıllı Tarif Sistemi"
+    subject = "Mail Doğrulama Kodu - ReciMatch"
     body = f"""
     <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2 style="color: #4CAF50;">Hoş Geldiniz!</h2>
-            <p>Akıllı Tarif Sistemi'ne kayıt olduğunuz için teşekkürler.</p>
+            <h2 style="color: #10b981;">Hoş Geldiniz!</h2>
+            <p>ReciMatch'e kayıt olduğunuz için teşekkürler.</p>
             <p>Hesabınızı doğrulamak için aşağıdaki kodu kullanın:</p>
-            <div style="padding: 15px; background-color: #f4f4f4; border-radius: 5px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #4CAF50; border: 1px solid #ddd;">
+            <div style="padding: 15px; background-color: #f4f4f4; border-radius: 5px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #10b981; border: 1px solid #ddd;">
                 {code}
             </div>
             <p>Bu kod <b>10 dakika</b> boyunca geçerlidir.</p>
@@ -70,14 +70,14 @@ def send_verification_email(email: str, code: str):
     return send_email(subject, email, body)
 
 def send_password_reset_email(email: str, code: str):
-    subject = "Şifre Sıfırlama Kodu - Akıllı Tarif Sistemi"
+    subject = "Şifre Sıfırlama Kodu - ReciMatch"
     body = f"""
     <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2 style="color: #2196F3;">Şifre Sıfırlama</h2>
+            <h2 style="color: #10b981;">Şifre Sıfırlama</h2>
             <p>Hesabınız için şifre sıfırlama isteği aldık.</p>
             <p>Aşağıdaki kodu kullanarak yeni şifrenizi belirleyebilirsiniz:</p>
-            <div style="padding: 15px; background-color: #f4f4f4; border-radius: 5px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #2196F3; border: 1px solid #ddd;">
+            <div style="padding: 15px; background-color: #f4f4f4; border-radius: 5px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #10b981; border: 1px solid #ddd;">
                 {code}
             </div>
             <p>Bu kod <b>10 dakika</b> boyunca geçerlidir.</p>

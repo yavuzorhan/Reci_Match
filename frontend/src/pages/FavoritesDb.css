@@ -383,3 +383,26 @@
   border-color: rgba(255, 180, 171, 0.3);
   background: rgba(255, 180, 171, 0.05);
 }
+
+/* FIX-07: Açık tema desteği */
+.layout-shell[data-theme="light"] .layout-content:has(.fav-wrapper),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.fav-wrapper) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+}
+.layout-shell[data-theme="light"] .fav-title,
+.layout-shell:not([data-theme="dark"]) .fav-title { color: #1f332d !important; }
+.layout-shell[data-theme="light"] .fav-desc,
+.layout-shell:not([data-theme="dark"]) .fav-desc { color: #4b6358 !important; }
+.layout-shell[data-theme="light"] .fav-count,
+.layout-shell:not([data-theme="dark"]) .fav-count {
+  background-color: rgba(16,185,129,0.1) !important;
+  color: #0f766e !important;
+  border-color: rgba(16,185,129,0.2) !important;
+}
+.layout-shell[data-theme="light"] .fav-search-card,
+.layout-shell:not([data-theme="dark"]) .fav-search-card {
+  background: rgba(255,255,255,0.82) !important;
+  border: 1px solid rgba(16,185,129,0.18) !important;
+  color: #1f332d !important;
+}

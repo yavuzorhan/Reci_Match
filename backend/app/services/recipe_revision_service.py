@@ -118,6 +118,12 @@ async def save_revised_recipe(
         ],
         db=db,
     )
+    if result.get("status") == "manual_required":
+        ing_name = result.get("ingredient_name", "Bilinmeyen malzeme")
+        raise HTTPException(
+            status_code=422,
+            detail=f"'{ing_name}' malzemesi sistemde bulunamadı. Tarifi elle oluşturabilirsiniz.",
+        )
     if result.get("status") == "success":
         result["redirect_to"] = "/recipes"
     return result

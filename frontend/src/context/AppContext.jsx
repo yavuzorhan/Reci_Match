@@ -41,28 +41,47 @@ export const AppProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [dailyLogs, setDailyLogs] = useState([]);
   const [recipeCache, setRecipeCache] = useState({});
+  const _savedUser = (() => {
+    try { return JSON.parse(localStorage.getItem('reciMatch_user') || 'null'); } catch { return null; }
+  })();
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    return localStorage.getItem('reciMatch_theme') === 'dark';
+    const userId = _savedUser?.id;
+    if (userId) {
+      const userTheme = localStorage.getItem(`reciMatch_theme_${userId}`);
+      if (userTheme) return userTheme === 'dark';
+    }
+    const global = localStorage.getItem('reciMatch_theme');
+    if (global) {
+      localStorage.removeItem('reciMatch_theme');
+      return global === 'dark';
+    }
+    return false;
   });
 
   // Sync user to localStorage
   useEffect(() => {
     if (user) {
       localStorage.setItem('reciMatch_user', JSON.stringify(user));
+      const userTheme = localStorage.getItem(`reciMatch_theme_${user.id}`);
+      setIsDarkMode(userTheme === 'dark');
     } else {
       localStorage.removeItem('reciMatch_user');
+      document.body.classList.remove('dark-mode');
+      setIsDarkMode(false);
     }
-  }, [user]);
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync theme to localStorage and body class
   useEffect(() => {
-    localStorage.setItem('reciMatch_theme', isDarkMode ? 'dark' : 'light');
+    if (user?.id) {
+      localStorage.setItem(`reciMatch_theme_${user.id}`, isDarkMode ? 'dark' : 'light');
+    }
     if (isDarkMode) {
       document.body.classList.add('dark-mode');
     } else {
       document.body.classList.remove('dark-mode');
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, user]);
 
   const fetchJson = useCallback(async (url, options = {}) => {
     const response = await fetch(url, options);
@@ -203,9 +222,10 @@ export const AppProvider = ({ children }) => {
   }, [fetchJson, user]);
 
   const fetchHealthyRecipes = useCallback(async () => {
-     const data = withProxiedImages(await fetchJson(`${API_BASE}/api/recipes?healthy_only=true`));
-     return data;
-  }, [fetchJson]);
+    const query = user?.id ? `?healthy_only=true&user_id=${user.id}` : '?healthy_only=true';
+    const data = withProxiedImages(await fetchJson(`${API_BASE}/api/recipes${query}`));
+    return data;
+  }, [fetchJson, user]);
 
   const toggleFavorite = useCallback(async (recipeId) => {
     if (!user?.id) return;
