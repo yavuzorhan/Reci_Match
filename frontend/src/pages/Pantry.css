@@ -43,13 +43,39 @@
 .pantry-title-row span {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(78, 222, 163, 0.2);
-  background: rgba(28, 43, 60, 0.64);
-  color: var(--noct-accent);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  /* Karanlık tema varsayılan */
+  border: 1px solid rgba(78, 222, 163, 0.22);
+  background: rgba(28, 43, 60, 0.64);
+  color: var(--noct-accent);
+}
+
+/* Açık tema override */
+.layout-shell[data-theme="light"] .pantry-title-row span,
+.layout-shell:not([data-theme="dark"]) .pantry-title-row span {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.30) !important;
+  color: #0f766e !important;
+}
+
+.layout-shell[data-theme="light"] .pantry-title-row h1,
+.layout-shell:not([data-theme="dark"]) .pantry-title-row h1 {
+  color: #1f332d !important;
+}
+
+.layout-shell[data-theme="light"] .pantry-noct-header p,
+.layout-shell:not([data-theme="dark"]) .pantry-noct-header p {
+  color: #4b6358 !important;
+}
+
+.layout-shell[data-theme="light"] .layout-content:has(.pantry-noct),
+.layout-shell:not([data-theme="dark"]) .layout-content:has(.pantry-noct) {
+  background-color: var(--bg-main) !important;
+  background-image: var(--bg-gradient) !important;
+  color: var(--text-primary) !important;
 }
 
 .pantry-noct-header p {
