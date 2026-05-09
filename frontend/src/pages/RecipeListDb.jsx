@@ -119,8 +119,8 @@ const RecipeListDb = () => {
     try {
       await deleteCustomRecipe(recipeId);
       setRecipes((prev) => prev.filter((item) => item.id !== recipeId));
-    } catch {
-      setError('Tarif silinemedi.');
+    } catch (err) {
+      setError(err.message || 'Tarif silinemedi.');
     } finally {
       setLoading(false);
     }

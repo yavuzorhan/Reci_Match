@@ -66,7 +66,8 @@ def delete_recipe(db: Session, recipe: Recipe) -> None:
     db.query(RecipeIngredient).filter(RecipeIngredient.recipe_id == recipe.recipe_id).delete()
     db.query(Favorite).filter(Favorite.recipe_id == recipe.recipe_id).delete()
     db.query(DailyLog).filter(DailyLog.recipe_id == recipe.recipe_id).delete()
-    db.delete(recipe)
+    db.query(HealthyRecipe).filter(HealthyRecipe.recipe_id == recipe.recipe_id).delete()
+    recipe.is_active = False
 
 
 def replace_recipe_ingredients(
