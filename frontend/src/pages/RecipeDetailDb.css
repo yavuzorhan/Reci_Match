@@ -579,7 +579,8 @@
   margin-bottom: 18px;
 }
 
-.recipe-save-card select {
+.recipe-save-card select,
+.recipe-save-card input[type="number"] {
   width: 100%;
   min-height: 48px;
   margin-top: 8px;
@@ -592,7 +593,8 @@
   outline: none;
 }
 
-.recipe-save-card select:disabled {
+.recipe-save-card select:disabled,
+.recipe-save-card input[type="number"]:disabled {
   cursor: default;
   opacity: 1;
   color: var(--noct-accent);
@@ -600,9 +602,44 @@
   background: rgba(78,222,163,0.08);
 }
 
-.recipe-save-card select:focus {
+.recipe-save-card select:focus,
+.recipe-save-card input[type="number"]:focus {
   border-color: rgba(78,222,163,0.45);
   box-shadow: 0 0 0 3px rgba(78,222,163,0.10);
+}
+
+.recipe-portion-control {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.recipe-portion-control input[type="number"] {
+  margin-top: 0;
+  text-align: center;
+}
+
+.recipe-portion-control button {
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(19,34,53,0.72);
+  color: var(--noct-accent);
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recipe-portion-control button:hover:not(:disabled) {
+  border-color: rgba(78,222,163,0.35);
+  background: rgba(78,222,163,0.12);
+}
+
+.recipe-portion-control button:disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 .recipe-meal-grid {
@@ -836,27 +873,28 @@
 .layout-shell:not([data-theme="dark"]) .recipe-hero-overlay {
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.82) 0%,
-    rgba(255, 255, 255, 0.52) 50%,
-    rgba(255, 255, 255, 0.12) 100%
+    rgba(3, 24, 19, 0.80) 0%,
+    rgba(3, 24, 19, 0.46) 54%,
+    rgba(3, 24, 19, 0.10) 100%
   ) !important;
 }
 
 .layout-shell[data-theme="light"] .recipe-hero-content p,
 .layout-shell:not([data-theme="dark"]) .recipe-hero-content p {
-  color: rgba(20, 50, 35, 0.92) !important;
+  color: rgba(255, 255, 255, 0.96) !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.42);
 }
 
 .layout-shell[data-theme="light"] .recipe-stat-row span,
 .layout-shell:not([data-theme="dark"]) .recipe-stat-row span {
-  background: rgba(255, 255, 255, 0.82) !important;
-  border-color: rgba(16, 185, 129, 0.18) !important;
-  color: #1f332d !important;
+  background: rgba(3, 24, 19, 0.58) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  color: rgba(255, 255, 255, 0.96) !important;
 }
 
 .layout-shell[data-theme="light"] .recipe-stat-row svg,
 .layout-shell:not([data-theme="dark"]) .recipe-stat-row svg {
-  color: #10b981 !important;
+  color: #6ffbbe !important;
 }
 
 .layout-shell[data-theme="light"] .recipe-image-fallback,

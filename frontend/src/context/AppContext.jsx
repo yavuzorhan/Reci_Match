@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import { API_BASE } from '../config';
+import { normalizeServingPortion } from '../utils/recipeInsights';
 
 const AppContext = createContext();
 
@@ -16,12 +17,6 @@ const withProxiedImage = (recipe) => {
 const withProxiedImages = (recipes) => {
   if (Array.isArray(recipes)) return recipes.map(withProxiedImage);
   return recipes;
-};
-
-const normalizeServingPortion = (value) => {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(20, Math.max(1, Math.trunc(number)));
 };
 
 export const AppProvider = ({ children }) => {
@@ -63,11 +58,11 @@ export const AppProvider = ({ children }) => {
     if (user) {
       localStorage.setItem('reciMatch_user', JSON.stringify(user));
       const userTheme = localStorage.getItem(`reciMatch_theme_${user.id}`);
-      setIsDarkMode(userTheme === 'dark');
+      window.setTimeout(() => setIsDarkMode(userTheme === 'dark'), 0);
     } else {
       localStorage.removeItem('reciMatch_user');
       document.body.classList.remove('dark-mode');
-      setIsDarkMode(false);
+      window.setTimeout(() => setIsDarkMode(false), 0);
     }
   }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -289,7 +284,11 @@ export const AppProvider = ({ children }) => {
         fat: cachedRecipe ? (cachedRecipe.fat ?? 0) * multiplier : null,
       }),
     });
-    setDailyLogs(prev => [data.log, ...prev]);
+    setDailyLogs(prev => {
+      const existingIndex = prev.findIndex(log => log.id === data.log.id);
+      if (existingIndex === -1) return [data.log, ...prev];
+      return prev.map(log => (log.id === data.log.id ? data.log : log));
+    });
     return data.log;
   }, [fetchJson, user, recipeCache]);
 

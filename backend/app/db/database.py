@@ -14,6 +14,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 _ingredient_inline_nutrition_ready = False
+_daily_log_macros_ready = False
 
 
 def ensure_ingredient_inline_nutrition_columns(db):
@@ -50,6 +51,18 @@ def ensure_ingredient_inline_nutrition_columns(db):
     db.commit()
     _ingredient_inline_nutrition_ready = True
 
+
+def ensure_daily_log_macro_columns(db):
+    global _daily_log_macros_ready
+    if _daily_log_macros_ready:
+        return
+
+    db.execute(text("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS protein_intake NUMERIC(6,2)"))
+    db.execute(text("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS carbohydrate_intake NUMERIC(6,2)"))
+    db.execute(text("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS fat_intake NUMERIC(6,2)"))
+    db.commit()
+    _daily_log_macros_ready = True
+
 def get_db():
     """
     HTTP isteklerinde bağımsız veritabanı oturumları açıp kapatmak için kullanılır. (FastAPI pattern)
@@ -57,6 +70,7 @@ def get_db():
     db = SessionLocal()
     try:
         ensure_ingredient_inline_nutrition_columns(db)
+        ensure_daily_log_macro_columns(db)
         yield db
     finally:
         db.close()

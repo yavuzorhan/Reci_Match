@@ -12,7 +12,7 @@ from app.repositories import recipe_repository
 from app.services.healthy_recipe_service import ensure_healthy_recipe_table
 from app.services.ingredient_nutrition_service import ensure_ingredient_nutrition_table
 from app.services.ingredient_resolver_service import resolve_ingredient_for_user
-from app.utils.recipe_health import build_recipe_health_profile
+from app.utils.recipe_health import build_recipe_health_profile, recipe_macro_values_per_serving
 from app.utils.recipe_helpers import (
     calculate_recipe_nutrition,
     ingredient_calories_per_100g,
@@ -35,6 +35,7 @@ def serialize_recipe_summary(
         calorie_target=calorie_target,
         meal_count=meal_count,
     )
+    per_serving_macros = recipe_macro_values_per_serving(recipe) or {}
     return {
         "id": recipe.recipe_id,
         "name": recipe.recipe_name,
@@ -45,10 +46,14 @@ def serialize_recipe_summary(
         "cooking_method": recipe.cooking_method,
         "total_time_minutes": recipe.total_time_minutes,
         "serving": recipe.serving,
-        "calorie": float(recipe.calorie) if recipe.calorie is not None else None,
-        "protein": float(recipe.protein) if recipe.protein is not None else None,
-        "carbohydrate": float(recipe.carbohydrate) if recipe.carbohydrate is not None else None,
-        "fat": float(recipe.fat) if recipe.fat is not None else None,
+        "calorie": per_serving_macros.get("calories_per_100g"),
+        "protein": per_serving_macros.get("protein_per_100g"),
+        "carbohydrate": per_serving_macros.get("carbs_per_100g"),
+        "fat": per_serving_macros.get("fat_per_100g"),
+        "total_calorie": float(recipe.calorie) if recipe.calorie is not None else None,
+        "total_protein": float(recipe.protein) if recipe.protein is not None else None,
+        "total_carbohydrate": float(recipe.carbohydrate) if recipe.carbohydrate is not None else None,
+        "total_fat": float(recipe.fat) if recipe.fat is not None else None,
         "image_url": recipe.image_url,
         "user_id": recipe.user_id,
         "ingredient_ids": [
@@ -90,6 +95,18 @@ def serialize_recipe_detail(
             for item in ingredient_rows
         ],
     }
+
+
+def _normalize_recipe_serving(serving: int | None) -> int | None:
+    if serving is None:
+        return None
+    try:
+        value = int(serving)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında olmalıdır.")
+    if value < 1 or value > 99:
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında olmalıdır.")
+    return value
 
 
 def get_recipes(
@@ -187,6 +204,7 @@ async def create_custom_recipe(
         raise HTTPException(status_code=400, detail="Tarif adi zorunludur.")
     if not ingredients:
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
+    serving = _normalize_recipe_serving(serving)
 
     ensure_ingredient_nutrition_table(db)
     try:
@@ -274,6 +292,7 @@ async def update_custom_recipe(
         raise HTTPException(status_code=400, detail="Tarif adi zorunludur.")
     if not ingredients:
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
+    serving = _normalize_recipe_serving(serving)
 
     ensure_ingredient_nutrition_table(db)
     try:

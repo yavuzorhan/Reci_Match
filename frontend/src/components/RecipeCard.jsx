@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChefHat, Heart, Pencil, Trash2, Flame, UtensilsCrossed, Clock3, BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { buildRecipeShortSummary, getHealthGrade, getHealthTone } from '../utils/recipeInsights';
+import { buildRecipeShortSummary, getHealthMeta } from '../utils/recipeInsights';
 import './RecipeCard.css';
 
 const Metric = ({ icon = null, label, value, color = 'var(--text-primary)' }) => (
@@ -21,9 +21,7 @@ const RecipeCard = ({
   onClick
 }) => {
   const navigate = useNavigate();
-  const hasHealthScore = recipe.health_score != null && Number(recipe.health_score) > 0;
-  const grade = hasHealthScore ? getHealthGrade(Number(recipe.health_score)).split(' ')[0] : '-';
-  const gradeColor = hasHealthScore ? getHealthTone(Number(recipe.health_score)).chip : 'var(--text-secondary)';
+  const healthMeta = getHealthMeta(recipe);
 
   const handleClick = () => {
     if (onClick) {
@@ -105,7 +103,7 @@ const RecipeCard = ({
           <Metric icon={<Flame size={13} />} label="Kalori" value={recipe.calorie ? Math.round(recipe.calorie) : '-'} />
           <Metric icon={<UtensilsCrossed size={13} />} label="Protein" value={recipe.protein ? `${Math.round(recipe.protein)}g` : '-'} />
           <Metric icon={<Clock3 size={13} />} label="Süre" value={`${recipe.total_time_minutes || recipe.preparation_time_minutes || 25} dk`} />
-          <Metric label="Kalite" value={grade} color={gradeColor} />
+          <Metric label="Kalite" value={healthMeta.display} color={healthMeta.tone.chip} />
         </div>
 
         <button type="button" className="recipes-detail-button">

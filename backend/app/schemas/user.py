@@ -37,6 +37,18 @@ class DailyLogCreateRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("calorie_intake", "calorieIntake"),
     )
+    protein_intake: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("protein_intake", "proteinIntake", "protein"),
+    )
+    carbohydrate_intake: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("carbohydrate_intake", "carbohydrateIntake", "carbohydrate", "carb"),
+    )
+    fat_intake: float | None = Field(
+        default=None,
+        validation_alias=AliasChoices("fat_intake", "fatIntake", "fat"),
+    )
 
 
 class DailyLogUpdateRequest(BaseModel):
@@ -47,3 +59,7 @@ class DailyLogUpdateRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("serving_count", "servingCount", "portion", "serving", "servings"),
     )
+    calorie_intake: float | None = Field(default=None, validation_alias=AliasChoices("calorie_intake", "calorieIntake"))
+    protein_intake: float | None = Field(default=None, validation_alias=AliasChoices("protein_intake", "proteinIntake", "protein"))
+    carbohydrate_intake: float | None = Field(default=None, validation_alias=AliasChoices("carbohydrate_intake", "carbohydrateIntake", "carbohydrate", "carb"))
+    fat_intake: float | None = Field(default=None, validation_alias=AliasChoices("fat_intake", "fatIntake", "fat"))

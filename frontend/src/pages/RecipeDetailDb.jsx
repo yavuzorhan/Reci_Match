@@ -22,7 +22,7 @@ import {
 import Layout from '../components/Layout';
 import RecipeRevisionModal from '../components/RecipeRevisionModal';
 import { useApp } from '../context/AppContext';
-import { getHealthGrade, getHealthTone, stripHtml } from '../utils/recipeInsights';
+import { getHealthMeta, normalizeServingPortion, stripHtml } from '../utils/recipeInsights';
 
 const splitPreparationSteps = (value) => {
   const cleaned = stripHtml(value)
@@ -54,12 +54,6 @@ const getIngredientAmount = (ingredient, multiplier) => {
   if (ingredient?.amount == null) return '';
   const adjusted = Number(ingredient.amount) * multiplier;
   return `${formatNumber(adjusted)} ${ingredient.unit || ''}`.trim();
-};
-
-const normalizePortion = (value) => {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(20, Math.max(1, Math.trunc(number)));
 };
 
 const getHealthLabels = (recipe) => {
@@ -172,7 +166,7 @@ const RecipeDetailPage = () => {
         const data = await fetchRecipeById(id);
         if (!cancelled) {
           setRecipe(data);
-          setServingCount(normalizePortion(data?.serving || 1));
+          setServingCount(normalizeServingPortion(data?.serving || 1));
         }
       } catch (err) {
         console.error('Fetch error:', err);
@@ -190,8 +184,10 @@ const RecipeDetailPage = () => {
 
   const isFavorite = (favorites || []).includes(Number(id));
   const canEdit = recipe?.user_id === user?.id;
-  const currentServing = normalizePortion(servingCount);
+  const currentServing = normalizeServingPortion(servingCount);
+  const baseServing = normalizeServingPortion(recipe?.serving || 1);
   const servingMultiplier = currentServing;
+  const ingredientMultiplier = currentServing / baseServing;
   const preparationSteps = useMemo(() => {
     const steps = splitPreparationSteps(recipe?.preparation);
     return steps.length ? steps : getFallbackSteps();
@@ -199,8 +195,9 @@ const RecipeDetailPage = () => {
   const displayIngredients = useMemo(() => recipe?.ingredients || [], [recipe]);
   const availableIngredients = displayIngredients.slice(0, Math.min(2, displayIngredients.length));
   const optionalIngredients = displayIngredients.slice(availableIngredients.length);
-  const healthGrade = recipe?.health_grade || getHealthGrade(recipe?.health_score ?? 0).split(' ')[0];
-  const healthTone = getHealthTone(recipe?.health_score ?? 0);
+  const healthMeta = getHealthMeta(recipe);
+  const healthGrade = healthMeta.grade;
+  const healthTone = healthMeta.tone;
   const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
   const qualityTags = useMemo(() => getQualityTags(recipe, healthGrade), [recipe, healthGrade]);
   const healthLabels = useMemo(() => getHealthLabels(recipe), [recipe]);
@@ -225,7 +222,16 @@ const RecipeDetailPage = () => {
   };
 
   const handleServingChange = (event) => {
-    setServingCount(normalizePortion(event.target.value));
+    const value = event.target.value;
+    setServingCount(value === '' ? '' : normalizeServingPortion(value));
+  };
+
+  const handleServingBlur = () => {
+    setServingCount(normalizeServingPortion(servingCount));
+  };
+
+  const adjustServing = (delta) => {
+    setServingCount((value) => normalizeServingPortion(normalizeServingPortion(value) + delta));
   };
 
   const markAsDone = async () => {
@@ -344,7 +350,7 @@ const RecipeDetailPage = () => {
                     <span><Flame size={16} /> {adjustedValue(recipe.calorie)} kcal</span>
                     <span><Activity size={16} /> {adjustedValue(recipe.protein)}g Protein</span>
                     <span><Clock3 size={16} /> {recipe.preparation_time || recipe.cooking_time || 20} dk</span>
-                    <span><Leaf size={16} /> Kalite: {healthGrade}</span>
+                    <span><Leaf size={16} /> Kalite: {healthMeta.label}</span>
                   </div>
                 </div>
               </article>
@@ -362,7 +368,7 @@ const RecipeDetailPage = () => {
                       {(availableIngredients.length ? availableIngredients : [{ name: 'Somon Filet' }, { name: 'Zeytinyağı' }]).map((ingredient, index) => (
                         <div className="recipe-ingredient-row available" key={`${getIngredientName(ingredient)}-${index}`}>
                           <span>{getIngredientName(ingredient)}</span>
-                          <small>{getIngredientAmount(ingredient, servingMultiplier)}</small>
+                          <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
                           <Check size={17} />
                         </div>
                       ))}
@@ -375,7 +381,7 @@ const RecipeDetailPage = () => {
                       {(optionalIngredients.length ? optionalIngredients.slice(0, 6) : [{ name: 'Olgun Avokado' }, { name: 'Taze Krema' }]).map((ingredient, index) => (
                         <div className="recipe-ingredient-row optional" key={`${getIngredientName(ingredient)}-${index}`}>
                           <span>{getIngredientName(ingredient)}</span>
-                          <small>{getIngredientAmount(ingredient, servingMultiplier)}</small>
+                          <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
                           <Plus size={17} />
                         </div>
                       ))}
@@ -417,10 +423,17 @@ const RecipeDetailPage = () => {
                   </div>
                 </div>
 
-                <strong style={{ color: healthTone.chip }}>{getQualityTitle(healthGrade)}</strong>
+                <strong style={{ color: healthTone.chip }}>{healthMeta.grade ? getQualityTitle(healthGrade) : healthMeta.label}</strong>
                 <small>{getQualitySubtitle(healthGrade)}</small>
                 <div className="recipe-quality-meter">
-                  <i style={{ width: `${Math.max(12, Math.min(100, recipe.health_score || 92))}%`, background: healthTone.chip, boxShadow: `0 0 18px ${healthTone.chip}60` }} />
+                  <i
+                    className={!healthMeta.hasScore ? 'neutral' : ''}
+                    style={{
+                      width: `${healthMeta.hasScore ? Math.max(2, Math.min(100, healthMeta.score)) : 0}%`,
+                      background: healthTone.chip,
+                      boxShadow: healthMeta.hasScore ? `0 0 18px ${healthTone.chip}60` : 'none',
+                    }}
+                  />
                 </div>
                 <p>{qualityRationale}</p>
 
@@ -436,11 +449,33 @@ const RecipeDetailPage = () => {
 
                 <label>
                   <span>Porsiyon</span>
-                  <select value={currentServing} onChange={handleServingChange}>
-                    {Array.from({ length: 20 }, (_, index) => index + 1).map((portion) => (
-                      <option key={portion} value={portion}>{portion} Porsiyon</option>
-                    ))}
-                  </select>
+                  <div className="recipe-portion-control">
+                    <button
+                      type="button"
+                      onClick={() => adjustServing(-1)}
+                      disabled={currentServing <= 1}
+                      aria-label="Porsiyonu azalt"
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      min="1"
+                      max="99"
+                      step="1"
+                      value={servingCount}
+                      onChange={handleServingChange}
+                      onBlur={handleServingBlur}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => adjustServing(1)}
+                      disabled={currentServing >= 99}
+                      aria-label="Porsiyonu artır"
+                    >
+                      +
+                    </button>
+                  </div>
                 </label>
 
                 <div>

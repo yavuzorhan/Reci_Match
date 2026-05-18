@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Recipe
 from app.repositories import user_repository
+from app.utils.recipe_health import recipe_macro_values_per_serving
 
 
 TURKEY_TZ = timezone(timedelta(hours=3))
@@ -144,20 +145,22 @@ def get_daily_logs(user_id: int, db: Session) -> list[dict]:
 
         multiplier = float(log.serving_multiplier) if log.serving_multiplier is not None else 1
 
+        recipe_macros = _recipe_macros_per_serving(recipe)
+
         if log.protein_intake is not None:
             protein = float(log.protein_intake)
         else:
-            protein = round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2)
+            protein = round(recipe_macros["protein"] * multiplier, 2)
 
         if log.carbohydrate_intake is not None:
             carbohydrate = float(log.carbohydrate_intake)
         else:
-            carbohydrate = round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2)
+            carbohydrate = round(recipe_macros["carbohydrate"] * multiplier, 2)
 
         if log.fat_intake is not None:
             fat = float(log.fat_intake)
         else:
-            fat = round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2)
+            fat = round(recipe_macros["fat"] * multiplier, 2)
 
         result.append({
             "id": log.log_id,
@@ -176,6 +179,44 @@ def get_daily_logs(user_id: int, db: Session) -> list[dict]:
     return result
 
 
+def get_daily_log_totals(user_id: int, log_date: str | None, db: Session) -> dict:
+    logs = get_daily_logs(user_id, db)
+    if log_date:
+        try:
+            target_date = date.fromisoformat(str(log_date).split("T")[0])
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Geçersiz günlük kayıt tarihi.")
+    else:
+        target_date = _local_now().date()
+
+    totals = {"calories": 0.0, "protein": 0.0, "carbohydrate": 0.0, "fat": 0.0}
+    count = 0
+    for log in logs:
+        eaten_at = log.get("eatenAt")
+        if not eaten_at:
+            continue
+        try:
+            eaten_date = date.fromisoformat(str(eaten_at).split("T")[0])
+        except ValueError:
+            continue
+        if eaten_date != target_date:
+            continue
+        count += 1
+        totals["calories"] += float(log.get("calorieIntake") or 0)
+        totals["protein"] += float(log.get("protein") or 0)
+        totals["carbohydrate"] += float(log.get("carbohydrate") or 0)
+        totals["fat"] += float(log.get("fat") or 0)
+
+    return {
+        "date": target_date.isoformat(),
+        "log_count": count,
+        "calories": round(totals["calories"], 2),
+        "protein": round(totals["protein"], 2),
+        "carbohydrate": round(totals["carbohydrate"], 2),
+        "fat": round(totals["fat"], 2),
+    }
+
+
 def add_daily_log(
     user_id: int,
     recipe_id: int,
@@ -185,6 +226,10 @@ def add_daily_log(
     db: Session,
     log_date: str | None = None,
     entry_source: str | None = "daily",
+    calorie_intake: float | None = None,
+    protein_intake: float | None = None,
+    carbohydrate_intake: float | None = None,
+    fat_intake: float | None = None,
 ) -> dict:
     _ensure_user_exists(user_id, db)
     recipe = _ensure_recipe_exists(recipe_id, db)
@@ -199,37 +244,54 @@ def add_daily_log(
         now = _local_now()
         target_date = now.date()
 
-    normalized_meal_type = _resolve_daily_meal_slot(
-        user_id=user_id,
-        requested_meal_type=_normalize_meal_type(meal_type),
-        log_date=target_date,
-        db=db,
-    )
+    normalized_meal_type = _normalize_meal_type(meal_type)
 
     portion_source = serving_count if serving_count is not None else serving_multiplier
     resolved_serving_count = _normalize_serving_count(portion_source)
-    resolved_multiplier = float(resolved_serving_count)
-    adjusted_calorie = (float(recipe.calorie) if recipe.calorie is not None else 0) * resolved_multiplier
-    adjusted_protein = (float(recipe.protein) if recipe.protein is not None else 0) * resolved_multiplier
-    adjusted_carbohydrate = (float(recipe.carbohydrate) if recipe.carbohydrate is not None else 0) * resolved_multiplier
-    adjusted_fat = (float(recipe.fat) if recipe.fat is not None else 0) * resolved_multiplier
-    resolved_entry_source = (entry_source or "daily").strip().lower()
-
-    log = user_repository.create_daily_log(
+    existing_log = user_repository.find_daily_log_by_recipe_meal(
         db,
         user_id=user_id,
         recipe_id=recipe_id,
-        log_date=now.date(),
-        logged_at=now,
+        log_date=target_date,
         meal_type=normalized_meal_type,
-        entry_source=resolved_entry_source,
-        calorie_intake=round(adjusted_calorie, 2),
-        protein_intake=round(adjusted_protein, 2),
-        carbohydrate_intake=round(adjusted_carbohydrate, 2),
-        fat_intake=round(adjusted_fat, 2),
-        serving_count=resolved_serving_count,
-        serving_multiplier=round(resolved_multiplier, 2),
     )
+    if existing_log:
+        resolved_serving_count = _normalize_serving_count(resolved_serving_count + int(existing_log.serving_count or 1))
+
+    resolved_multiplier = float(resolved_serving_count)
+    recipe_macros = _recipe_macros_per_serving(recipe)
+    adjusted_calorie = recipe_macros["calorie"] * resolved_multiplier
+    adjusted_protein = recipe_macros["protein"] * resolved_multiplier
+    adjusted_carbohydrate = recipe_macros["carbohydrate"] * resolved_multiplier
+    adjusted_fat = recipe_macros["fat"] * resolved_multiplier
+    resolved_entry_source = (entry_source or "daily").strip().lower()
+
+    if existing_log:
+        log = existing_log
+        log.logged_at = now
+        log.entry_source = resolved_entry_source
+        log.calorie_intake = round(adjusted_calorie, 2)
+        log.protein_intake = round(adjusted_protein, 2)
+        log.carbohydrate_intake = round(adjusted_carbohydrate, 2)
+        log.fat_intake = round(adjusted_fat, 2)
+        log.serving_count = resolved_serving_count
+        log.serving_multiplier = round(resolved_multiplier, 2)
+    else:
+        log = user_repository.create_daily_log(
+            db,
+            user_id=user_id,
+            recipe_id=recipe_id,
+            log_date=now.date(),
+            logged_at=now,
+            meal_type=normalized_meal_type,
+            entry_source=resolved_entry_source,
+            calorie_intake=round(adjusted_calorie, 2),
+            protein_intake=round(adjusted_protein, 2),
+            carbohydrate_intake=round(adjusted_carbohydrate, 2),
+            fat_intake=round(adjusted_fat, 2),
+            serving_count=resolved_serving_count,
+            serving_multiplier=round(resolved_multiplier, 2),
+        )
 
     try:
         db.commit()
@@ -275,6 +337,10 @@ def update_daily_log(
     log_id: int,
     meal_type: str | None,
     serving_count: int | None,
+    calorie_intake: float | None,
+    protein_intake: float | None,
+    carbohydrate_intake: float | None,
+    fat_intake: float | None,
     db: Session,
 ) -> dict:
     log = user_repository.find_daily_log(db, user_id, log_id)
@@ -284,19 +350,33 @@ def update_daily_log(
     recipe = user_repository.find_recipe_by_id(db, log.recipe_id)
 
     if meal_type:
-        log.meal_type = meal_type
+        log.meal_type = _normalize_meal_type(meal_type)
 
     if serving_count is not None:
         normalized_serving_count = _normalize_serving_count(serving_count)
         log.serving_count = normalized_serving_count
         multiplier = float(normalized_serving_count)
+        recipe_macros = _recipe_macros_per_serving(recipe)
         log.serving_multiplier = round(multiplier, 2)
-        log.calorie_intake = round((float(recipe.calorie) if recipe.calorie else 0) * multiplier, 2)
-        log.protein_intake = round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2)
-        log.carbohydrate_intake = round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2)
-        log.fat_intake = round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2)
+        log.calorie_intake = round(recipe_macros["calorie"] * multiplier, 2)
+        log.protein_intake = round(recipe_macros["protein"] * multiplier, 2)
+        log.carbohydrate_intake = round(recipe_macros["carbohydrate"] * multiplier, 2)
+        log.fat_intake = round(recipe_macros["fat"] * multiplier, 2)
 
-    db.commit()
+    if calorie_intake is not None:
+        log.calorie_intake = round(float(calorie_intake), 2)
+    if protein_intake is not None:
+        log.protein_intake = round(float(protein_intake), 2)
+    if carbohydrate_intake is not None:
+        log.carbohydrate_intake = round(float(carbohydrate_intake), 2)
+    if fat_intake is not None:
+        log.fat_intake = round(float(fat_intake), 2)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Günlük kayıt güncellenirken geçersiz bir değer gönderildi.")
     db.refresh(log)
 
     multiplier = float(log.serving_multiplier) if log.serving_multiplier is not None else 1
@@ -313,9 +393,9 @@ def update_daily_log(
             "servingCount": log.serving_count,
             "servingMultiplier": multiplier,
             "calorieIntake": float(log.calorie_intake) if log.calorie_intake is not None else 0,
-            "protein": float(log.protein_intake) if log.protein_intake is not None else round((float(recipe.protein) if recipe.protein else 0) * multiplier, 2),
-            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round((float(recipe.carbohydrate) if recipe.carbohydrate else 0) * multiplier, 2),
-            "fat": float(log.fat_intake) if log.fat_intake is not None else round((float(recipe.fat) if recipe.fat else 0) * multiplier, 2),
+            "protein": float(log.protein_intake) if log.protein_intake is not None else round(_recipe_macros_per_serving(recipe)["protein"] * multiplier, 2),
+            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round(_recipe_macros_per_serving(recipe)["carbohydrate"] * multiplier, 2),
+            "fat": float(log.fat_intake) if log.fat_intake is not None else round(_recipe_macros_per_serving(recipe)["fat"] * multiplier, 2),
         }
     }
 
@@ -329,16 +409,26 @@ def _normalize_serving_count(value) -> int:
     try:
         number = float(value)
     except (TypeError, ValueError):
-        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında bir sayı olmalıdır.")
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında bir sayı olmalıdır.")
 
-    if number < 1 or number > 20:
-        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında olmalıdır.")
+    if number < 1 or number > 99:
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında olmalıdır.")
 
     normalized = int(round(number))
-    if normalized < 1 or normalized > 20:
-        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 20 arasında olmalıdır.")
+    if normalized < 1 or normalized > 99:
+        raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında olmalıdır.")
 
     return normalized
+
+
+def _recipe_macros_per_serving(recipe: Recipe) -> dict:
+    macros = recipe_macro_values_per_serving(recipe) or {}
+    return {
+        "calorie": float(macros.get("calories_per_100g") or 0),
+        "protein": float(macros.get("protein_per_100g") or 0),
+        "carbohydrate": float(macros.get("carbs_per_100g") or 0),
+        "fat": float(macros.get("fat_per_100g") or 0),
+    }
 
 
 def _ensure_user_exists(user_id: int, db: Session):

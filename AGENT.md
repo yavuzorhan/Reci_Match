@@ -639,23 +639,27 @@ addDailyLog():
 
 ---
 
-### 6.12 Besin Değeri Depolama Kuralı
+### 6.12 Besin Değeri Depolama ve Porsiyon Kuralı
 
 ```
-DB'de SAKLA:   1 porsiyon başı değer (per-serving)
-UI'da GÖSTER:  calorie × servingCount (çarpma frontend'de)
-LOG'A YAZAR:   calorie × serving_count (backend tarafında)
+DB'de SAKLA:   tarifin toplam besin değeri (source porsiyon sayısının tamamı)
+API'de DÖNDÜR: calorie/protein/carbohydrate/fat = 1 porsiyon başı değer
+API'de EKLE:   total_calorie/total_protein/total_carbohydrate/total_fat = DB'deki toplam değer
+UI'da GÖSTER:  porsiyon başı değer × seçilen porsiyon
+LOG'A YAZAR:   porsiyon başı değer × serving_count (backend tarafında)
 
 yemekcom scraper:
-  ✅ per_serving_calorie sakla
-  ❌ per_serving × servings YAPMA (toplam kalori DB'ye girmemeli)
-
-bbcgoodfood scraper:
-  Zaten "Nutrition: Per serving" veriyor → DOKUNMA
+  Kaynak "1 porsiyon için" besin değeri verir.
+  save_scraped_recipe() bu değeri serving ile çarpıp DB'ye toplam tarif değeri olarak kaydeder.
 
 Mevcut DB durumu:
-  Bazı eski yemekcom tarifleri toplam kalori içeriyor olabilir
-  → backfill scripti gerekebilir
+  yemekcom, yemekcom_diet ve custom tariflerde macro alanları toplam tarif değeridir.
+  recipe_macro_values_per_serving() tüm serving > 1 tariflerde bu toplamı porsiyon sayısına böler.
+
+Tavuklu Pilav doğrulaması:
+  Kaynak: https://yemek.com/tarif/tavuklu-pilav/
+  serving=6, 1 porsiyon=336 kcal, toplam=2016 kcal
+  tavuk göğsü miktarı 500 gramdır.
 ```
 
 ---
@@ -947,6 +951,41 @@ GEMINI_API_KEY=...
 
 ---
 # 13. Oturum Günlüğü
+---
+
+## [2026-05-18] Oturum 5 — tarif porsiyon sistemi, tüm tarif macro normalizasyonu, porsiyon UI
+
+**Model:** `codex`
+
+**Değiştirilen Dosyalar:**
+- `backend/app/utils/recipe_health.py` — `recipe_macro_values_per_serving()` public helper haline getirildi; tüm `serving > 1` tariflerde DB'deki toplam macro değerleri porsiyon sayısına bölünerek 1 porsiyon değeri hesaplanıyor.
+- `backend/app/services/recipe_service.py` — API `calorie/protein/carbohydrate/fat` alanlarını porsiyon başı döndürüyor; denetim için `total_calorie/total_protein/total_carbohydrate/total_fat` alanları eklendi.
+- `backend/app/services/user_service.py` — daily log ekleme/güncelleme/toplam hesapları porsiyon başı macro helper üzerinden çalışıyor; `serving_count` ile doğru ölçekleniyor.
+- `backend/app/services/recipe_import_service.py` — yemek.com kaynaklı importlarda kaynak porsiyon başı besin değerleri `serving` ile çarpılıp DB'ye toplam tarif değeri olarak kaydediliyor.
+- `backend/scripts/ensure_tavuklu_pilav_chicken.py` — Tavuklu Pilav tavuk göğsü miktarı kaynakla uyumlu şekilde 500 gram olacak biçimde idempotent güncellendi.
+- `frontend/src/pages/RecipeDetailDb.jsx` — porsiyon kontrolü elle yazılabilir hale getirildi; `+` / `-` butonları eklendi. Malzeme miktarı `seçilen porsiyon / tarif serving` oranıyla ölçekleniyor.
+- `frontend/src/pages/RecipeDetailDb.css` — yeni porsiyon kontrolü için input ve buton stilleri eklendi.
+
+**Tarif / Porsiyon Kararı:**
+- DB macro alanları (`recipes.calorie`, `protein`, `carbohydrate`, `fat`) tarifin toplam değeridir.
+- API summary/detail response içinde `calorie/protein/carbohydrate/fat` her zaman 1 porsiyon değeridir.
+- API response içinde `total_*` alanları toplam tarif değerini taşır.
+- UI seçili porsiyonu porsiyon başı değerle çarpar.
+- Malzeme miktarları kaynak tarifin toplam porsiyon miktarıdır; detayda `ingredient.amount * (selectedServing / recipe.serving)` ile gösterilir.
+
+**Doğrulama:**
+- 424 adet `serving > 1` tarif kontrol edildi; porsiyon başı API değeri ile `DB toplam / serving` karşılaştırmasında `bad_count=0`.
+- Tavuklu Pilav kaynak doğrulaması: https://yemek.com/tarif/tavuklu-pilav/ — `serving=6`, 1 porsiyon `336 kcal`, toplam `2016 kcal`, tavuk göğsü `500 g`.
+- HTTP doğrulaması yeni backend üzerinde:
+  - `/api/recipes/1484` → Brokoli Çorbası `serving=4`, `calorie=97`, `total_calorie=388`
+  - `/api/recipes/1232` → Tavuklu Pilav `serving=6`, `calorie=336`, `total_calorie=2016`
+- `npm run lint` geçti.
+- `npm run build` geçti.
+- Backend syntax kontrolü geçti.
+
+**Operasyon Notu:**
+- `localhost:8000` üzerinde eski backend süreci bazen eski kodu servis ediyor olabilir. Değişiklikleri uygulamada görmek için backend process tamamen kapatılıp yeniden başlatılmalı.
+
 ---
 
 ## [2026-05-18] Oturum 4 — daily_logs macro sütunları, kalite renkleri, açık tema, porsiyon

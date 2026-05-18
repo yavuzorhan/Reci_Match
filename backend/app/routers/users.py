@@ -67,6 +67,10 @@ def add_daily_log(user_id: int, req: DailyLogCreateRequest, db: Session = Depend
         db,
         req.log_date,
         req.entry_source,
+        calorie_intake=req.calorie_intake,
+        protein_intake=req.protein_intake,
+        carbohydrate_intake=req.carbohydrate_intake,
+        fat_intake=req.fat_intake,
     )
 
 
@@ -87,5 +91,14 @@ def update_daily_log(
         log_id=log_id,
         meal_type=req.meal_type,
         serving_count=req.serving_count,
+        calorie_intake=req.calorie_intake,
+        protein_intake=req.protein_intake,
+        carbohydrate_intake=req.carbohydrate_intake,
+        fat_intake=req.fat_intake,
         db=db,
     )
+
+
+@router.get("/users/{user_id}/daily-logs/totals")
+def get_daily_log_totals(user_id: int, log_date: str | None = None, db: Session = Depends(get_db)):
+    return user_service.get_daily_log_totals(user_id, log_date, db)

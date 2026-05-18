@@ -982,7 +982,7 @@ def _is_light_sweet_or_snack(category: str | None) -> bool:
 
 
 def _resolve_general_macro_source(recipe, nutrition_rollup: dict) -> dict:
-    recipe_macros = _recipe_macro_values_per_serving(recipe)
+    recipe_macros = recipe_macro_values_per_serving(recipe)
     if recipe_macros:
         recipe_macros["source"] = "recipe_fields"
         return recipe_macros
@@ -992,7 +992,7 @@ def _resolve_general_macro_source(recipe, nutrition_rollup: dict) -> dict:
     return nutrition
 
 
-def _recipe_macro_values_per_serving(recipe) -> dict | None:
+def recipe_macro_values_per_serving(recipe) -> dict | None:
     if recipe is None:
         return None
 
@@ -1003,14 +1003,7 @@ def _recipe_macro_values_per_serving(recipe) -> dict | None:
     if calories is None and protein is None and carbs is None and fat is None:
         return None
 
-    servings = max(1, int(getattr(recipe, "serving", 1) or 1))
-    should_divide = servings > 1 and any(value is not None and value > threshold for value, threshold in (
-        (calories, 900),
-        (protein, 70),
-        (carbs, 120),
-        (fat, 60),
-    ))
-    divisor = servings if should_divide else 1
+    divisor = max(1, int(getattr(recipe, "serving", 1) or 1))
 
     return {
         "calories_per_100g": _divide_optional(calories, divisor),

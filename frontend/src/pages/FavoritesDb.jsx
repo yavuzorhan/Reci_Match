@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Search, ChefHat, Flame, Utensils } from 'lucide-react';
-import { buildRecipeShortSummary, getHealthGrade } from '../utils/recipeInsights';
+import { buildRecipeShortSummary, getHealthMeta } from '../utils/recipeInsights';
 
 const FavoritesDb = () => {
   const { favorites, toggleFavorite, fetchRecipesByIds } = useApp();
@@ -125,7 +125,7 @@ const FavoritesDb = () => {
 
         <div className="fav-grid">
           {filteredRecipes.map((recipe) => {
-            const grade = getHealthGrade(recipe.health_score || recipe.score);
+            const healthMeta = getHealthMeta(recipe);
             return (
               <article key={recipe.id} className="fav-card" onClick={() => navigate(`/recipe/${recipe.id}`)} style={{ cursor: 'pointer' }}>
                 <div className="fav-card-image-wrapper">
@@ -167,7 +167,9 @@ const FavoritesDb = () => {
                       <div className="fav-metric-lbl">Süre</div>
                     </div>
                     <div className="fav-metric">
-                      <div className="fav-metric-val fav-metric-val-quality">{grade ? grade.split(' ')[0] : 'A'}</div>
+                      <div className="fav-metric-val fav-metric-val-quality" style={{ color: healthMeta.tone.chip }}>
+                        {healthMeta.display}
+                      </div>
                       <div className="fav-metric-lbl">Kalite</div>
                     </div>
                   </div>

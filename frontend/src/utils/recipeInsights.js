@@ -64,6 +64,8 @@ export const applyRecipeFilters = (recipes, activeFilters, options = {}) => {
   });
 };
 
+export const HEALTH_SCORE_MAX_PORTION = 99;
+
 export const getHealthTone = (score = 0) => {
   if (score >= 80) return { bg: '#dcfce7', text: '#166534', chip: '#16a34a' };
   if (score >= 60) return { bg: '#dbeafe', text: '#1e40af', chip: '#2563eb' };
@@ -76,6 +78,54 @@ export const getHealthGrade = (score = 0) => {
   if (score >= 60) return 'B kalite';
   if (score >= 50) return 'C kalite';
   return 'D kalite';
+};
+
+const normalizeGradeLetter = (value) => {
+  const grade = String(value || '').trim().charAt(0).toUpperCase();
+  return ['A', 'B', 'C', 'D'].includes(grade) ? grade : null;
+};
+
+export const hasCalculatedHealthScore = (value) => (
+  value !== null
+  && value !== undefined
+  && value !== ''
+  && Number.isFinite(Number(value))
+);
+
+export const getHealthMeta = (recipeOrScore) => {
+  const isObject = recipeOrScore && typeof recipeOrScore === 'object';
+  const scoreValue = isObject ? recipeOrScore.health_score : recipeOrScore;
+  const hasScore = hasCalculatedHealthScore(scoreValue);
+  const score = hasScore ? Math.max(0, Math.min(100, Number(scoreValue))) : null;
+  const backendGrade = isObject ? normalizeGradeLetter(recipeOrScore.health_grade) : null;
+  const grade = backendGrade || (hasScore ? getHealthGrade(score).split(' ')[0] : null);
+
+  if (!grade) {
+    return {
+      hasScore: false,
+      score: null,
+      grade: null,
+      label: 'Hesaplanmadı',
+      display: '-',
+      tone: { bg: 'rgba(148, 163, 184, 0.16)', text: '#64748b', chip: '#94a3b8' },
+    };
+  }
+
+  const gradeScore = score ?? ({ A: 80, B: 60, C: 50, D: 0 }[grade] || 0);
+  return {
+    hasScore,
+    score,
+    grade,
+    label: `${grade} Kalite`,
+    display: grade,
+    tone: getHealthTone(gradeScore),
+  };
+};
+
+export const normalizeServingPortion = (value, max = HEALTH_SCORE_MAX_PORTION) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 1;
+  return Math.min(max, Math.max(1, Math.trunc(number)));
 };
 
 export const stripHtml = (value) => (

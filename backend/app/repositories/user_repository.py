@@ -63,6 +63,19 @@ def find_daily_log(db: Session, user_id: int, log_id: int) -> DailyLog | None:
     )
 
 
+def find_daily_log_by_recipe_meal(db: Session, user_id: int, recipe_id: int, log_date, meal_type: str) -> DailyLog | None:
+    return (
+        db.query(DailyLog)
+        .filter(
+            DailyLog.user_id == user_id,
+            DailyLog.recipe_id == recipe_id,
+            DailyLog.log_date == log_date,
+            DailyLog.meal_type == meal_type,
+        )
+        .first()
+    )
+
+
 def find_daily_log_meal_types(db: Session, user_id: int, log_date) -> set[str]:
     existing_logs = (
         db.query(DailyLog.meal_type)

@@ -48,6 +48,23 @@ def _coerce_decimal(value):
         return None
 
 
+def _macro_for_storage(recipe_data: dict, key: str):
+    value = _coerce_decimal(recipe_data.get(key))
+    if value is None:
+        return None
+
+    source = (recipe_data.get("source") or "").strip().lower()
+    if source in {"yemekcom", "yemekcom_diet"}:
+        try:
+            serving = int(recipe_data.get("serving") or 1)
+        except (TypeError, ValueError):
+            serving = 1
+        if serving > 1:
+            return value * serving
+
+    return value
+
+
 def save_scraped_recipe(db: Session, recipe_data: dict):
     recipe_name = (recipe_data.get("title") or "").strip()
     source_url = (recipe_data.get("source_url") or "").strip() or None
@@ -73,10 +90,10 @@ def save_scraped_recipe(db: Session, recipe_data: dict):
         "cooking_method": recipe_data.get("cooking_method"),
         "total_time_minutes": recipe_data.get("total_time_minutes"),
         "serving": recipe_data.get("serving"),
-        "calorie": _coerce_decimal(recipe_data.get("calorie")),
-        "protein": _coerce_decimal(recipe_data.get("protein")),
-        "carbohydrate": _coerce_decimal(recipe_data.get("carbohydrate")),
-        "fat": _coerce_decimal(recipe_data.get("fat")),
+        "calorie": _macro_for_storage(recipe_data, "calorie"),
+        "protein": _macro_for_storage(recipe_data, "protein"),
+        "carbohydrate": _macro_for_storage(recipe_data, "carbohydrate"),
+        "fat": _macro_for_storage(recipe_data, "fat"),
         "image_url": recipe_data.get("image_url") or None,
     }
 

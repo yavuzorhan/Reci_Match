@@ -16,7 +16,7 @@ import {
 
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
-import { getHealthGrade, normalizeCookingType } from '../utils/recipeInsights';
+import { getHealthMeta, normalizeCookingType } from '../utils/recipeInsights';
 
 const fallbackSelectedIngredients = ['Tavuk Göğsü', 'Avokado', 'Ispanak', 'Kinoa'];
 
@@ -46,12 +46,6 @@ const formatNumber = (value) => {
   return number % 1 === 0 ? number.toString() : number.toFixed(1);
 };
 
-const titleCaseGrade = (value, score) => {
-  const raw = value || getHealthGrade(score || 0);
-  const grade = String(raw).split(' ')[0].toUpperCase();
-  return `${grade} Kalite`;
-};
-
 const getRecipeTime = (recipe) => (
   recipe.total_time_minutes
     || recipe.preparation_time
@@ -79,7 +73,7 @@ const normalizeRecipe = (recipe) => ({
   id: recipe.id,
   source: recipe,
   title: recipe.name || 'Sağlıklı Tarif',
-  grade: titleCaseGrade(recipe.health_grade, recipe.health_score),
+  healthMeta: getHealthMeta(recipe),
   match: getRecipeMatch(recipe),
   time: `${getRecipeTime(recipe)} dk`,
   calories: `${formatNumber(recipe.calorie)} kcal`,
@@ -158,8 +152,8 @@ const RecipeCard = ({ recipe, isFavorite, onFavorite, onInspect }) => (
       )}
       <div className="healthy-card-overlay" />
       <div className="healthy-card-badges">
-        <span className={recipe.grade.startsWith('A') ? 'grade-a' : 'grade-b'}>
-          {recipe.grade}
+        <span style={{ background: recipe.healthMeta.tone.chip }}>
+          {recipe.healthMeta.label}
         </span>
         <span>%{recipe.match} Eşleşme</span>
       </div>
@@ -212,7 +206,7 @@ const RecipeCard = ({ recipe, isFavorite, onFavorite, onInspect }) => (
 );
 
 const HealthyMenu = () => {
-  const { user, favorites, toggleFavorite, fetchHealthyRecipes, pantryIngredients } = useApp();
+  const { favorites, toggleFavorite, fetchHealthyRecipes, pantryIngredients } = useApp();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -268,7 +262,7 @@ const HealthyMenu = () => {
         if (!haystack.includes(query)) return false;
       }
 
-      if (activeFilters.includes('A Kalite') && !recipe.grade.startsWith('A')) return false;
+      if (activeFilters.includes('A Kalite') && recipe.healthMeta.grade !== 'A') return false;
       if (activeFilters.includes('Yüksek Protein') && recipe.proteinValue < 20) return false;
       if (activeFilters.includes('Düşük Kalori') && recipe.caloriesValue > 450) return false;
       if (activeFilters.includes('Dengeli Makro') && !recipe.tags.some((tag) => String(tag).toLocaleLowerCase('tr-TR').includes('makro'))) return false;

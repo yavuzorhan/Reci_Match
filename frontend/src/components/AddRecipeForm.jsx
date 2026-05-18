@@ -4,6 +4,7 @@ import { CloudUpload, Search, Info, X } from 'lucide-react';
 import ManualIngredientNutritionModal from './ManualIngredientNutritionModal';
 import './AddRecipeForm.css';
 import { API_BASE } from '../config';
+import { HEALTH_SCORE_MAX_PORTION, normalizeServingPortion } from '../utils/recipeInsights';
 
 const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
   const { user, addCustomRecipe, updateCustomRecipe, addCustomIngredient, createManualIngredient, uploadRecipeImage } = useApp();
@@ -192,9 +193,9 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
     if (!formData.name) return setError('Tarif adı zorunludur.');
     if (ingredients.length === 0) return setError('En az bir malzeme eklemelisiniz.');
 
-    const servingCount = parseInt(formData.serving) || 1;
-    if (servingCount < 1 || servingCount > 20) {
-      alert('Porsiyon sayısı 1 ile 20 arasında olmalıdır.');
+    const servingCount = Number(formData.serving);
+    if (!Number.isFinite(servingCount) || servingCount < 1 || servingCount > HEALTH_SCORE_MAX_PORTION) {
+      alert(`Porsiyon sayısı 1 ile ${HEALTH_SCORE_MAX_PORTION} arasında olmalıdır.`);
       return;
     }
 
@@ -281,9 +282,16 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
                   type="number"
                   name="serving"
                   min="1"
-                  max="20"
+                  max={HEALTH_SCORE_MAX_PORTION}
+                  step="1"
                   value={formData.serving}
-                  onChange={handleChange}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setFormData(prev => ({
+                      ...prev,
+                      serving: value === '' ? '' : normalizeServingPortion(value),
+                    }));
+                  }}
                 />
               </div>
               <div>

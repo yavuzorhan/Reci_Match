@@ -506,7 +506,7 @@
 }
 .layout-shell[data-theme="light"] .fav-metric-val-quality,
 .layout-shell:not([data-theme="dark"]) .fav-metric-val-quality {
-  color: #0f766e !important;
+  color: inherit;
 }
 .layout-shell[data-theme="light"] .fav-metric-lbl,
 .layout-shell:not([data-theme="dark"]) .fav-metric-lbl {

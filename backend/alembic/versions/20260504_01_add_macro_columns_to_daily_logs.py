@@ -16,9 +16,9 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("daily_logs", sa.Column("protein_intake", sa.Numeric(6, 2), nullable=True))
-    op.add_column("daily_logs", sa.Column("carbohydrate_intake", sa.Numeric(6, 2), nullable=True))
-    op.add_column("daily_logs", sa.Column("fat_intake", sa.Numeric(6, 2), nullable=True))
+    op.execute("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS protein_intake NUMERIC(6, 2)")
+    op.execute("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS carbohydrate_intake NUMERIC(6, 2)")
+    op.execute("ALTER TABLE daily_logs ADD COLUMN IF NOT EXISTS fat_intake NUMERIC(6, 2)")
 
 
 def downgrade() -> None:
