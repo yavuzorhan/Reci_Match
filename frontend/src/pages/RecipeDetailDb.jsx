@@ -22,7 +22,7 @@ import {
 import Layout from '../components/Layout';
 import RecipeRevisionModal from '../components/RecipeRevisionModal';
 import { useApp } from '../context/AppContext';
-import { getHealthGrade, stripHtml } from '../utils/recipeInsights';
+import { getHealthGrade, getHealthTone, stripHtml } from '../utils/recipeInsights';
 
 const splitPreparationSteps = (value) => {
   const cleaned = stripHtml(value)
@@ -200,6 +200,7 @@ const RecipeDetailPage = () => {
   const availableIngredients = displayIngredients.slice(0, Math.min(2, displayIngredients.length));
   const optionalIngredients = displayIngredients.slice(availableIngredients.length);
   const healthGrade = recipe?.health_grade || getHealthGrade(recipe?.health_score ?? 0).split(' ')[0];
+  const healthTone = getHealthTone(recipe?.health_score ?? 0);
   const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
   const qualityTags = useMemo(() => getQualityTags(recipe, healthGrade), [recipe, healthGrade]);
   const healthLabels = useMemo(() => getHealthLabels(recipe), [recipe]);
@@ -416,10 +417,10 @@ const RecipeDetailPage = () => {
                   </div>
                 </div>
 
-                <strong>{getQualityTitle(healthGrade)}</strong>
+                <strong style={{ color: healthTone.chip }}>{getQualityTitle(healthGrade)}</strong>
                 <small>{getQualitySubtitle(healthGrade)}</small>
                 <div className="recipe-quality-meter">
-                  <i style={{ width: `${Math.max(12, Math.min(100, recipe.health_score || 92))}%` }} />
+                  <i style={{ width: `${Math.max(12, Math.min(100, recipe.health_score || 92))}%`, background: healthTone.chip, boxShadow: `0 0 18px ${healthTone.chip}60` }} />
                 </div>
                 <p>{qualityRationale}</p>
 

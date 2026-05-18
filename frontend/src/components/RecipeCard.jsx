@@ -1,17 +1,10 @@
 import React from 'react';
 import { ChefHat, Heart, Pencil, Trash2, Flame, UtensilsCrossed, Clock3, BookOpen, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { buildRecipeShortSummary, getHealthGrade } from '../utils/recipeInsights';
+import { buildRecipeShortSummary, getHealthGrade, getHealthTone } from '../utils/recipeInsights';
 import './RecipeCard.css';
 
-const getGradeColor = (score = 0) => {
-  if (score >= 80) return '#4edea3';
-  if (score >= 60) return '#44e2cd';
-  if (score >= 50) return '#ffb3af';
-  return '#ffb4ab';
-};
-
-const Metric = ({ icon = null, label, value, color = '#d4e4fa' }) => (
+const Metric = ({ icon = null, label, value, color = 'var(--text-primary)' }) => (
   <div className="recipes-metric">
     <small>{icon}{label}</small>
     <strong style={{ color }}>{value}</strong>
@@ -28,8 +21,9 @@ const RecipeCard = ({
   onClick
 }) => {
   const navigate = useNavigate();
-  const grade = getHealthGrade(recipe.health_score || 0).split(' ')[0];
-  const gradeColor = getGradeColor(recipe.health_score || 0);
+  const hasHealthScore = recipe.health_score != null && Number(recipe.health_score) > 0;
+  const grade = hasHealthScore ? getHealthGrade(Number(recipe.health_score)).split(' ')[0] : '-';
+  const gradeColor = hasHealthScore ? getHealthTone(Number(recipe.health_score)).chip : 'var(--text-secondary)';
 
   const handleClick = () => {
     if (onClick) {
@@ -111,7 +105,7 @@ const RecipeCard = ({
           <Metric icon={<Flame size={13} />} label="Kalori" value={recipe.calorie ? Math.round(recipe.calorie) : '-'} />
           <Metric icon={<UtensilsCrossed size={13} />} label="Protein" value={recipe.protein ? `${Math.round(recipe.protein)}g` : '-'} />
           <Metric icon={<Clock3 size={13} />} label="Süre" value={`${recipe.total_time_minutes || recipe.preparation_time_minutes || 25} dk`} />
-          <Metric label="Kalite" value={recipe.health_score ? grade : '-'} color={recipe.health_score ? gradeColor : '#d4e4fa'} />
+          <Metric label="Kalite" value={grade} color={gradeColor} />
         </div>
 
         <button type="button" className="recipes-detail-button">

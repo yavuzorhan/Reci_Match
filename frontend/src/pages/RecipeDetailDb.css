@@ -534,6 +534,7 @@
   border-radius: inherit;
   background: linear-gradient(90deg, #18c98b, var(--noct-accent));
   box-shadow: 0 0 18px rgba(78,222,163,0.38);
+  transition: background 0.3s ease;
 }
 
 .recipe-quality-card p {
@@ -812,9 +813,9 @@
   color: #1f332d !important;
 }
 .layout-shell[data-theme="light"] .recipe-quality-head h2,
-.layout-shell[data-theme="light"] .recipe-quality-card > strong,
-.layout-shell:not([data-theme="dark"]) .recipe-quality-head h2,
-.layout-shell:not([data-theme="dark"]) .recipe-quality-card > strong { color: #1f332d !important; }
+.layout-shell:not([data-theme="dark"]) .recipe-quality-head h2 { color: #1f332d !important; }
+/* NOTE: .recipe-quality-card > strong intentionally has NO !important override
+   so the inline healthTone.chip color from RecipeDetailDb.jsx takes effect */
 .layout-shell[data-theme="light"] .recipe-quality-head span,
 .layout-shell[data-theme="light"] .recipe-quality-card > small,
 .layout-shell:not([data-theme="dark"]) .recipe-quality-head span,
@@ -825,5 +826,40 @@
   border: 1px solid rgba(16,185,129,0.15) !important;
   color: #1f332d !important;
 }
-.layout-shell[data-theme="light"] .recipe-quality-card p,
-.layout-shell:not([data-theme="dark"]) .recipe-quality-card p { color: var(--text-secondary) !important; }
+.layout-shell[data-theme="light"] .recipe-quality-head span,
+.layout-shell[data-theme="light"] .recipe-quality-card > small,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-head span,
+.layout-shell:not([data-theme="dark"]) .recipe-quality-card > small { color: #4b6358 !important; }
+
+/* GÖREV B — Hero overlay açık tema okunabilirlik düzeltmesi */
+.layout-shell[data-theme="light"] .recipe-hero-overlay,
+.layout-shell:not([data-theme="dark"]) .recipe-hero-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.52) 50%,
+    rgba(255, 255, 255, 0.12) 100%
+  ) !important;
+}
+
+.layout-shell[data-theme="light"] .recipe-hero-content p,
+.layout-shell:not([data-theme="dark"]) .recipe-hero-content p {
+  color: rgba(20, 50, 35, 0.92) !important;
+}
+
+.layout-shell[data-theme="light"] .recipe-stat-row span,
+.layout-shell:not([data-theme="dark"]) .recipe-stat-row span {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(16, 185, 129, 0.18) !important;
+  color: #1f332d !important;
+}
+
+.layout-shell[data-theme="light"] .recipe-stat-row svg,
+.layout-shell:not([data-theme="dark"]) .recipe-stat-row svg {
+  color: #10b981 !important;
+}
+
+.layout-shell[data-theme="light"] .recipe-image-fallback,
+.layout-shell:not([data-theme="dark"]) .recipe-image-fallback {
+  background: linear-gradient(145deg, #d4f0e2, #eaf7f0) !important;
+}
