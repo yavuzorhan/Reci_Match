@@ -949,6 +949,23 @@ GEMINI_API_KEY=...
 # 13. Oturum Günlüğü
 ---
 
+## [2026-05-18] Oturum 4 — daily_logs macro sütunları, kalite renkleri, açık tema, porsiyon
+
+**Model:** `claude-sonnet-4-6`
+
+**Değiştirilen Dosyalar:**
+- `backend/alembic/versions/20260518_01_manual.sql` — YENİ: daily_logs protein/carbohydrate/fat_intake sütunları için psql/pgAdmin ile çalıştırılabilir manuel SQL (alembic 20260504_01 zaten vardı, DB'ye uygulanmamış olabilir)
+- `frontend/src/utils/recipeInsights.js` — getHealthTone: B bandı rengi teal (#14b8a6) → mavi (#2563eb/bg #dbeafe/text #1e40af), C bandı chip #f97316 → #ea580c
+- `frontend/src/pages/RecipeDetailDb.css` — hero overlay gradient güçlendirildi (rgba(0,0,0,0.82)), stat-row badge arka planı rgba(0,0,0,0.5), hero içerik metni rgba(255,255,255,0.95); açık tema için recipe-quality-card p → var(--text-secondary)
+- `frontend/src/pages/RecipeDetailDb.jsx` — fetchRecipeById'dan dönen data.serving ile setServingCount başlatıldı (porsiyon dropdown tarifin orijinal porsiyonuyla açılıyor)
+
+**Notlar:**
+- models.py DailyLog + user_service.py add_daily_log + alembic migration hepsi 20260504 oturumunda zaten eklenmişti; sorun migration'ın PostgreSQL'e uygulanmamış olması → 20260518_01_manual.sql ile hızlı fix
+- Overlay hardcoded siyah-transparan kullanabilir çünkü position:absolute, her zaman görsel üzerine oturuyor
+- Porsiyon state useEffect içinde data yüklendikten sonra set ediliyor (normalizePortion sınırlaması korunuyor: 1-20 arası)
+
+---
+
 ## [2026-05-09] Oturum 3 — HealthyMenu, Pantry, Favorites, Log Hatası
 
 **Model:** `claude-haiku` (CSS) + `claude-sonnet` (backend/JSX)

@@ -172,6 +172,7 @@ const RecipeDetailPage = () => {
         const data = await fetchRecipeById(id);
         if (!cancelled) {
           setRecipe(data);
+          setServingCount(normalizePortion(data?.serving || 1));
         }
       } catch (err) {
         console.error('Fetch error:', err);
