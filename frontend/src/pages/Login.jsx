@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles, Sun, Moon } from 'lucide-react';
+import { ArrowRight, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
 import reciMatchLogo from '../assets/recimatch-logo.png';
@@ -10,7 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { setUser, setProfile, isDarkMode, toggleDarkMode } = useApp();
+  const { setUser, setProfile } = useApp();
   const navigate = useNavigate();
 
   const parseResponse = async (response) => {
@@ -53,16 +53,7 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
-      <button 
-        type="button" 
-        className="auth-theme-toggle" 
-        onClick={toggleDarkMode}
-        aria-label="Temayı Değiştir"
-      >
-        {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
-
+    <div className="auth-shell" data-theme="light">
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 

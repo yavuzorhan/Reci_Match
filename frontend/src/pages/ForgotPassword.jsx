@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import './Login.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Mail, ShieldCheck, Sparkles, Undo2 } from 'lucide-react';
+import { ArrowRight, Mail, ShieldCheck, Undo2 } from 'lucide-react';
 import { API_BASE } from '../config';
 import reciMatchLogo from '../assets/recimatch-logo.png';
 
@@ -39,42 +40,42 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" data-theme="light">
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 
       <div className="register-layout">
         <section className="register-showcase">
-          <div className="showcase-badge">
-            <img src={reciMatchLogo} alt="" className="badge-icon" />
-            <span>ReciMatch</span>
+          <div className="brand-hero">
+            <img src={reciMatchLogo} alt="ReciMatch Logo" className="hero-logo" />
+            <h2 className="hero-title">ReciMatch</h2>
           </div>
 
-          <h1>Hesabina guvenli sekilde yeniden eris.</h1>
+          <h1>Hesabına güvenli şekilde yeniden eriş.</h1>
           <p>
-            E-posta adresini gir, sifre sifirlama kodunu gonderelim. Birkac adim sonra yeniden
-            hesabina donebilirsin.
+            E-posta adresini gir, şifre sıfırlama kodunu gönderelim. Birkaç adım sonra yeniden
+            hesabına dönebilirsin.
           </p>
 
           <div className="showcase-grid">
             <div className="showcase-card">
               <Mail size={20} />
               <div>
-                <strong>Hizli kod gonderimi</strong>
+                <strong>Hızlı kod gönderimi</strong>
                 <span>E-posta adresine doğrulama kodu yönlendirilir.</span>
               </div>
             </div>
             <div className="showcase-card">
               <ShieldCheck size={20} />
               <div>
-                <strong>Guvenli sifirlama</strong>
+                <strong>Güvenli sıfırlama</strong>
                 <span>Kod doğrulaması olmadan şifre değişimi yapılmaz.</span>
               </div>
             </div>
             <div className="showcase-card">
               <Undo2 size={20} />
               <div>
-                <strong>Kolay geri donus</strong>
+                <strong>Kolay geri dönüş</strong>
                 <span>Yeni şifreyle doğrudan giriş ekranına dönersin.</span>
               </div>
             </div>
@@ -92,7 +93,7 @@ const ForgotPassword = () => {
           {error && <div className="auth-message error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="register-form">
-            <div>
+            <div className="auth-input-group">
               <label>E-posta</label>
               <input
                 type="email"
@@ -104,7 +105,7 @@ const ForgotPassword = () => {
             </div>
 
             <button type="submit" className="primary-btn register-submit" disabled={loading}>
-              <span>{loading ? 'Gonderiliyor...' : 'Kod Gonder'}</span>
+              <span>{loading ? 'Gönderiliyor...' : 'Kod Gönder'}</span>
               <ArrowRight size={18} />
             </button>
           </form>
