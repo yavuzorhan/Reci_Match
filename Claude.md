@@ -15,7 +15,7 @@
 | Frontend  | React · Vite · React Router · Context API · CSS   |
 | E-posta   | SMTP (mailer.py) — marka adı: **ReciMatch**        |
 | AI        | Gemini 2.5 Flash (tarif revizyonu + besin değeri) |
-| Scraper   | yemekcom, bbcgoodfood, eatingwell, skinnytaste     |
+| Scraper   | yemekcom                                           |
 
 **GitHub:** `https://github.com/yavuzorhan/Reci_Match.git`  
 **Branch:** `main`
@@ -98,7 +98,7 @@ Açık tema override'larını şu formatta yaz:
 ### Besin Değerleri (KRİTİK)
 - Tüm `calorie`, `protein`, `carbohydrate`, `fat` değerleri **1 porsiyon** için saklanır
 - `yemekcom_scraper.py`: `per_serving_calorie` direkt saklanır (`* servings` YAPILMAZ)
-- `bbcgoodfood_scraper.py`: zaten "Per serving" veri çekiyor — dokunma
+- Eski BBC Good Food / EatingWell / Skinnytaste scraper hattı kaldırıldı; aktif scraper kaynağı yemek.com'dur.
 - Tarif detayda gösterim: `calorie * servingCount` ile hesaplanır
 
 ### Kullanıcı İzolasyonu
@@ -143,6 +143,9 @@ const { isDarkMode } = useApp();
 - Auth sayfasında `data-theme` attribute'u olmadan bırakma
 - E-postalarda "Akıllı Tarif Sistemi" yazma
 - `user_id` göndermeden `/api/recipes` isteği yapma (izolasyon bozulur)
+- AddRecipeForm'da birim için serbest text input kullanma → `<select>` (Gram/ml/Adet) kullan
+- `ensure_nutrition_for_ingredient`'ta DB'de bulunan malzeme için `manual_required` dönme → `resolved` döndür
+- Gemini revizyon çıktısındaki malzemeleri filtrelemeden kaydetme → orijinal + kullanıcı eklentileri dışındakileri filtrele
 
 ---
 
@@ -278,7 +281,7 @@ Besin değeri altyapısı USDA FoodData Central API'den Gemini AI'a taşındı.
 ### Kritik Dosyalar
 | Dosya | Görev |
 |---|---|
-| `app/services/gemini_client.py` | Gemini'ye structured JSON ile 15 besin alanı sorgusu |
+| `app/services/gemini_client.py` | Gemini'ye structured JSON ile 8 temel besin alanı sorgusu |
 | `app/services/nutrition_resolver_service.py` | 2 katmanlı çözüm mantığı |
 | `app/services/ingredient_resolver_service.py` | `resolve_ingredient_for_user()`, `upsert_ingredient_nutrition()` |
 | `app/services/ingredient_nutrition_service.py` | Toplu backfill ve tek malzeme sync |
@@ -288,3 +291,17 @@ Besin değeri altyapısı USDA FoodData Central API'den Gemini AI'a taşındı.
 - `try_usda` parametresi kullanma → `try_ai` kullan
 - `nutrition_value` relationship'i kontrol etme → `ingredient.calorie_per_100g > 0` kullan
 - `IngredientNutritionValue` veya `IngredientUsdaMapping` import etme (sınıflar silindi)
+
+### Besin Değeri Resolve Davranışı (Mayıs 2026)
+- `ensure_nutrition_for_ingredient`: calorie > 0 ise direkt "resolved", 0 ise Gemini çağrılır
+- Gemini başarılı → besin değeri yazılır, "resolved" döner
+- Gemini başarısız (None) → DB'de bilinen malzeme ise yine "resolved" döner (0 besiniyle), bilinmeyen malzeme ise "manual_required"
+- Backfill endpoint: `POST /api/ingredients/nutrition/sync-missing` body: `{"limit": 200}`
+
+### Ingredient Inline Nutrition Daraltmasi (Mayis 2026)
+- Health score hesaplamasi gercekte 8 alan kullanir: `calorie_per_100g`, `protein_per_100g`, `carbohydrate_per_100g`, `fat_per_100g`, `saturated_fat_per_100g`, `fiber_per_100g`, `sugar_per_100g`, `sodium_mg_per_100g`.
+- `ingredients` tablosunda aktif inline besin kolonlari: `calorie_per_100g`, `protein_per_100g`, `carbohydrate_per_100g`, `fat_per_100g`, `saturated_fat_per_100g`, `fiber_per_100g`, `sugar_per_100g`, `sodium_mg_per_100g`, `nutrition_source`, `nutrition_confidence`.
+- `NUTRITION_FIELDS` guncel tuple: `calorie_per_100g`, `protein_per_100g`, `carbohydrate_per_100g`, `fat_per_100g`, `saturated_fat_per_100g`, `fiber_per_100g`, `sugar_per_100g`, `sodium_mg_per_100g`.
+- Kaldirilan kolonlar: `added_sugar_per_100g`, `trans_fat_per_100g`, `cholesterol_mg_per_100g`, `potassium_mg_per_100g`, `calcium_mg_per_100g`, `iron_mg_per_100g`, `vitamin_d_mcg_per_100g`. Neden: `REQUIRED_HEALTH_FIELDS` ve score hesaplamasi bu alanlari kullanmiyor; potasyum/kalsiyum/demir/D vitamini sadece eski referans deger olarak duruyordu.
+- Temel malzemelerin eksik besin degerleri manuel yaklasik degerlerle doldurulabilir; bu kayitlarda `nutrition_source = 'manual'`, `nutrition_confidence = 0.9` kullanilir.
+- `recipe_health.py`, eski `nutrition_value` relationship'i yerine dogrudan `ingredient` inline kolonlarini okur.

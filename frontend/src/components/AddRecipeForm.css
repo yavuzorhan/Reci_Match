@@ -284,6 +284,18 @@
   border-color: #10b981;
 }
 
+.arf-chip-select {
+  appearance: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+  width: 6rem;
+}
+
+.arf-chip-select option {
+  background-color: #122131;
+  color: #d4e4fa;
+}
+
 .arf-chip-close {
   color: #10b981;
   cursor: pointer;

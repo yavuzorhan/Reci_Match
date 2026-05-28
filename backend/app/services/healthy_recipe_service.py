@@ -7,7 +7,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 
-HEALTHY_SOURCES = ("bbcgoodfood", "eatingwell", "skinnytaste", "yemekcom_diet")
+HEALTHY_SOURCES = ("yemekcom_diet",)
 
 
 HEALTHY_COMPLETENESS_CONDITION = """

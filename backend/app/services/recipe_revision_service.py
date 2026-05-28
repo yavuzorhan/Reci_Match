@@ -211,7 +211,26 @@ Donmen gereken JSON semasi:
                 detail="Gemini API günlük istek limiti doldu. Lütfen birkaç dakika sonra tekrar deneyin.",
             )
         raise HTTPException(status_code=502, detail=f"Gemini API hatası: {exc}")
-    return _parse_json_response(getattr(response, "text", "") or "")
+
+    parsed = _parse_json_response(getattr(response, "text", "") or "")
+
+    # Filter out ingredients Gemini hallucinated — only original + requested additions allowed
+    if parsed.get("ingredients"):
+        from app.utils.recipe_helpers import ascii_fold
+        removed_norms = {ascii_fold(r) for r in requested_removals if r}
+        allowed_norms = (
+            {ascii_fold(n) for n in original_ingredient_names if n} - removed_norms
+            | {ascii_fold(n) for n in requested_additions if n}
+        )
+        if allowed_norms:
+            filtered = [
+                item for item in parsed["ingredients"]
+                if ascii_fold(item.get("ingredient_name", "")) in allowed_norms
+            ]
+            if filtered:
+                parsed["ingredients"] = filtered
+
+    return parsed
 
 
 def _parse_json_response(text: str) -> dict:

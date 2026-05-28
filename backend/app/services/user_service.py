@@ -1,6 +1,7 @@
 """
 Kullanıcı (User) profil iş mantığı - profil, favoriler ve günlük kayıtlar.
 """
+import logging
 from datetime import date, datetime, timedelta, timezone
 
 from fastapi import HTTPException
@@ -98,7 +99,7 @@ def update_profile(
     except HTTPException:
         raise
     except Exception as exc:
-        print(f"Update profile error: {exc}")
+        logging.error("Update profile error: %s", exc)
         raise HTTPException(status_code=500, detail="Profil güncellenirken bir hata oluştu.")
 
 

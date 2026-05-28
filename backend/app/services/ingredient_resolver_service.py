@@ -94,7 +94,8 @@ async def ensure_nutrition_for_ingredient(
         )
         return ResolveResult(status="resolved", ingredient=ingredient)
 
-    return ResolveResult(status="manual_required", ingredient_name=ingredient.ingredient_name)
+    # Ingredient is known in DB (calorie just unpopulated) — resolve without blocking
+    return ResolveResult(status="resolved", ingredient=ingredient)
 
 
 def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) -> Ingredient | None:
@@ -249,13 +250,6 @@ def serialize_ingredient(ingredient: Ingredient) -> dict:
         "fiber_per_100g": float(ingredient.fiber_per_100g or 0),
         "sugar_per_100g": float(ingredient.sugar_per_100g or 0),
         "sodium_mg_per_100g": float(ingredient.sodium_mg_per_100g or 0),
-        "added_sugar_per_100g": float(ingredient.added_sugar_per_100g or 0),
-        "trans_fat_per_100g": float(ingredient.trans_fat_per_100g or 0),
-        "cholesterol_mg_per_100g": float(ingredient.cholesterol_mg_per_100g or 0),
-        "potassium_mg_per_100g": float(ingredient.potassium_mg_per_100g or 0),
-        "calcium_mg_per_100g": float(ingredient.calcium_mg_per_100g or 0),
-        "iron_mg_per_100g": float(ingredient.iron_mg_per_100g or 0),
-        "vitamin_d_mcg_per_100g": float(ingredient.vitamin_d_mcg_per_100g or 0),
         "nutrition_source": ingredient.nutrition_source,
         "nutrition_confidence": float(ingredient.nutrition_confidence or 0),
         "is_verified": bool(ingredient.is_verified),

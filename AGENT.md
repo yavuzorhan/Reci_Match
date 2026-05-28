@@ -19,12 +19,12 @@ bir web uygulamasıdır.
 
 | Katman | Teknoloji |
 |--------|-----------|
-| Backend | Python 3.11+, FastAPI, SQLAlchemy ORM, Pydantic v2 |
+| Backend | Python 3.14, FastAPI, SQLAlchemy ORM, Pydantic v2 |
 | Veritabanı | PostgreSQL (production), SQLite (geliştirme) |
 | Kimlik doğrulama | bcrypt şifre hash, OTP e-posta doğrulama |
-| AI Revizyonu | Google Gemini 2.5 Flash (`google-generativeai`) |
-| Scraper | BeautifulSoup4, requests, httpx |
-| Frontend | React 18, Vite, React Router v6, Context API |
+| AI Revizyonu | Google Gemini 2.5 Flash (`google-genai`) |
+| Scraper | BeautifulSoup4, requests |
+| Frontend | React 19, Vite, React Router v7, Context API |
 | İkonlar | lucide-react |
 | E-posta | Python smtplib, SMTP, marka: **ReciMatch** |
 
@@ -78,9 +78,7 @@ Reci_Match/
 │   │       └── recipe_helpers.py      ← Kalori hesaplama, gram dönüşüm yardımcıları
 │   ├── scraper/
 │   │   ├── yemekcom_scraper.py        ← yemek.com (per-serving kalori saklar)
-│   │   ├── bbcgoodfood_scraper.py     ← BBC Good Food (per-serving, dokunma)
-│   │   ├── eatingwell_scraper.py      ← EatingWell
-│   │   └── skinnytaste_scraper.py     ← Skinnytaste
+│   │   └── import_yemekcom_recipes.py ← yemek.com tarif importu
 │   └── scripts/
 │       ├── backfill_health_scores.py  ← Mevcut tariflere skor hesapla
 │       └── backfill_recipe_ingredient_grams.py ← Gram dönüşümlerini doldur
@@ -167,7 +165,7 @@ fat             PER SERVING
 serving         Kaç kişilik (tarif tanımında, hesaplamada kullanılır)
 health_score    0-100 arası (backfill scripti ile doldurulur)
 health_grade    A/B/C/D
-source          yemekcom | bbcgoodfood | eatingwell | skinnytaste | custom
+source          yemekcom | yemekcom_diet | custom
 is_active       Soft delete için
 ```
 
@@ -844,9 +842,8 @@ Sayfalar karanlık arka plana hardcode sahipse, açık temada override gerekir:
 | Scraper | Kaynak | Dil | Per-serving? |
 |---------|--------|-----|--------------|
 | yemekcom_scraper.py | yemek.com | Türkçe | EVET (düzeltildi) |
-| bbcgoodfood_scraper.py | BBC Good Food | İngilizce | EVET (doğuştan) |
-| eatingwell_scraper.py | EatingWell | İngilizce | EVET |
-| skinnytaste_scraper.py | Skinnytaste | İngilizce | EVET |
+
+BBC Good Food, EatingWell ve Skinnytaste scraper/import dosyaları kullanılmayan kaynaklar olduğu için temizlendi.
 
 ### 9.2 Import Çıktısı
 
@@ -868,7 +865,7 @@ Her scraper şu alanları döndürür:
   "instructions": str,
   "image_url": str,
   "source_url": str,
-  "source": "yemekcom|bbcgoodfood|...",
+  "source": "yemekcom|yemekcom_diet",
 }
 ```
 
@@ -953,6 +950,27 @@ GEMINI_API_KEY=...
 # 13. Oturum Günlüğü
 ---
 
+## [2026-05-28] Oturum 6 — 4 Bug Fix + Repo Senkronizasyon + CLAUDE.md Güncellemesi
+
+**Model:** `claude-sonnet-4-6`
+
+**Değiştirilen Dosyalar:**
+- `backend/app/services/ingredient_resolver_service.py` — BUG 2: `ensure_nutrition_for_ingredient` son satırı `manual_required` yerine `resolved` döndürüyor; DB'de bulunan malzeme için Gemini de başarısız olsa bile tarif oluşturma bloklanmıyor
+- `backend/app/services/recipe_revision_service.py` — BUG 4: `_revise_with_gemini` çıktısındaki malzemeler artık orijinal tarif + kullanıcı eklentilerine göre filtreleniyor; Gemini halüsinasyon malzemeleri kaydedilmiyor
+- `frontend/src/components/AddRecipeForm.jsx` — BUG 3: Malzeme satırındaki birim alanı serbest text input → `<select>` dropdown (Gram/ml/Adet); `handleAddIngredient` varsayılan birimi 'Adet'→'Gram' olarak düzeltildi
+- `frontend/src/components/AddRecipeForm.css` — `.arf-chip-select` stili eklendi
+- `CLAUDE.md` — Yapılmaması gerekenler + Besin değeri resolve davranışı bölümü güncellendi
+
+**Doğrulamalar:**
+- BUG 0 (repo sync): gemini_client.py + recipe_revision_service.py zaten `from google import genai` kullanıyor ✓; requirements.txt `google-genai` ✓
+- BUG 1 (tarif silme): `delete_custom_recipe` → `recipe_repository.delete_recipe` → soft delete (is_active=False) + cascade temizleme + `db.commit()` ✓; frontend `deleteCustomRecipe` doğru DELETE request ✓
+
+**Notlar:**
+- BUG 2 kök nedeni: ALTER TABLE ile eklenen kolon mevcut satırları DEFAULT 0 olarak doldurdu; global malzemeler (yumurta vb.) calorie=0 ile kaldı; Gemini çalışıyorsa otomatik doldurur; başarısız olursa artık bloklamaz
+- BUG 3: unit_to_grams fonksiyonu "Gram","ml","Adet" karşılıklarına zaten sahip ✓
+- BUG 4: `ascii_fold` recipe_helpers.py'den inline import edildi; filtre `(original - removed) | additions` mantığıyla çalışıyor; yapısal alternatifleri korumak istiyorsan kullanıcı `add_ingredients`'e eklemeli
+- Backfill gerekiyorsa: `POST /api/ingredients/nutrition/sync-missing` body: `{"limit": 200}`
+
 ## [2026-05-18] Oturum 5 — tarif porsiyon sistemi, tüm tarif macro normalizasyonu, porsiyon UI
 
 **Model:** `codex`
@@ -993,13 +1011,13 @@ GEMINI_API_KEY=...
 **Model:** `claude-sonnet-4-6`
 
 **Değiştirilen Dosyalar:**
-- `backend/alembic/versions/20260518_01_manual.sql` — YENİ: daily_logs protein/carbohydrate/fat_intake sütunları için psql/pgAdmin ile çalıştırılabilir manuel SQL (alembic 20260504_01 zaten vardı, DB'ye uygulanmamış olabilir)
+- `backend/scripts/migrate_daily_logs_macros.py` — daily_logs protein/carbohydrate/fat_intake sütunları için manuel DB düzeltme scripti
 - `frontend/src/utils/recipeInsights.js` — getHealthTone: B bandı rengi teal (#14b8a6) → mavi (#2563eb/bg #dbeafe/text #1e40af), C bandı chip #f97316 → #ea580c
 - `frontend/src/pages/RecipeDetailDb.css` — hero overlay gradient güçlendirildi (rgba(0,0,0,0.82)), stat-row badge arka planı rgba(0,0,0,0.5), hero içerik metni rgba(255,255,255,0.95); açık tema için recipe-quality-card p → var(--text-secondary)
 - `frontend/src/pages/RecipeDetailDb.jsx` — fetchRecipeById'dan dönen data.serving ile setServingCount başlatıldı (porsiyon dropdown tarifin orijinal porsiyonuyla açılıyor)
 
 **Notlar:**
-- models.py DailyLog + user_service.py add_daily_log + alembic migration hepsi 20260504 oturumunda zaten eklenmişti; sorun migration'ın PostgreSQL'e uygulanmamış olması → 20260518_01_manual.sql ile hızlı fix
+- models.py DailyLog + user_service.py add_daily_log daha önce eklenmişti; mevcut tek PC kurulumunda DB düzeltmeleri runtime guard/script yaklaşımıyla yönetiliyor
 - Overlay hardcoded siyah-transparan kullanabilir çünkü position:absolute, her zaman görsel üzerine oturuyor
 - Porsiyon state useEffect içinde data yüklendikten sonra set ediliyor (normalizePortion sınırlaması korunuyor: 1-20 arası)
 

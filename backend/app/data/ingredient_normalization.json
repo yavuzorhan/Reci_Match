@@ -1,0 +1,1283 @@
+{
+  "category_name_to_id": {
+    "Sebzeler": 1,
+    "Meyveler": 2,
+    "Balık ve Deniz Ürünleri": 4,
+    "Süt Ürünleri": 5,
+    "Bakliyatlar": 6,
+    "Tahıllar ve Unlu Ürünler": 7,
+    "Baharatlar": 8,
+    "Soslar ve Yağlar": 9,
+    "Diğer": 10,
+    "Peynirler": 13,
+    "Beyaz Et": 14,
+    "Şarküteri": 15,
+    "Kırmızı Et": 16,
+    "Çerezler": 17
+  },
+  "aliases": {
+    "elma sirkesi": "elma sirkesi",
+    "pirinc kremasi": "pirinc kremasi",
+    "pirinc unu": "pirinc unu",
+    "yumurta sarisi": "yumurta",
+    "yumurta beyazi": "yumurta",
+    "yumurta aki": "yumurta",
+    "cirpilmis yumurta": "yumurta",
+    "haslanmis yumurta": "yumurta",
+    "omlet": "yumurta",
+    "soyulmus patlican": "patlican",
+    "kozlenmis patlican": "patlican",
+    "orta boy patlican": "patlican",
+    "bostan patlicani": "patlican",
+    "kuru sogan": "sogan",
+    "mor sogan": "sogan",
+    "taze sogan": "sogan",
+    "arpacik sogan": "sogan",
+    "orta boy kuru sogan": "sogan",
+    "yemeklik dogranmis sogan": "sogan",
+    "rendelenmis sogan": "sogan",
+    "dogranmis sogan": "sogan",
+    "yesil biber": "biber",
+    "sivri biber": "biber",
+    "kapya biber": "biber",
+    "kirmizi biber": "biber",
+    "carliston biber": "biber",
+    "dolmalik biber": "biber",
+    "orta boy domates": "domates",
+    "dogranmis domates": "domates",
+    "rendelenmis domates": "domates",
+    "domates rendesi": "domates",
+    "haslanmis patates": "patates",
+    "orta boy patates": "patates",
+    "bebek patates": "patates",
+    "patates puresi": "patates",
+    "dere otu": "dereotu",
+    "buyukce salatalik": "salatalik",
+    "cekirdekleri cikarilmis zeytin": "zeytin",
+    "baklavalik yufka": "yufka",
+    "bayat ekmek ici": "ekmek",
+    "ekmek ici": "ekmek",
+    "sicak su": "su",
+    "kaynar su": "su",
+    "icme suyu": "su",
+    "limonun suyu": "limon suyu",
+    "soganin suyu": "sogan",
+    "taze cekilmis tane karabiber": "karabiber",
+    "degirmen karabiber": "karabiber",
+    "bitter cikolata": "cikolata",
+    "dovulmus ceviz": "ceviz",
+    "avuc iri kirilmis ceviz": "ceviz",
+    "cekirdeksiz uzum": "uzum",
+    "suzme yogurt": "suzme yogurt",
+    "labne peyniri": "labne peyniri",
+    "beyaz peynir": "beyaz peynir",
+    "kasar peyniri": "kasar peyniri",
+    "rendelenmis kasar peyniri": "kasar peyniri",
+    "lor peyniri": "lor peyniri",
+    "krem peynir": "krem peynir",
+    "mozzarella peyniri": "mozzarella peyniri",
+    "parmesan peyniri": "parmesan peyniri",
+    "tulum peyniri": "tulum peyniri",
+    "ezine peyniri": "ezine peyniri",
+    "keci peyniri": "keci peyniri",
+    "dil peyniri": "dil peyniri",
+    "orgu peyniri": "orgu peyniri",
+    "hellim peyniri": "hellim peyniri",
+    "tam yagli sut": "sut",
+    "yarim yagli sut": "sut",
+    "laktozsuz sut": "sut",
+    "sut kremasi": "krema",
+    "cig krema": "krema",
+    "cay kremasi": "krema",
+    "yogurt": "yogurt",
+    "kefir": "kefir",
+    "ayran": "ayran",
+    "kaymak": "kaymak",
+    "tereyagi": "tereyagi",
+    "kirmizi mercimek": "kirmizi mercimek",
+    "yesil mercimek": "yesil mercimek",
+    "sari mercimek": "sari mercimek",
+    "kuru fasulye": "kuru fasulye",
+    "barbunya fasulyesi": "barbunya",
+    "kuru barbunya": "barbunya",
+    "borulce": "borulce",
+    "kuru borulce": "borulce",
+    "mas fasulyesi": "mas fasulyesi",
+    "sogan tozu": "sogan",
+    "sarimsak tozu": "sarimsak",
+    "orta yagli kiyma": "dana kiyma",
+    "az yagli kiyma": "dana kiyma",
+    "kiyma": "dana kiyma",
+    "dana kusbasi eti": "kusbasi dana eti",
+    "kusbasi dana eti": "kusbasi dana eti",
+    "kusbasi et": "kusbasi dana eti",
+    "et kusbasi": "kusbasi dana eti",
+    "kusbasilik dana eti": "kusbasi dana eti",
+    "sotelik dana eti": "dana eti",
+    "dana kontrfile": "dana eti",
+    "bonfile": "dana eti",
+    "antrikot": "dana eti",
+    "et": "dana eti",
+    "kirmizi et": "dana eti",
+    "kuzu kusbasi eti": "kusbasi kuzu eti",
+    "koyun eti": "kuzu eti",
+    "tavuk gogsu": "tavuk gogsu",
+    "tavuk gogus": "tavuk gogsu",
+    "tavuk gogus eti": "tavuk gogsu",
+    "kusbasi tavuk gogsu": "tavuk gogsu",
+    "fileto tavuk gogsu": "tavuk gogsu",
+    "parcalanmis tavuk": "tavuk eti",
+    "butun tavuk": "butun tavuk",
+    "tavuk": "tavuk eti",
+    "tavuk eti": "tavuk eti",
+    "tavuk budu": "tavuk but",
+    "kemiksiz but eti tavuk": "tavuk but",
+    "kemiksiz but eti": "tavuk but",
+    "hindi": "hindi eti",
+    "hindi eti": "hindi eti",
+    "et suyu tablet": "et suyu",
+    "tavuk bulyon": "tavuk suyu",
+    "et bulyon": "et suyu",
+    "alabalik": "alabalik",
+    "cipura": "cipura",
+    "bruksel lahanasi": "bruksel lahanasi",
+    "cikolata": "cikolata",
+    "corek otu": "corek otu",
+    "kornison tursu": "kornison tursu",
+    "sivi yag": "sivi yag",
+    "yas maya": "yas maya",
+    "dut": "dut",
+    "pazi": "pazi",
+    "semiz otu": "semizotu",
+    "semizotu": "semizotu",
+    "kivircik": "kivircik",
+    "yeni dunya": "yeni dunya",
+    "narenciye": "narenciye",
+    "palamut": "palamut",
+    "mezgit": "mezgit",
+    "uskumru": "uskumru",
+    "sardalya": "sardalya",
+    "milfoy hamuru": "milfoy hamuru",
+    "lavas": "lavas",
+    "misirozu yagi": "misirozu",
+    "misirözü yağı": "misirozu",
+    "misirözü": "misirozu",
+    "toz paprika": "toz paprika",
+    "kavurma": "kavurma",
+    "karniyarik": "karniyarik",
+    "ketcap": "ketcap"
+  },
+  "phrase_rules": [
+    [
+      "pirinc kremasi",
+      "pirinc kremasi"
+    ],
+    [
+      "kuru uzum",
+      "kuru uzum"
+    ],
+    [
+      "domates salcasi",
+      "domates salcasi"
+    ],
+    [
+      "biber salcasi",
+      "biber salcasi"
+    ],
+    [
+      "nar eksisi",
+      "nar eksisi"
+    ],
+    [
+      "limon suyu",
+      "limon suyu"
+    ],
+    [
+      "portakal suyu",
+      "portakal suyu"
+    ],
+    [
+      "soya sosu",
+      "soya sosu"
+    ],
+    [
+      "elma sirkesi",
+      "elma sirkesi"
+    ],
+    [
+      "uzum sirkesi",
+      "sirke"
+    ],
+    [
+      "sirke",
+      "sirke"
+    ],
+    [
+      "tavuk suyu",
+      "tavuk suyu"
+    ],
+    [
+      "et suyu",
+      "et suyu"
+    ],
+    [
+      "kemik suyu",
+      "kemik suyu"
+    ],
+    [
+      "kabartma tozu",
+      "kabartma tozu"
+    ],
+    [
+      "karbonat",
+      "karbonat"
+    ],
+    [
+      "galeta unu",
+      "galeta unu"
+    ],
+    [
+      "misir nisastasi",
+      "misir nisastasi"
+    ],
+    [
+      "bugday nisastasi",
+      "bugday nisastasi"
+    ],
+    [
+      "nisasta",
+      "nisasta"
+    ],
+    [
+      "misir unu",
+      "misir unu"
+    ],
+    [
+      "misirozu",
+      "misirozu"
+    ],
+    [
+      "toz seker",
+      "toz seker"
+    ],
+    [
+      "pudra sekeri",
+      "pudra sekeri"
+    ],
+    [
+      "esmer seker",
+      "esmer seker"
+    ],
+    [
+      "vanilin",
+      "vanilin"
+    ],
+    [
+      "vanilya",
+      "vanilya"
+    ],
+    [
+      "kakao",
+      "kakao"
+    ],
+    [
+      "hindistan cevizi",
+      "hindistan cevizi"
+    ],
+    [
+      "ceviz ici",
+      "ceviz"
+    ],
+    [
+      "findik ici",
+      "findik"
+    ],
+    [
+      "antep fistigi",
+      "antep fistigi"
+    ],
+    [
+      "dolmalik fistik",
+      "dolmalik fistik"
+    ],
+    [
+      "cam fistigi",
+      "cam fistigi"
+    ],
+    [
+      "kus uzumu",
+      "kus uzumu"
+    ],
+    [
+      "asma yapragi",
+      "yaprak"
+    ],
+    [
+      "defne yapragi",
+      "defne yapragi"
+    ],
+    [
+      "bal kabagi",
+      "bal kabagi"
+    ],
+    [
+      "besamel sos",
+      "besamel sos"
+    ],
+    [
+      "zeytinyagi",
+      "zeytinyagi"
+    ],
+    [
+      "tereyagi",
+      "tereyagi"
+    ],
+    [
+      "aycicek yagi",
+      "aycicek yagi"
+    ],
+    [
+      "aci sos",
+      "aci sos"
+    ],
+    [
+      "toz paprika",
+      "toz paprika"
+    ],
+    [
+      "ketcap",
+      "ketcap"
+    ],
+    [
+      "hardal",
+      "hardal"
+    ],
+    [
+      "mayonez",
+      "mayonez"
+    ],
+    [
+      "tahin",
+      "tahin"
+    ],
+    [
+      "pekmez",
+      "pekmez"
+    ]
+  ],
+  "generic_stop_words": [
+    "adet",
+    "adetlik",
+    "gram",
+    "gr",
+    "kg",
+    "ml",
+    "lt",
+    "litre",
+    "bardagi",
+    "bardak",
+    "kasigi",
+    "kasik",
+    "cay",
+    "caybardagi",
+    "yemek",
+    "tatli",
+    "su",
+    "paket",
+    "demet",
+    "dal",
+    "dis",
+    "tane",
+    "dilim",
+    "fincan",
+    "kase",
+    "kup",
+    "top",
+    "boy",
+    "orta",
+    "buyuk",
+    "kucuk",
+    "yarim",
+    "ceyrek",
+    "tepeleme",
+    "yaklasik",
+    "kadar",
+    "biraz",
+    "az",
+    "cok",
+    "arzuya",
+    "gore",
+    "icin",
+    "uzeri",
+    "ekstra",
+    "olarak",
+    "ve",
+    "veya",
+    "ile",
+    "da",
+    "de",
+    "bulamak",
+    "kullanacagiz",
+    "kullanabilir",
+    "kullanabilirsiniz",
+    "olur",
+    "olabilir",
+    "gerekirse",
+    "robotta",
+    "cekilmis",
+    "temizlenmis",
+    "ayiklanmis",
+    "dogranmis",
+    "rendelenmis",
+    "ezilmis",
+    "cirpilmis",
+    "haslanmis",
+    "soyulmus",
+    "kizartmak",
+    "konserve",
+    "kisilik",
+    "bir",
+    "iki",
+    "uc",
+    "dort",
+    "bes",
+    "alti",
+    "yedi",
+    "sekiz",
+    "dokuz",
+    "on",
+    "birkac",
+    "bolca",
+    "azicik",
+    "sunum",
+    "oluyor",
+    "afiyet",
+    "olsun",
+    "harci",
+    "malzeme",
+    "malzemesi",
+    "ici",
+    "iciin",
+    "ic",
+    "uzerine",
+    "bagli",
+    "istege",
+    "hazir",
+    "pismemis",
+    "sosu",
+    "soslu",
+    "tarifi",
+    "tatlandirmak",
+    "servis",
+    "sunumluk"
+  ],
+  "root_keywords": [
+    [
+      "yumurta",
+      [
+        "omlet",
+        "yumurta"
+      ]
+    ],
+    [
+      "patlican",
+      [
+        "patlican"
+      ]
+    ],
+    [
+      "patates",
+      [
+        "patates"
+      ]
+    ],
+    [
+      "domates",
+      [
+        "domates"
+      ]
+    ],
+    [
+      "sogan",
+      [
+        "sogan"
+      ]
+    ],
+    [
+      "sarimsak",
+      [
+        "sarimsak"
+      ]
+    ],
+    [
+      "biber",
+      [
+        "biber"
+      ]
+    ],
+    [
+      "pirinc",
+      [
+        "pirinc"
+      ]
+    ],
+    [
+      "pirasa",
+      [
+        "pirasa"
+      ]
+    ],
+    [
+      "salatalik",
+      [
+        "salatalik"
+      ]
+    ],
+    [
+      "kabak",
+      [
+        "kabak"
+      ]
+    ],
+    [
+      "ispanak",
+      [
+        "ispanak"
+      ]
+    ],
+    [
+      "mantar",
+      [
+        "mantar"
+      ]
+    ],
+    [
+      "fasulye",
+      [
+        "fasulye"
+      ]
+    ],
+    [
+      "havuc",
+      [
+        "havuc"
+      ]
+    ],
+    [
+      "brokoli",
+      [
+        "brokoli"
+      ]
+    ],
+    [
+      "bruksel lahanasi",
+      [
+        "bruksel",
+        "lahanasi"
+      ]
+    ],
+    [
+      "karnabahar",
+      [
+        "karnabahar"
+      ]
+    ],
+    [
+      "bezelye",
+      [
+        "bezelye"
+      ]
+    ],
+    [
+      "bakla",
+      [
+        "bakla"
+      ]
+    ],
+    [
+      "barbunya",
+      [
+        "barbunya"
+      ]
+    ],
+    [
+      "borulce",
+      [
+        "borulce"
+      ]
+    ],
+    [
+      "pazi",
+      [
+        "pazi"
+      ]
+    ],
+    [
+      "semizotu",
+      [
+        "semizotu"
+      ]
+    ],
+    [
+      "kivircik",
+      [
+        "kivircik"
+      ]
+    ],
+    [
+      "bugday",
+      [
+        "bugday"
+      ]
+    ],
+    [
+      "bulgur",
+      [
+        "bulgur"
+      ]
+    ],
+    [
+      "yufka",
+      [
+        "yufka"
+      ]
+    ],
+    [
+      "zeytin",
+      [
+        "zeytin"
+      ]
+    ],
+    [
+      "uzum",
+      [
+        "uzum"
+      ]
+    ],
+    [
+      "su",
+      [
+        "su"
+      ]
+    ],
+    [
+      "krema",
+      [
+        "krema"
+      ]
+    ],
+    [
+      "ceviz",
+      [
+        "ceviz"
+      ]
+    ],
+    [
+      "findik",
+      [
+        "findik"
+      ]
+    ],
+    [
+      "badem",
+      [
+        "badem"
+      ]
+    ],
+    [
+      "antep fistigi",
+      [
+        "antep",
+        "fistigi",
+        "fistik"
+      ]
+    ],
+    [
+      "hindistan cevizi",
+      [
+        "cevizi",
+        "hindistan"
+      ]
+    ],
+    [
+      "maydanoz",
+      [
+        "maydanoz"
+      ]
+    ],
+    [
+      "dereotu",
+      [
+        "dereotu"
+      ]
+    ],
+    [
+      "yogurt",
+      [
+        "yogurt"
+      ]
+    ],
+    [
+      "sut",
+      [
+        "sut"
+      ]
+    ],
+    [
+      "un",
+      [
+        "un"
+      ]
+    ],
+    [
+      "elma",
+      [
+        "elma"
+      ]
+    ],
+    [
+      "armut",
+      [
+        "armut"
+      ]
+    ],
+    [
+      "muz",
+      [
+        "muz"
+      ]
+    ],
+    [
+      "portakal",
+      [
+        "portakal"
+      ]
+    ],
+    [
+      "mandalina",
+      [
+        "mandalina"
+      ]
+    ],
+    [
+      "limon",
+      [
+        "limon"
+      ]
+    ],
+    [
+      "greyfurt",
+      [
+        "greyfurt"
+      ]
+    ],
+    [
+      "cilek",
+      [
+        "cilek"
+      ]
+    ],
+    [
+      "kiraz",
+      [
+        "kiraz"
+      ]
+    ],
+    [
+      "visne",
+      [
+        "visne"
+      ]
+    ],
+    [
+      "erik",
+      [
+        "erik"
+      ]
+    ],
+    [
+      "kayisi",
+      [
+        "kayisi"
+      ]
+    ],
+    [
+      "seftali",
+      [
+        "seftali"
+      ]
+    ],
+    [
+      "nektarin",
+      [
+        "nektarin"
+      ]
+    ],
+    [
+      "kavun",
+      [
+        "kavun"
+      ]
+    ],
+    [
+      "karpuz",
+      [
+        "karpuz"
+      ]
+    ],
+    [
+      "incir",
+      [
+        "incir"
+      ]
+    ],
+    [
+      "nar",
+      [
+        "nar"
+      ]
+    ],
+    [
+      "ayva",
+      [
+        "ayva"
+      ]
+    ],
+    [
+      "kivi",
+      [
+        "kivi"
+      ]
+    ],
+    [
+      "avokado",
+      [
+        "avokado"
+      ]
+    ],
+    [
+      "ananas",
+      [
+        "ananas"
+      ]
+    ],
+    [
+      "mango",
+      [
+        "mango"
+      ]
+    ],
+    [
+      "dut",
+      [
+        "dut"
+      ]
+    ],
+    [
+      "yeni dunya",
+      [
+        "dunya",
+        "yeni"
+      ]
+    ],
+    [
+      "narenciye",
+      [
+        "narenciye"
+      ]
+    ],
+    [
+      "ahududu",
+      [
+        "ahududu"
+      ]
+    ],
+    [
+      "bogurtlen",
+      [
+        "bogurtlen"
+      ]
+    ],
+    [
+      "yaban mersini",
+      [
+        "mersini",
+        "yaban"
+      ]
+    ],
+    [
+      "kefir",
+      [
+        "kefir"
+      ]
+    ],
+    [
+      "ayran",
+      [
+        "ayran"
+      ]
+    ],
+    [
+      "kaymak",
+      [
+        "kaymak"
+      ]
+    ],
+    [
+      "suzme yogurt",
+      [
+        "suzme",
+        "yogurt"
+      ]
+    ],
+    [
+      "beyaz peynir",
+      [
+        "beyaz",
+        "peynir"
+      ]
+    ],
+    [
+      "kasar peyniri",
+      [
+        "kasar",
+        "peyniri"
+      ]
+    ],
+    [
+      "lor peyniri",
+      [
+        "lor",
+        "peyniri"
+      ]
+    ],
+    [
+      "labne peyniri",
+      [
+        "labne",
+        "peyniri"
+      ]
+    ],
+    [
+      "mozzarella peyniri",
+      [
+        "mozzarella"
+      ]
+    ],
+    [
+      "parmesan peyniri",
+      [
+        "parmesan"
+      ]
+    ],
+    [
+      "tulum peyniri",
+      [
+        "peyniri",
+        "tulum"
+      ]
+    ],
+    [
+      "ezine peyniri",
+      [
+        "ezine",
+        "peyniri"
+      ]
+    ],
+    [
+      "keci peyniri",
+      [
+        "keci",
+        "peyniri"
+      ]
+    ],
+    [
+      "dil peyniri",
+      [
+        "dil",
+        "peyniri"
+      ]
+    ],
+    [
+      "orgu peyniri",
+      [
+        "orgu",
+        "peyniri"
+      ]
+    ],
+    [
+      "hellim peyniri",
+      [
+        "hellim"
+      ]
+    ],
+    [
+      "kirmizi mercimek",
+      [
+        "kirmizi",
+        "mercimek"
+      ]
+    ],
+    [
+      "yesil mercimek",
+      [
+        "mercimek",
+        "yesil"
+      ]
+    ],
+    [
+      "sari mercimek",
+      [
+        "mercimek",
+        "sari"
+      ]
+    ],
+    [
+      "nohut",
+      [
+        "nohut"
+      ]
+    ],
+    [
+      "kuru fasulye",
+      [
+        "fasulye",
+        "kuru"
+      ]
+    ],
+    [
+      "mas fasulyesi",
+      [
+        "fasulyesi",
+        "mas"
+      ]
+    ],
+    [
+      "palamut",
+      [
+        "palamut"
+      ]
+    ],
+    [
+      "mezgit",
+      [
+        "mezgit"
+      ]
+    ],
+    [
+      "uskumru",
+      [
+        "uskumru"
+      ]
+    ],
+    [
+      "sardalya",
+      [
+        "sardalya"
+      ]
+    ],
+    [
+      "milfoy hamuru",
+      [
+        "hamuru",
+        "milfoy"
+      ]
+    ],
+    [
+      "lavas",
+      [
+        "lavas"
+      ]
+    ]
+  ],
+  "canonical_display": {
+    "aci sos": "acı sos",
+    "ahududu": "ahududu",
+    "alabalik": "alabalık",
+    "ananas": "ananas",
+    "antep fistigi": "antep fıstığı",
+    "arpa sehriye": "arpa şehriye",
+    "armut": "armut",
+    "avokado": "avokado",
+    "aycicek yagi": "ayçiçek yağı",
+    "ayran": "ayran",
+    "ayva": "ayva",
+    "badem": "badem",
+    "bakla": "bakla",
+    "bal kabagi": "bal kabağı",
+    "barbunya": "barbunya",
+    "besamel sos": "beşamel sos",
+    "beyaz peynir": "beyaz peynir",
+    "biber": "biber",
+    "biber salcasi": "biber salçası",
+    "bogurtlen": "böğürtlen",
+    "borulce": "börülce",
+    "brokoli": "brokoli",
+    "bruksel lahanasi": "brüksel lahanası",
+    "bugday": "buğday",
+    "bugday nisastasi": "buğday nişastası",
+    "bulgur": "bulgur",
+    "butun tavuk": "bütün tavuk",
+    "cam fistigi": "çam fıstığı",
+    "ceviz": "ceviz",
+    "cikolata": "çikolata",
+    "cipura": "çipura",
+    "cilek": "çilek",
+    "corek otu": "çörek otu",
+    "defne yapragi": "defne yaprağı",
+    "dereotu": "dereotu",
+    "dana eti": "dana eti",
+    "dana kiyma": "dana kıyma",
+    "dana salam": "dana salam",
+    "dana sosis": "dana sosis",
+    "dana sucuk": "dana sucuk",
+    "dil peyniri": "dil peyniri",
+    "dolmalik fistik": "dolmalık fıstık",
+    "domates": "domates",
+    "domates salcasi": "domates salçası",
+    "dut": "dut",
+    "ekmek": "ekmek",
+    "elma": "elma",
+    "elma sirkesi": "elma sirkesi",
+    "erik": "erik",
+    "esmer seker": "esmer şeker",
+    "et suyu": "et suyu",
+    "ezine peyniri": "ezine peyniri",
+    "fasulye": "fasulye",
+    "findik": "fındık",
+    "galeta unu": "galeta unu",
+    "greyfurt": "greyfurt",
+    "hamsi": "hamsi",
+    "hardal": "hardal",
+    "havuc": "havuç",
+    "hellim peyniri": "hellim peyniri",
+    "hindi eti": "hindi eti",
+    "hindi fume": "hindi füme",
+    "hindi salam": "hindi salam",
+    "hindi sosis": "hindi sosis",
+    "hindistan cevizi": "hindistan cevizi",
+    "ispanak": "ıspanak",
+    "kabak": "kabak",
+    "kabartma tozu": "kabartma tozu",
+    "kakao": "kakao",
+    "karbonat": "karbonat",
+    "karniyarik": "karnıyarık",
+    "karnabahar": "karnabahar",
+    "kasar peyniri": "kaşar peyniri",
+    "kavun": "kavun",
+    "kavurma": "kavurma",
+    "kayisi": "kayısı",
+    "kaymak": "kaymak",
+    "keci peyniri": "keçi peyniri",
+    "kefir": "kefir",
+    "kemik suyu": "kemik suyu",
+    "ketcap": "ketçap",
+    "kirmizi mercimek": "kırmızı mercimek",
+    "kiraz": "kiraz",
+    "kivircik": "kıvırcık",
+    "kivi": "kivi",
+    "kornison tursu": "kornişon turşu",
+    "krema": "krema",
+    "kuru fasulye": "kuru fasulye",
+    "kus uzumu": "kuş üzümü",
+    "kusbasi dana eti": "kuşbaşı dana eti",
+    "kusbasi kuzu eti": "kuşbaşı kuzu eti",
+    "kuzu eti": "kuzu eti",
+    "kuzu incik": "kuzu incik",
+    "kuzu kiyma": "kuzu kıyma",
+    "kuzu pirzola": "kuzu pirzola",
+    "labne peyniri": "labne peyniri",
+    "lavas": "lavaş",
+    "limon": "limon",
+    "limon suyu": "limon suyu",
+    "lor peyniri": "lor peyniri",
+    "mandalina": "mandalina",
+    "mango": "mango",
+    "mantar": "mantar",
+    "mas fasulyesi": "maş fasulyesi",
+    "maydanoz": "maydanoz",
+    "mayonez": "mayonez",
+    "mezgit": "mezgit",
+    "milfoy hamuru": "milföy hamuru",
+    "misir nisastasi": "mısır nişastası",
+    "misir unu": "mısır unu",
+    "misirozu": "mısırözü",
+    "mozzarella peyniri": "mozzarella peyniri",
+    "muz": "muz",
+    "nar": "nar",
+    "nar eksisi": "nar ekşisi",
+    "narenciye": "narenciye",
+    "nektarin": "nektarin",
+    "nisasta": "nişasta",
+    "nohut": "nohut",
+    "orgu peyniri": "örgü peyniri",
+    "palamut": "palamut",
+    "parmesan peyniri": "parmesan peyniri",
+    "patates": "patates",
+    "patlican": "patlıcan",
+    "pazi": "pazı",
+    "pekmez": "pekmez",
+    "pirasa": "pırasa",
+    "pirinc": "pirinç",
+    "pirinc kremasi": "pirinç kreması",
+    "pirinc unu": "pirinç unu",
+    "portakal": "portakal",
+    "portakal suyu": "portakal suyu",
+    "pudra sekeri": "pudra şekeri",
+    "salatalik": "salatalık",
+    "sardalya": "sardalya",
+    "sari mercimek": "sarı mercimek",
+    "sarimsak": "sarımsak",
+    "seftali": "şeftali",
+    "semizotu": "semizotu",
+    "sirke": "sirke",
+    "sivi yag": "sıvı yağ",
+    "sogan": "soğan",
+    "soya sosu": "soya sosu",
+    "su": "su",
+    "susam": "susam",
+    "sut": "süt",
+    "suzme yogurt": "süzme yoğurt",
+    "tahin": "tahin",
+    "tarcin": "tarçın",
+    "tavuk baget": "tavuk baget",
+    "tavuk but": "tavuk but",
+    "tavuk eti": "tavuk eti",
+    "tavuk gogsu": "tavuk göğsü",
+    "tavuk kalca": "tavuk kalça",
+    "tavuk kanat": "tavuk kanat",
+    "tavuk pirzola": "tavuk pirzola",
+    "tavuk sosis": "tavuk sosis",
+    "tavuk suyu": "tavuk suyu",
+    "tereyagi": "tereyağı",
+    "toz paprika": "toz paprika",
+    "toz seker": "toz şeker",
+    "tulum peyniri": "tulum peyniri",
+    "un": "un",
+    "uskumru": "uskumru",
+    "uzum": "üzüm",
+    "vanilin": "vanilin",
+    "vanilya": "vanilya",
+    "visne": "vişne",
+    "yaban mersini": "yaban mersini",
+    "yaprak": "yaprak",
+    "yas maya": "yaş maya",
+    "yeni dunya": "yeni dünya",
+    "yesil mercimek": "yeşil mercimek",
+    "yogurt": "yoğurt",
+    "yufka": "yufka",
+    "yumurta": "yumurta",
+    "zeytin": "zeytin",
+    "zeytinyagi": "zeytinyağı",
+    "taze sogan": "taze soğan",
+    "jambon": "jambon",
+    "kisnis": "kişniş",
+    "zerdecal": "zerdeçal",
+    "lahana": "lahana",
+    "tofu": "tofu",
+    "somon": "somon",
+    "kapari": "kapari",
+    "chia tohumu": "chia tohumu",
+    "kabak cekirdegi": "kabak çekirdeği"
+  }
+}

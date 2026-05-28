@@ -64,7 +64,7 @@ Backend:
 - SQLite gelistirme dosyasi destegi
 - Bcrypt ile sifre hashleme
 - SMTP tabanli e-posta/OTP islemleri
-- Alembic-style migration dosyalari
+- Tek PC odakli kurulum icin runtime DB guard fonksiyonlari
 
 Frontend:
 
@@ -78,7 +78,7 @@ Frontend:
 Veri ve yardimci araclar:
 
 - Gemini 2.5 Flash AI (tarif revizyonu + besin degeri tahmini)
-- Yemek.com, BBC Good Food, EatingWell ve Skinnytaste scraper/import scriptleri
+- Yemek.com scraper/import scriptleri
 - Backfill scriptleri
 - Alias ve ingredient denetim scriptleri
 
@@ -105,10 +105,12 @@ backend/
       auth.py
       ingredient.py
       recipe.py
+      recipe_revision.py
       user.py
     repositories/
       ingredient_repository.py
       recipe_repository.py
+      user_repository.py
     services/
       auth_service.py
       gemini_client.py
@@ -127,10 +129,7 @@ backend/
       mailer.py
       recipe_health.py
       recipe_helpers.py
-      recipe_translation.py
       text_normalize.py
-  alembic/
-    versions/
   scraper/
   scripts/
 
@@ -142,6 +141,7 @@ frontend/
     App.css
     index.css
     main.jsx
+    config.js
     context/
       AppContext.jsx
     components/
@@ -149,12 +149,12 @@ frontend/
       IngredientPicker.jsx
       Layout.jsx
       ManualIngredientNutritionModal.jsx
-      ProgressCircle.jsx
+      RecipeCard.jsx
+      RecipeRevisionModal.jsx
     pages/
       Dashboard.jsx
-      DailyLogs.jsx
       DislikedIngredients.jsx
-      Favorites.jsx
+      EditRecipe.jsx
       FavoritesDb.jsx
       ForgotPassword.jsx
       HealthyMenu.jsx
@@ -164,9 +164,7 @@ frontend/
       Pantry.jsx
       ProfileEdit.jsx
       ProfileSetup.jsx
-      RecipeDetail.jsx
       RecipeDetailDb.jsx
-      RecipeList.jsx
       RecipeListDb.jsx
       Recommendations.jsx
       Register.jsx
@@ -200,13 +198,14 @@ Servis katmani is mantigini routerlardan ayirir:
 - `ingredient_resolver_service.py`: Alias/canonical ingredient yaklasimiyla malzeme cozme katmanidir. `try_ai=True` parametresiyle Gemini'den besin degeri alir.
 - `ingredient_nutrition_service.py`: Malzeme bazli besin degeri islemleri; toplu backfill ve tek malzeme sync.
 - `nutrition_resolver_service.py`: 2 katmanli besin degeri cozme — once DB (inline kolon), sonra Gemini.
-- `gemini_client.py`: Gemini 2.5 Flash ile structured JSON schema uzerinden 15 besin alani sorgusu.
+- `gemini_client.py`: Gemini 2.5 Flash ile structured JSON schema uzerinden 8 besin alani sorgusu.
 - `recipe_revision_service.py`: Gemini ile tarif revizyonu ve `revision_cache` entegrasyonu.
 
 Repository katmani:
 
 - `ingredient_repository.py`
 - `recipe_repository.py`
+- `user_repository.py`
 
 Bu katmanlar veritabani erisimini servis mantigindan ayirmak icin kullanilir.
 
@@ -310,14 +309,14 @@ Kritik teknik karar: `amount` ve `unit` alanlari orijinal tarif verisi olarak ko
 
 Besin degerleri artik ayri tabloda degil, dogrudan `ingredients` tablosundaki inline kolonlarda saklanir.
 
-`ingredients` tablosuna eklenen kolonlar:
+`ingredients` tablosundaki aktif inline besin kolonlari (8 alan):
 
 - `calorie_per_100g`, `protein_per_100g`, `carbohydrate_per_100g`, `fat_per_100g`
 - `saturated_fat_per_100g`, `fiber_per_100g`, `sugar_per_100g`, `sodium_mg_per_100g`
-- `added_sugar_per_100g`, `trans_fat_per_100g`, `cholesterol_mg_per_100g`
-- `potassium_mg_per_100g`, `calcium_mg_per_100g`, `iron_mg_per_100g`, `vitamin_d_mcg_per_100g`
 - `nutrition_source` (gemini / usda_legacy / manual / db)
 - `nutrition_confidence`, `is_verified`, `source`
+
+**KALDIRILDI (Mayis 2026):** `added_sugar_per_100g`, `trans_fat_per_100g`, `cholesterol_mg_per_100g`, `potassium_mg_per_100g`, `calcium_mg_per_100g`, `iron_mg_per_100g`, `vitamin_d_mcg_per_100g` — health score bu alanlari kullanmiyor.
 
 **KALDIRILDI:** `ingredient_nutrition_values`, `ingredient_usda_mappings`, `unmatched_ingredients`, `ingredient_unit_conversions` tablolari DROP edildi.
 
@@ -409,7 +408,6 @@ Tarif importlarinda en kritik sorun, farkli kaynaklardan gelen malzeme adlarinin
 - Malzeme adlari normalize edilir.
 - Turkce karakter, buyuk/kucuk harf, fazla bosluk ve basit yazim farklari temizlenir.
 - Alias tablosu ile farkli isimler canonical ingredient kaydina baglanabilir.
-- Eslesmeyen malzemeler `unmatched_ingredients` ile raporlanir.
 - Denetim ve merge scriptleri ile malzeme havuzu temizlenebilir.
 
 Ilgili dosyalar:
@@ -420,7 +418,6 @@ backend/app/services/ingredient_resolver_service.py
 backend/aliases.json
 backend/audit_ingredient_matching.py
 backend/merge_canonical_ingredients.py
-backend/normalize_healthy_recipe_ingredients.py
 backend/refresh_yemekcom_ingredients.py
 ```
 
@@ -437,13 +434,13 @@ backend/app/services/gemini_client.py
 backend/app/services/nutrition_resolver_service.py
 backend/app/services/ingredient_resolver_service.py
 backend/app/services/ingredient_nutrition_service.py
-backend/scripts/sync_ingredient_nutrition_from_usda.py  (adi yaniltici, icerigi Gemini tabanlı)
+backend/scripts/sync_ingredient_nutrition.py
 ```
 
 Mevcut yaklasim (2 katmanli):
 
 1. `ingredient.calorie_per_100g > 0` ise veritabanindan dogrudan kullan (kaynak: `db`)
-2. Sifirsa `gemini_client.estimate_nutrition_with_gemini(name)` cagir; 15 alani inline kolonlara yaz (kaynak: `gemini`)
+2. Sifirsa `gemini_client.estimate_nutrition_with_gemini(name)` cagir; 8 alani inline kolonlara yaz (kaynak: `gemini`)
 3. Gemini de basarisiz olursa `manual_required` doner; kullanici manuel girer (kaynak: `manual`)
 
 `nutrition_source` kolonu: `'gemini'`, `'usda_legacy'` (eski USDA verisi), `'manual'`, `'db'`
@@ -669,20 +666,14 @@ yag: kalorinin %30'u / 9
 
 ## 15. Scraper ve Tarif Import Sistemi
 
-Projede farkli kaynaklardan tarif verisi toplamak ve sisteme almak icin scraper/import scriptleri gelistirildi.
+Projede yemek.com kaynakli tarif verisi toplamak ve sisteme almak icin scraper/import scriptleri gelistirildi. BBC Good Food, EatingWell ve Skinnytaste hatlari kullanilmadigi icin temizlendi.
 
 Kaynak dosyalar:
 
 ```text
 backend/scraper/yemekcom_scraper.py
-backend/scraper/bbcgoodfood_scraper.py
-backend/scraper/eatingwell_scraper.py
-backend/scraper/skinnytaste_scraper.py
 backend/scraper/import_yemekcom_recipes.py
-backend/scraper/import_bbcgoodfood_healthy_recipes.py
-backend/scraper/import_eatingwell_healthy_recipes.py
-backend/scraper/import_skinnytaste_healthy_recipes.py
-backend/import_yemekcom_diet_healthy_recipes.py
+backend/scripts/import_yemekcom_diet_healthy_recipes.py
 ```
 
 Import sirasinda:
@@ -736,18 +727,11 @@ Tarif response'lari summary ve detail seviyesinde ayrilir. Detail response icind
 
 ---
 
-## 17. Migration ve Backfill Dosyalari
+## 17. DB Guard ve Backfill Dosyalari
 
-Migration dosyalari:
-
-```text
-backend/alembic/versions/20260424_01_add_usda_nutrition_tables.py
-backend/alembic/versions/20260426_01_add_ingredient_aliases_and_unmatched.py
-backend/alembic/versions/20260427_01_add_recipe_ingredient_gram_conversions.py
-backend/alembic/versions/20260427_02_add_recipe_health_score_fields.py
-backend/alembic/versions/20260428_01_add_ingredient_inline_nutrition.py
-backend/alembic/versions/20260428_02_use_nutrition_values_for_custom_ingredients.py
-```
+Alembic migration klasoru tek PC odakli guncel kurulumda aktif kullanilmadigi icin kaldirildi.
+Guncel tablolar SQLAlchemy modelleriyle temsil edilir; mevcut lokal DB icin gerekli kolon kontrolleri
+`backend/app/db/database.py` icindeki `ensure_*` guard fonksiyonlariyla yapilir.
 
 Backfill scriptleri:
 

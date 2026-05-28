@@ -10,11 +10,6 @@ FDA_DAILY_VALUES = {
     "fiber_g": 28.0,
     "saturated_fat_g": 20.0,
     "sodium_mg": 2300.0,
-    "added_sugar_g": 50.0,
-    "potassium_mg": 4700.0,
-    "calcium_mg": 1300.0,
-    "iron_mg": 18.0,
-    "vitamin_d_mcg": 20.0,
 }
 
 
@@ -144,8 +139,7 @@ def aggregate_recipe_nutrition(recipe) -> dict:
 
     for link in ingredient_links:
         ingredient = getattr(link, "ingredient", None)
-        nutrition = ingredient
-        if not nutrition:
+        if not ingredient or not float(getattr(ingredient, "calorie_per_100g", 0) or 0):
             continue
 
         amount_grams, conversion_confidence = resolve_link_amount_grams(link)
@@ -157,7 +151,7 @@ def aggregate_recipe_nutrition(recipe) -> dict:
         multiplier = amount_grams / 100.0
 
         for field in _nutrition_fields():
-            value = _ingredient_inline_nutrition(nutrition, field)
+            value = _ingredient_inline_nutrition(ingredient, field)
             if value is None:
                 continue
             totals[field] += float(value) * multiplier
@@ -1013,13 +1007,7 @@ def recipe_macro_values_per_serving(recipe) -> dict | None:
         "saturated_fat_per_100g": None,
         "fiber_per_100g": None,
         "sugar_per_100g": None,
-        "added_sugar_per_100g": None,
         "sodium_mg_per_100g": None,
-        "trans_fat_per_100g": None,
-        "potassium_mg_per_100g": None,
-        "calcium_mg_per_100g": None,
-        "iron_mg_per_100g": None,
-        "vitamin_d_mcg_per_100g": None,
     }
 
 
@@ -1211,13 +1199,6 @@ def _nutrition_fields() -> tuple[str, ...]:
         "fiber_per_100g",
         "sugar_per_100g",
         "sodium_mg_per_100g",
-        "added_sugar_per_100g",
-        "trans_fat_per_100g",
-        "cholesterol_mg_per_100g",
-        "potassium_mg_per_100g",
-        "calcium_mg_per_100g",
-        "iron_mg_per_100g",
-        "vitamin_d_mcg_per_100g",
     )
 
 

@@ -19,13 +19,6 @@ NUTRITION_FIELDS = (
     "fiber_per_100g",
     "sugar_per_100g",
     "sodium_mg_per_100g",
-    "added_sugar_per_100g",
-    "trans_fat_per_100g",
-    "cholesterol_mg_per_100g",
-    "potassium_mg_per_100g",
-    "calcium_mg_per_100g",
-    "iron_mg_per_100g",
-    "vitamin_d_mcg_per_100g",
 )
 
 

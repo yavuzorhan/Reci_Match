@@ -20,8 +20,8 @@ _daily_log_macros_ready = False
 def ensure_ingredient_inline_nutrition_columns(db):
     """
     Keeps older databases readable after the Ingredient model gained inline
-    nutrition columns. Alembic is still the source of truth, this just prevents
-    list endpoints from failing before the migration is applied manually.
+    nutrition columns. The project currently relies on these runtime guards
+    instead of a migration folder because it is deployed on a single local DB.
     """
     global _ingredient_inline_nutrition_ready
     if _ingredient_inline_nutrition_ready:
@@ -35,13 +35,6 @@ def ensure_ingredient_inline_nutrition_columns(db):
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS fiber_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS sugar_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS sodium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS added_sugar_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS trans_fat_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS cholesterol_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS potassium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS calcium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS iron_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
-    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS vitamin_d_mcg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS nutrition_source VARCHAR(30) NOT NULL DEFAULT 'manual'"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS nutrition_confidence DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))

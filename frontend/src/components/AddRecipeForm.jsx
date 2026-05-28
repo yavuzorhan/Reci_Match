@@ -87,7 +87,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
 
   const handleAddIngredient = (ing) => {
     if (ingredients.find(i => i.ingredient_id === ing.id)) return;
-    setIngredients([...ingredients, { client_id: `id-${ing.id}`, ingredient_id: ing.id, name: ing.name, amount: 1, unit: 'Adet' }]);
+    setIngredients([...ingredients, { client_id: `id-${ing.id}`, ingredient_id: ing.id, name: ing.name, amount: 1, unit: 'Gram' }]);
     setSearchTerm('');
   };
 
@@ -431,7 +431,11 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
                   <div key={ing.client_id} className="arf-chip-row">
                      <div className="arf-chip-name">{ing.name}</div>
                      <input type="number" min="0" placeholder="Miktar" value={ing.amount} onChange={e => updateIngredient(ing.client_id, 'amount', e.target.value)} className="arf-chip-input" />
-                     <input type="text" placeholder="Birim (Örn: Gram, Adet)" value={ing.unit} onChange={e => updateIngredient(ing.client_id, 'unit', e.target.value)} className="arf-chip-input" />
+                     <select value={ing.unit} onChange={e => updateIngredient(ing.client_id, 'unit', e.target.value)} className="arf-chip-input arf-chip-select">
+                       <option value="Gram">Gram</option>
+                       <option value="ml">ml</option>
+                       <option value="Adet">Adet</option>
+                     </select>
                      <button type="button" onClick={() => removeIngredient(ing.client_id)} className="arf-chip-close"><X size={20} /></button>
                   </div>
                ))
