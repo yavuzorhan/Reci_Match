@@ -167,7 +167,7 @@ def find_revision_cache(db: Session, recipe_id: int, modifications_hash: str) ->
 
 
 def create_revision_cache(db: Session, recipe_id: int, modifications_hash: str, response_json: str) -> RevisionCache:
-    cache = RevisionCache(recipe_id=recipe_id, modifications_hash=modifications_hash, response_json=response_json)
-    db.add(cache)
+    record = RevisionCache(recipe_id=recipe_id, modifications_hash=modifications_hash, response_json=response_json)
+    db.add(record)
     db.flush()
-    return cache
+    return record

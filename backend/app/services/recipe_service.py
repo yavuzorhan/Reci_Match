@@ -1,6 +1,3 @@
-"""
-Tarif (Recipe) is mantigi - listeleme, detay, oneri motoru ve ozel tarif olusturma.
-"""
 import logging
 from fastapi import HTTPException
 from pathlib import Path
@@ -408,12 +405,10 @@ def get_recommendations(
         return []
 
     ingredient_ids = list(available_ids | disliked_ids)
-    ingredient_index = {}
-    if ingredient_ids:
-        ingredient_index = {
-            ingredient.ingredient_id: ingredient.ingredient_name
-            for ingredient in recipe_repository.get_ingredients_by_ids(db, ingredient_ids)
-        }
+    ingredient_index = {
+        ingredient.ingredient_id: ingredient.ingredient_name
+        for ingredient in recipe_repository.get_ingredients_by_ids(db, ingredient_ids)
+    } if ingredient_ids else {}
 
     selected_keys_by_id = {
         ingredient_id: ingredient_keys(ingredient_index.get(ingredient_id, ""))

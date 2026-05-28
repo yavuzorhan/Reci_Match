@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import './ProfileEdit.css';
 import {
   Camera,
-  Check,
   Lock,
   Mail,
   Plus,

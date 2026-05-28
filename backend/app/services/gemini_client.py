@@ -1,4 +1,3 @@
-"""Gemini structured nutrition client."""
 from __future__ import annotations
 
 import json

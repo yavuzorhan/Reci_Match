@@ -419,3 +419,74 @@
 .arf-custom-ing-btn:disabled {
   opacity: 0.5;
 }
+
+.arf-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.arf-image-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.arf-image-upload-text {
+  margin-top: 1rem;
+}
+
+.arf-upload-progress {
+  height: 8px;
+  background: #1c2b3c;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.arf-upload-progress-bar {
+  height: 100%;
+  background: #4edea3;
+}
+
+.arf-description-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.arf-empty-placeholder {
+  color: rgba(187, 202, 191, 0.5);
+  text-align: center;
+  font-style: italic;
+  padding: 1rem;
+}
+
+.arf-dropdown-notfound {
+  padding: 10px;
+  color: #888;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.arf-dropdown-add-btn {
+  color: #4edea3;
+  background: transparent;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+}
+
+.arf-custom-ing-close {
+  background: transparent;
+  color: #888;
+  border: none;
+  cursor: pointer;
+}

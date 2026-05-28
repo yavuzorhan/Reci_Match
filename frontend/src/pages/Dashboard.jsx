@@ -3,9 +3,7 @@ import './Dashboard.css';
 import { useNavigate } from 'react-router-dom';
 import {
   ChefHat,
-  Clock3,
   Flame,
-  Heart,
   Leaf,
   MoreHorizontal,
   NotebookText,

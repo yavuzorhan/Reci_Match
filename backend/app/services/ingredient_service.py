@@ -1,6 +1,3 @@
-"""
-Malzeme iş mantığı: kategorize listeleme, özel malzeme ekleme ve kiler yönetimi.
-"""
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 

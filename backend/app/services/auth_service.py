@@ -1,6 +1,3 @@
-"""
-Kimlik doğrulama iş mantığı — register, verify, login, şifre sıfırlama vb.
-"""
 import bcrypt
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
@@ -10,31 +7,55 @@ from app.db.models import User, EmailVerificationCode
 from app.utils.mailer import send_verification_email, send_password_reset_email, generate_otp
 
 
+# ─── OTP Yardımcıları ───────────────────────────────────────────────────────
+
+def _create_otp_record(
+    db: Session,
+    purpose: str,
+    email: str,
+    user_id: int | None = None,
+    temp_name: str | None = None,
+    temp_password: str | None = None,
+) -> str:
+    code = generate_otp()
+    record = EmailVerificationCode(
+        email=email,
+        code=code,
+        purpose=purpose,
+        expires_at=datetime.utcnow() + timedelta(minutes=10),
+        user_id=user_id,
+        temp_name=temp_name,
+        temp_password=temp_password,
+    )
+    db.add(record)
+    db.commit()
+    return code
+
+
+def _validate_otp(db: Session, user_id: int, code: str, purpose: str) -> EmailVerificationCode:
+    record = (
+        db.query(EmailVerificationCode)
+        .filter(
+            EmailVerificationCode.user_id == user_id,
+            EmailVerificationCode.code == code,
+            EmailVerificationCode.purpose == purpose,
+        )
+        .order_by(EmailVerificationCode.created_at.desc())
+        .first()
+    )
+    if not record or record.expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Geçersiz veya süresi dolmuş kod.")
+    return record
+
+
 # ─── Kayıt ──────────────────────────────────────────────────────────────────
 
 def register_user(name: str, email: str, password: str, db: Session) -> dict:
-    """
-    E-postaya OTP gönderir ve geçici kayıt bilgilerini saklar.
-    Gerçek kullanıcı kaydı verify aşamasında yapılır.
-    """
-    user = db.query(User).filter(User.email == email).first()
-    if user:
+    if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı.")
 
     hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
-    code = generate_otp()
-    verification = EmailVerificationCode(
-        email=email,
-        code=code,
-        purpose="register",
-        expires_at=datetime.utcnow() + timedelta(minutes=10),
-        temp_name=name,
-        temp_password=hashed_pw,
-    )
-    db.add(verification)
-    db.commit()
-
+    code = _create_otp_record(db, purpose="register", email=email, temp_name=name, temp_password=hashed_pw)
     send_verification_email(email, code)
     return {
         "message": "Doğrulama kodu mail adresinize gönderildi. Hesabınız ancak kodu doğruladıktan sonra oluşturulacaktır."
@@ -44,7 +65,6 @@ def register_user(name: str, email: str, password: str, db: Session) -> dict:
 # ─── E-posta Doğrulama ──────────────────────────────────────────────────────
 
 def verify_email(email: str, code: str, db: Session) -> dict:
-    """OTP doğrulaması başarılıysa kullanıcıyı oluşturur ve giriş bilgilerini döner."""
     record = (
         db.query(EmailVerificationCode)
         .filter(
@@ -95,7 +115,6 @@ def verify_email(email: str, code: str, db: Session) -> dict:
 # ─── Giriş ──────────────────────────────────────────────────────────────────
 
 def login_user(email: str, password: str, db: Session) -> dict:
-    """Kullanıcı giriş doğrulaması yapar, profil bilgileriyle döner."""
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(
@@ -149,29 +168,17 @@ def login_user(email: str, password: str, db: Session) -> dict:
 # ─── Şifre Sıfırlama ────────────────────────────────────────────────────────
 
 def forgot_password(email: str, db: Session) -> dict:
-    """Şifre sıfırlama kodu gönderir."""
     user = db.query(User).filter(User.email == email).first()
     if not user:
         # Güvenlik için kullanıcı yoksa bile "gönderildi" mesajı veriyoruz
         return {"message": "Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama kodu gönderildi."}
 
-    code = generate_otp()
-    reset_record = EmailVerificationCode(
-        user_id=user.user_id,
-        email=user.email,
-        code=code,
-        purpose="reset_password",
-        expires_at=datetime.utcnow() + timedelta(minutes=10),
-    )
-    db.add(reset_record)
-    db.commit()
-
+    code = _create_otp_record(db, purpose="reset_password", email=user.email, user_id=user.user_id)
     send_password_reset_email(user.email, code)
     return {"message": "Şifre sıfırlama kodu e-postanıza gönderildi."}
 
 
 def reset_password(email: str, code: str, new_password: str, db: Session) -> dict:
-    """OTP doğrulaması ile şifre sıfırlar."""
     record = (
         db.query(EmailVerificationCode)
         .filter(
@@ -201,41 +208,17 @@ def reset_password(email: str, code: str, new_password: str, db: Session) -> dic
 # ─── Güvenlik Güncelleme (OTP İsteme / Şifre / E-posta Değiştirme) ──────────
 
 def request_otp_for_update(user_id: int, email: str, db: Session) -> dict:
-    """Güvenlik güncellemesi için mevcut e-postaya OTP gönderir."""
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
 
-    code = generate_otp()
-    verification = EmailVerificationCode(
-        user_id=user.user_id,
-        email=user.email,
-        code=code,
-        purpose="security_update",
-        expires_at=datetime.utcnow() + timedelta(minutes=10),
-    )
-    db.add(verification)
-    db.commit()
-
+    code = _create_otp_record(db, purpose="security_update", email=user.email, user_id=user.user_id)
     send_verification_email(user.email, code)
     return {"message": "Güvenlik kodu e-posta adresinize gönderildi."}
 
 
 def security_update_password(user_id: int, code: str, new_password: str, db: Session) -> dict:
-    """OTP ile doğrulayarak şifre günceller."""
-    record = (
-        db.query(EmailVerificationCode)
-        .filter(
-            EmailVerificationCode.user_id == user_id,
-            EmailVerificationCode.code == code,
-            EmailVerificationCode.purpose == "security_update",
-        )
-        .order_by(EmailVerificationCode.created_at.desc())
-        .first()
-    )
-    if not record or record.expires_at < datetime.utcnow():
-        raise HTTPException(status_code=400, detail="Geçersiz veya süresi dolmuş kod.")
-
+    record = _validate_otp(db, user_id, code, "security_update")
     user = db.query(User).filter(User.user_id == user_id).first()
     user.password_hash = bcrypt.hashpw(new_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     db.delete(record)
@@ -244,22 +227,9 @@ def security_update_password(user_id: int, code: str, new_password: str, db: Ses
 
 
 def security_update_email(user_id: int, code: str, new_email: str, db: Session) -> dict:
-    """OTP ile doğrulayarak e-posta günceller."""
-    record = (
-        db.query(EmailVerificationCode)
-        .filter(
-            EmailVerificationCode.user_id == user_id,
-            EmailVerificationCode.code == code,
-            EmailVerificationCode.purpose == "security_update",
-        )
-        .order_by(EmailVerificationCode.created_at.desc())
-        .first()
-    )
-    if not record or record.expires_at < datetime.utcnow():
-        raise HTTPException(status_code=400, detail="Geçersiz veya süresi dolmuş kod.")
+    record = _validate_otp(db, user_id, code, "security_update")
 
-    existing = db.query(User).filter(User.email == new_email).first()
-    if existing:
+    if db.query(User).filter(User.email == new_email).first():
         raise HTTPException(status_code=400, detail="Bu email adresi başka bir hesap tarafından kullanılıyor.")
 
     user = db.query(User).filter(User.user_id == user_id).first()

@@ -397,7 +397,7 @@ const RecipeDetailPage = () => {
 
                 <div className="recipe-step-list">
                   {preparationSteps.length === 0 ? (
-                    <p style={{ color: 'rgba(187,202,191,0.5)', fontStyle: 'italic', padding: '0.5rem 0' }}>Hazırlanış adımı girilmemiş.</p>
+                    <p className="recipe-empty-steps">Hazırlanış adımı girilmemiş.</p>
                   ) : preparationSteps.map((step, index) => (
                     <div className="recipe-step-row" key={`${step}-${index}`}>
                       <span>{index + 1}</span>

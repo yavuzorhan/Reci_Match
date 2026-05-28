@@ -273,7 +273,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
               </div>
             </div>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="arf-two-col">
               <div>
                 <label className="arf-label">Porsiyon</label>
                 <input
@@ -329,19 +329,19 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
                 handleImageSelect(e.dataTransfer.files?.[0]);
               }}
             >
-              <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '100%', height: '100%', justifyContent: 'center' }}>
+              <label className="arf-image-upload-label">
                 <div className="arf-image-upload-icon-wrapper">
                   <CloudUpload className="arf-image-upload-icon" />
                 </div>
-                <p className="arf-image-upload-text" style={{ marginTop: '1rem' }}>Tarif resmini seç veya sürükle</p>
+                <p className="arf-image-upload-text">Tarif resmini seç veya sürükle</p>
                 <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(e) => handleImageSelect(e.target.files?.[0])} />
               </label>
             </div>
           )}
           
           {uploadProgress > 0 && uploadProgress < 100 && (
-            <div style={{ height: '8px', background: '#1c2b3c', borderRadius: '999px', overflow: 'hidden', marginTop: '1rem' }}>
-              <div style={{ width: `${uploadProgress}%`, height: '100%', background: '#4edea3' }} />
+            <div className="arf-upload-progress">
+              <div className="arf-upload-progress-bar" style={{ width: `${uploadProgress}%` }} />
             </div>
           )}
         </section>
@@ -349,7 +349,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
         {/* Açıklama */}
         <section className="arf-section">
           <h4 className="arf-section-title">3. Açıklama</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="arf-description-stack">
             <div>
               <label className="arf-label">Kısa Açıklama</label>
               <textarea 
@@ -396,9 +396,9 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
                      </div>
                   ))}
                   {filteredItems.length === 0 && (
-                     <div style={{ padding: '10px', color: '#888', textAlign: 'center' }}>
+                     <div className="arf-dropdown-notfound">
                         Bulunamadı.
-                        <button type="button" onClick={handleAddIngredientByName} style={{ marginLeft: '8px', color: '#4edea3', background: 'transparent', fontWeight: 800, cursor: 'pointer', border: 'none' }}>
+                        <button type="button" onClick={handleAddIngredientByName} className="arf-dropdown-add-btn">
                            Adıyla ekle
                         </button>
                      </div>
@@ -419,13 +419,13 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
                   {categorizedItems.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                </select>
                <button type="button" onClick={handleCreateCustomIngredient} disabled={loading || !customIngCategory || !customIngName.trim()} className="arf-custom-ing-btn">Ekle</button>
-               <button type="button" onClick={() => setShowAddCustom(false)} style={{ background: 'transparent', color: '#888', border: 'none', cursor: 'pointer' }}><X size={20}/></button>
+               <button type="button" onClick={() => setShowAddCustom(false)} className="arf-custom-ing-close"><X size={20}/></button>
             </div>
           )}
 
           <div className="arf-chips-wrapper" style={{ marginTop: '1rem' }}>
             {ingredients.length === 0 ? (
-               <p style={{ color: 'rgba(187, 202, 191, 0.5)', textAlign: 'center', fontStyle: 'italic', padding: '1rem' }}>Henüz malzeme eklemediniz.</p>
+               <p className="arf-empty-placeholder">Henüz malzeme eklemediniz.</p>
             ) : (
                ingredients.map((ing) => (
                   <div key={ing.client_id} className="arf-chip-row">

@@ -1,6 +1,3 @@
-"""
-Malzeme (Ingredient) veri erişim katmanı.
-"""
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 

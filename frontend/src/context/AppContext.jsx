@@ -36,11 +36,10 @@ export const AppProvider = ({ children }) => {
   const [favorites, setFavorites] = useState([]);
   const [dailyLogs, setDailyLogs] = useState([]);
   const [recipeCache, setRecipeCache] = useState({});
-  const _savedUser = (() => {
-    try { return JSON.parse(localStorage.getItem('reciMatch_user') || 'null'); } catch { return null; }
-  })();
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    const userId = _savedUser?.id;
+    const saved = localStorage.getItem('reciMatch_user');
+    const savedUser = (() => { try { return saved ? JSON.parse(saved) : null; } catch { return null; } })();
+    const userId = savedUser?.id;
     if (userId) {
       const userTheme = localStorage.getItem(`reciMatch_theme_${userId}`);
       if (userTheme) return userTheme === 'dark';
@@ -210,17 +209,16 @@ export const AppProvider = ({ children }) => {
     return ids.map(id => recipeCache[id] || data.find(r => r.id === id));
   }, [fetchJson, recipeCache, user]);
 
-  const fetchAllRecipes = useCallback(async () => {
-    const query = user?.id ? `?user_id=${user.id}` : '';
-    const data = withProxiedImages(await fetchJson(`${API_BASE}/api/recipes${query}`));
-    return data;
+  const fetchRecipeList = useCallback(async (extraParams = {}) => {
+    const params = new URLSearchParams(extraParams);
+    if (user?.id) params.set('user_id', user.id);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return withProxiedImages(await fetchJson(`${API_BASE}/api/recipes${query}`));
   }, [fetchJson, user]);
 
-  const fetchHealthyRecipes = useCallback(async () => {
-    const query = user?.id ? `?healthy_only=true&user_id=${user.id}` : '?healthy_only=true';
-    const data = withProxiedImages(await fetchJson(`${API_BASE}/api/recipes${query}`));
-    return data;
-  }, [fetchJson, user]);
+  const fetchAllRecipes = useCallback(() => fetchRecipeList(), [fetchRecipeList]);
+
+  const fetchHealthyRecipes = useCallback(() => fetchRecipeList({ healthy_only: 'true' }), [fetchRecipeList]);
 
   const toggleFavorite = useCallback(async (recipeId) => {
     if (!user?.id) return;

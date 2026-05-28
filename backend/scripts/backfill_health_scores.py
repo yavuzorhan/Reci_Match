@@ -18,7 +18,7 @@ from sqlalchemy import text  # noqa: E402
 from sqlalchemy.orm import selectinload  # noqa: E402
 
 from app.db.database import SessionLocal  # noqa: E402
-from app.db.models import Ingredient, Recipe, RecipeIngredient  # noqa: E402
+from app.db.models import Recipe, RecipeIngredient, Ingredient  # noqa: E402
 from app.utils.recipe_health import build_recipe_health_profile  # noqa: E402
 
 
@@ -43,7 +43,6 @@ def main() -> int:
             .options(
                 selectinload(Recipe.ingredients)
                 .selectinload(RecipeIngredient.ingredient)
-                .selectinload(Ingredient.nutrition_value)
             )
             .order_by(Recipe.recipe_id.asc())
             .all()

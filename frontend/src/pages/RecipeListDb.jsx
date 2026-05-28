@@ -4,16 +4,13 @@ import {
   Book,
   BookOpen,
   ChefHat,
-  ChevronRight,
   Clock3,
   Filter,
   Flame,
   Heart,
-  Pencil,
   PlusCircle,
   Search,
   Trash2,
-  UtensilsCrossed,
   PackageOpen,
 } from 'lucide-react';
 

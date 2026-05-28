@@ -1,4 +1,3 @@
-"""AI-assisted recipe revision preview and save service."""
 from __future__ import annotations
 
 import hashlib
@@ -12,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.repositories import recipe_repository
 from app.schemas.recipe_revision import RecipeRevisionRequest, RevisedRecipePayload
 from app.services import recipe_service
+from app.utils.recipe_helpers import ascii_fold
 
 try:
     from google import genai
@@ -216,7 +216,6 @@ Donmen gereken JSON semasi:
 
     # Filter out ingredients Gemini hallucinated — only original + requested additions allowed
     if parsed.get("ingredients"):
-        from app.utils.recipe_helpers import ascii_fold
         removed_norms = {ascii_fold(r) for r in requested_removals if r}
         allowed_norms = (
             {ascii_fold(n) for n in original_ingredient_names if n} - removed_norms

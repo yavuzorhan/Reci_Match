@@ -2,12 +2,12 @@ import React, { useCallback, useState, useMemo } from 'react';
 import './WeeklyLogs.css';
 import Layout from '../components/Layout';
 import { useApp } from '../context/AppContext';
-import { 
-  Clock, 
-  Trash2, 
-  ChevronLeft, 
-  ChevronRight, 
-  Utensils, 
+import {
+  Clock,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Utensils,
   Edit2,
   Check,
   X,
@@ -18,7 +18,6 @@ import {
   Moon,
   Apple,
   Cake,
-  History,
   Flame,
   LineChart,
   CheckCircle2

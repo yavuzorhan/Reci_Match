@@ -984,3 +984,9 @@
 .layout-shell[data-theme="light"].noct-layout .recipe-stat-row svg {
   color: #059669 !important;
 }
+
+.recipe-empty-steps {
+  color: rgba(187, 202, 191, 0.5);
+  font-style: italic;
+  padding: 0.5rem 0;
+}

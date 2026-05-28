@@ -416,9 +416,9 @@ Ilgili dosyalar:
 backend/app/services/ingredient_matching_service.py
 backend/app/services/ingredient_resolver_service.py
 backend/aliases.json
-backend/audit_ingredient_matching.py
-backend/merge_canonical_ingredients.py
-backend/refresh_yemekcom_ingredients.py
+backend/scripts/audit_ingredient_matching.py
+backend/scripts/merge_canonical_ingredients.py
+backend/scripts/refresh_yemekcom_ingredients.py
 ```
 
 ---

@@ -1,4 +1,3 @@
-"""Ingredient resolve helpers for custom recipe creation."""
 from __future__ import annotations
 
 from dataclasses import dataclass

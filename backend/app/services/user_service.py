@@ -1,6 +1,3 @@
-"""
-Kullanıcı (User) profil iş mantığı - profil, favoriler ve günlük kayıtlar.
-"""
 import logging
 from datetime import date, datetime, timedelta, timezone
 
@@ -349,6 +346,7 @@ def update_daily_log(
         raise HTTPException(status_code=404, detail="Kayıt bulunamadı.")
 
     recipe = user_repository.find_recipe_by_id(db, log.recipe_id)
+    recipe_macros = _recipe_macros_per_serving(recipe)
 
     if meal_type:
         log.meal_type = _normalize_meal_type(meal_type)
@@ -357,7 +355,6 @@ def update_daily_log(
         normalized_serving_count = _normalize_serving_count(serving_count)
         log.serving_count = normalized_serving_count
         multiplier = float(normalized_serving_count)
-        recipe_macros = _recipe_macros_per_serving(recipe)
         log.serving_multiplier = round(multiplier, 2)
         log.calorie_intake = round(recipe_macros["calorie"] * multiplier, 2)
         log.protein_intake = round(recipe_macros["protein"] * multiplier, 2)
@@ -394,9 +391,9 @@ def update_daily_log(
             "servingCount": log.serving_count,
             "servingMultiplier": multiplier,
             "calorieIntake": float(log.calorie_intake) if log.calorie_intake is not None else 0,
-            "protein": float(log.protein_intake) if log.protein_intake is not None else round(_recipe_macros_per_serving(recipe)["protein"] * multiplier, 2),
-            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round(_recipe_macros_per_serving(recipe)["carbohydrate"] * multiplier, 2),
-            "fat": float(log.fat_intake) if log.fat_intake is not None else round(_recipe_macros_per_serving(recipe)["fat"] * multiplier, 2),
+            "protein": float(log.protein_intake) if log.protein_intake is not None else round(recipe_macros["protein"] * multiplier, 2),
+            "carbohydrate": float(log.carbohydrate_intake) if log.carbohydrate_intake is not None else round(recipe_macros["carbohydrate"] * multiplier, 2),
+            "fat": float(log.fat_intake) if log.fat_intake is not None else round(recipe_macros["fat"] * multiplier, 2),
         }
     }
 
