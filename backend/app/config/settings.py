@@ -22,7 +22,6 @@ class Settings:
 
     # Application Settings
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173")
-    USDA_API_KEY: str = os.getenv("USDA_API_KEY", "")
 
     @property
     def DATABASE_URL(self) -> str:

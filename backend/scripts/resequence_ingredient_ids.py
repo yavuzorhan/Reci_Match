@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 import sys
 
-from sqlalchemy import insert, text
+from sqlalchemy import text
 
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -58,31 +58,6 @@ def main() -> None:
                 """
             )
         ).mappings().all()
-        ingredient_usda_mappings = db.execute(
-            text(
-                """
-                SELECT mapping_id, ingredient_id, fdc_id, usda_description, data_type, match_query,
-                       match_confidence, match_status, is_verified, created_at, updated_at
-                FROM ingredient_usda_mappings
-                ORDER BY mapping_id ASC
-                """
-            )
-        ).mappings().all()
-        ingredient_nutrition_values = db.execute(
-            text(
-                """
-                SELECT nutrition_id, ingredient_id, fdc_id, calories_per_100g, protein_per_100g,
-                       carbs_per_100g, fat_per_100g, saturated_fat_per_100g, fiber_per_100g,
-                       sugar_per_100g, sodium_mg_per_100g, added_sugar_per_100g, trans_fat_per_100g,
-                       cholesterol_mg_per_100g, potassium_mg_per_100g, calcium_mg_per_100g,
-                       iron_mg_per_100g, vitamin_d_mcg_per_100g, source, confidence_score,
-                       created_at, updated_at
-                FROM ingredient_nutrition_values
-                ORDER BY nutrition_id ASC
-                """
-            )
-        ).mappings().all()
-
         transformed_ingredients = [
             {
                 "ingredient_id": id_map[row["ingredient_id"]],
@@ -120,55 +95,9 @@ def main() -> None:
             }
             for row in disliked_ingredients
         ]
-        transformed_mappings = [
-            {
-                "mapping_id": row["mapping_id"],
-                "ingredient_id": id_map[row["ingredient_id"]],
-                "fdc_id": row["fdc_id"],
-                "usda_description": row["usda_description"],
-                "data_type": row["data_type"],
-                "match_query": row["match_query"],
-                "match_confidence": row["match_confidence"],
-                "match_status": row["match_status"],
-                "is_verified": row["is_verified"],
-                "created_at": row["created_at"],
-                "updated_at": row["updated_at"],
-            }
-            for row in ingredient_usda_mappings
-        ]
-        transformed_nutrition = [
-            {
-                "nutrition_id": row["nutrition_id"],
-                "ingredient_id": id_map[row["ingredient_id"]],
-                "fdc_id": row["fdc_id"],
-                "calories_per_100g": row["calories_per_100g"],
-                "protein_per_100g": row["protein_per_100g"],
-                "carbs_per_100g": row["carbs_per_100g"],
-                "fat_per_100g": row["fat_per_100g"],
-                "saturated_fat_per_100g": row["saturated_fat_per_100g"],
-                "fiber_per_100g": row["fiber_per_100g"],
-                "sugar_per_100g": row["sugar_per_100g"],
-                "sodium_mg_per_100g": row["sodium_mg_per_100g"],
-                "added_sugar_per_100g": row["added_sugar_per_100g"],
-                "trans_fat_per_100g": row["trans_fat_per_100g"],
-                "cholesterol_mg_per_100g": row["cholesterol_mg_per_100g"],
-                "potassium_mg_per_100g": row["potassium_mg_per_100g"],
-                "calcium_mg_per_100g": row["calcium_mg_per_100g"],
-                "iron_mg_per_100g": row["iron_mg_per_100g"],
-                "vitamin_d_mcg_per_100g": row["vitamin_d_mcg_per_100g"],
-                "source": row["source"],
-                "confidence_score": row["confidence_score"],
-                "created_at": row["created_at"],
-                "updated_at": row["updated_at"],
-            }
-            for row in ingredient_nutrition_values
-        ]
-
         db.execute(text("DELETE FROM recipe_ingredients"))
         db.execute(text("DELETE FROM owned_ingredients"))
         db.execute(text("DELETE FROM disliked_ingredients"))
-        db.execute(text("DELETE FROM ingredient_usda_mappings"))
-        db.execute(text("DELETE FROM ingredient_nutrition_values"))
         db.execute(text("DELETE FROM ingredients"))
 
         if transformed_ingredients:
@@ -203,41 +132,10 @@ def main() -> None:
                 ),
                 transformed_disliked,
             )
-        if transformed_mappings:
-            db.execute(
-                insert_sql(
-                    "ingredient_usda_mappings",
-                    [
-                        "mapping_id", "ingredient_id", "fdc_id", "usda_description", "data_type",
-                        "match_query", "match_confidence", "match_status", "is_verified",
-                        "created_at", "updated_at",
-                    ],
-                ),
-                transformed_mappings,
-            )
-        if transformed_nutrition:
-            db.execute(
-                insert_sql(
-                    "ingredient_nutrition_values",
-                    [
-                        "nutrition_id", "ingredient_id", "fdc_id", "calories_per_100g",
-                        "protein_per_100g", "carbs_per_100g", "fat_per_100g",
-                        "saturated_fat_per_100g", "fiber_per_100g", "sugar_per_100g",
-                        "sodium_mg_per_100g", "added_sugar_per_100g", "trans_fat_per_100g",
-                        "cholesterol_mg_per_100g", "potassium_mg_per_100g",
-                        "calcium_mg_per_100g", "iron_mg_per_100g", "vitamin_d_mcg_per_100g",
-                        "source", "confidence_score", "created_at", "updated_at",
-                    ],
-                ),
-                transformed_nutrition,
-            )
-
         reset_sequence(db, "ingredients", "ingredient_id")
         reset_sequence(db, "recipe_ingredients", "recipe_ingredient_id")
         reset_sequence(db, "owned_ingredients", "owned_id")
         reset_sequence(db, "disliked_ingredients", "disliked_id")
-        reset_sequence(db, "ingredient_usda_mappings", "mapping_id")
-        reset_sequence(db, "ingredient_nutrition_values", "nutrition_id")
         db.commit()
 
         print(

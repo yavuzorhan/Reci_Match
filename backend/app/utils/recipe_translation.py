@@ -7,11 +7,6 @@ import os
 import re
 from functools import lru_cache
 
-try:
-    from deep_translator import GoogleTranslator
-except ImportError:  # pragma: no cover
-    GoogleTranslator = None
-
 
 ENGLISH_HINTS = {
     "the", "and", "with", "from", "fresh", "chopped", "sliced", "ground", "recipe",
@@ -56,10 +51,7 @@ def _looks_like_english(value: str | None) -> bool:
 
 @lru_cache(maxsize=1)
 def _get_translator():
-    if GoogleTranslator is None:
-        return None
-    _prepare_translation_env()
-    return GoogleTranslator(source="en", target="tr")
+    return None
 
 
 @lru_cache(maxsize=4096)

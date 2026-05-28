@@ -1,6 +1,7 @@
 """
 Tarif (Recipe) is mantigi - listeleme, detay, oneri motoru ve ozel tarif olusturma.
 """
+import logging
 from fastapi import HTTPException
 from pathlib import Path
 from uuid import uuid4
@@ -10,7 +11,7 @@ from sqlalchemy.orm import Session
 from app.db.models import Recipe
 from app.repositories import recipe_repository
 from app.services.healthy_recipe_service import ensure_healthy_recipe_table
-from app.services.ingredient_nutrition_service import ensure_ingredient_nutrition_table
+from app.services.ingredient_nutrition_service import ensure_ingredient_columns
 from app.services.ingredient_resolver_service import resolve_ingredient_for_user
 from app.utils.recipe_health import build_recipe_health_profile, recipe_macro_values_per_serving
 from app.utils.recipe_helpers import (
@@ -85,7 +86,7 @@ def serialize_recipe_detail(
                         "carbs_per_100g": ingredient_carbs_per_100g(item.ingredient),
                         "fat_per_100g": ingredient_fat_per_100g(item.ingredient),
                         "source": item.ingredient.source,
-                        "nutrition_data_source": getattr(item.ingredient.nutrition_value, "data_source", None),
+                        "nutrition_data_source": item.ingredient.nutrition_source,
                         "is_verified": bool(item.ingredient.is_verified),
                     }
                     if item.ingredient
@@ -117,7 +118,7 @@ def get_recipes(
     healthy_only: bool,
     db: Session,
 ) -> list[dict]:
-    ensure_ingredient_nutrition_table(db)
+    ensure_ingredient_columns(db)
     user_profile = _get_user_profile(user_id, db)
 
     if healthy_only:
@@ -143,7 +144,7 @@ def get_recipes(
 
 
 def get_recipe_detail(recipe_id: int, db: Session) -> dict:
-    ensure_ingredient_nutrition_table(db)
+    ensure_ingredient_columns(db)
     recipe = recipe_repository.find_recipe_by_id_with_relations(db, recipe_id)
     if not recipe:
         raise HTTPException(status_code=404, detail="Tarif bulunamadi.")
@@ -168,13 +169,13 @@ async def _resolve_ingredients(db: Session, user_id: int, ingredients: list[dict
             ingredient = recipe_repository.find_ingredient_by_id(db, ing["ingredient_id"], user_id)
             if not ingredient:
                 raise HTTPException(status_code=404, detail="Malzeme bulunamadi.")
-            if not getattr(ingredient, "nutrition_value", None):
-                result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ingredient.ingredient_name, try_usda=True)
+            if float(getattr(ingredient, "calorie_per_100g", 0) or 0) <= 0:
+                result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ingredient.ingredient_name, try_ai=True)
                 if result.status == "manual_required":
                     raise _ManualRequired(ingredient.ingredient_name)
                 ingredient = result.ingredient
         else:
-            result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ing.get("ingredient_name") or "", try_usda=True)
+            result = await resolve_ingredient_for_user(db=db, user_id=user_id, ingredient_name=ing.get("ingredient_name") or "", try_ai=True)
             if result.status == "manual_required":
                 raise _ManualRequired(result.ingredient_name)
             ingredient = result.ingredient
@@ -206,7 +207,7 @@ async def create_custom_recipe(
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
     serving = _normalize_recipe_serving(serving)
 
-    ensure_ingredient_nutrition_table(db)
+    ensure_ingredient_columns(db)
     try:
         resolved_items = await _resolve_ingredients(db, user_id, ingredients)
 
@@ -267,7 +268,8 @@ async def create_custom_recipe(
         raise
     except Exception as exc:
         db.rollback()
-        raise HTTPException(status_code=500, detail="Tarif kaydedilirken bir hata olustu.") from exc
+        logging.error(f"Create recipe error: {exc}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Tarif kaydedilirken hata: {str(exc)}") from exc
 
 
 async def update_custom_recipe(
@@ -294,7 +296,7 @@ async def update_custom_recipe(
         raise HTTPException(status_code=400, detail="En az bir malzeme eklemelisiniz.")
     serving = _normalize_recipe_serving(serving)
 
-    ensure_ingredient_nutrition_table(db)
+    ensure_ingredient_columns(db)
     try:
         resolved_items = await _resolve_ingredients(db, user_id, ingredients)
         totals = calculate_recipe_nutrition(resolved_items)
@@ -375,7 +377,8 @@ async def upload_recipe_image(user_id: int, recipe_id: int, upload_file, db: Ses
         output_path = upload_dir / filename
         image.save(output_path, format="JPEG", quality=85, optimize=True)
     except Exception as exc:
-        raise HTTPException(status_code=400, detail="Resim islenemedi.") from exc
+        logging.error(f"Image upload error: {exc}")
+        raise HTTPException(status_code=400, detail=f"Resim islenemedi: {str(exc)}") from exc
 
     recipe.image_url = f"/uploads/recipe_images/{filename}"
     db.commit()
@@ -393,7 +396,7 @@ def get_recommendations(
     healthy_only: bool,
     db: Session,
 ) -> list[dict]:
-    ensure_ingredient_nutrition_table(db)
+    ensure_ingredient_columns(db)
     selected_ids = set(selected_ingredient_ids)
     pantry_ids = set(pantry_ingredient_ids)
     pantry_only_ids = pantry_ids - selected_ids

@@ -69,7 +69,7 @@ export const HEALTH_SCORE_MAX_PORTION = 99;
 export const getHealthTone = (score = 0) => {
   if (score >= 80) return { bg: '#dcfce7', text: '#166534', chip: '#16a34a' };
   if (score >= 60) return { bg: '#dbeafe', text: '#1e40af', chip: '#2563eb' };
-  if (score >= 50) return { bg: '#ffedd5', text: '#9a3412', chip: '#ea580c' };
+  if (score >= 50) return { bg: '#fee2e2', text: '#991b1b', chip: '#dc2626' };
   return { bg: '#fee2e2', text: '#991b1b', chip: '#dc2626' };
 };
 

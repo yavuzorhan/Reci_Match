@@ -744,12 +744,14 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content {
-  background-color: #f4fbf4 !important;
+  background-color: #f3fbf6 !important;
   background-image:
-    radial-gradient(circle at 10% 18%, rgba(111, 251, 190, 0.28) 0%, transparent 38%),
-    radial-gradient(circle at 90% 78%, rgba(109, 245, 225, 0.20) 0%, transparent 40%),
-    linear-gradient(180deg, #f4fbf4 0%, #eef6ee 100%) !important;
-  color: #161d19;
+    radial-gradient(circle at 12% 10%, rgba(78, 222, 163, 0.30) 0%, transparent 32%),
+    radial-gradient(circle at 74% 8%, rgba(104, 156, 255, 0.14) 0%, transparent 34%),
+    radial-gradient(circle at 92% 78%, rgba(68, 226, 205, 0.24) 0%, transparent 36%),
+    radial-gradient(circle at 45% 92%, rgba(255, 179, 175, 0.16) 0%, transparent 34%),
+    linear-gradient(135deg, #f8fff9 0%, #eefbf4 42%, #eef9ff 100%) !important;
+  color: #122018;
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-dashboard,
@@ -763,10 +765,23 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .glass-panel {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(187, 202, 191, 0.55);
-  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08);
-  backdrop-filter: blur(18px);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(244, 255, 249, 0.64)),
+    radial-gradient(circle at 16% 0%, rgba(78, 222, 163, 0.10), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.10), transparent 36%);
+  border: 1px solid rgba(126, 153, 140, 0.30);
+  box-shadow:
+    0 22px 54px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px);
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(78, 222, 163, 0.22), transparent 35%),
+    radial-gradient(circle at 78% 12%, rgba(104, 156, 255, 0.16), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(255, 179, 175, 0.16), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.90), rgba(234, 252, 243, 0.72) 48%, rgba(239, 248, 255, 0.68));
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-topbar {
@@ -830,11 +845,15 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-hero::after {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), transparent, rgba(109, 245, 225, 0.10));
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.12), transparent 42%, rgba(104, 156, 255, 0.10)),
+    linear-gradient(45deg, transparent 15%, rgba(255, 255, 255, 0.40) 46%, transparent 72%);
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .hero-glow {
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, transparent 70%);
+  background:
+    radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, transparent 58%),
+    radial-gradient(circle, rgba(68, 226, 205, 0.18) 12%, transparent 70%);
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .noct-search-box {
@@ -874,19 +893,73 @@
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-glass {
-  background: rgba(255, 255, 255, 0.74);
-  border-color: rgba(187, 202, 191, 0.55);
-  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.90), rgba(247, 255, 251, 0.80)),
+    radial-gradient(circle at 0% 0%, rgba(78, 222, 163, 0.12), transparent 32%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.10), transparent 34%);
+  border-color: rgba(126, 153, 140, 0.32);
+  box-shadow:
+    0 18px 44px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card h3,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-title {
-  color: #161d19;
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card h2,
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-title,
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-metric strong {
+  color: #122018;
 }
 
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-body p,
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-meta,
-.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-tag {
-  color: #3c4a42;
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-tag,
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-metric small {
+  color: #4b6156;
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-media {
+  background:
+    radial-gradient(circle at 30% 18%, rgba(78, 222, 163, 0.26), transparent 36%),
+    linear-gradient(180deg, #dbe8df 0%, #c5d4ca 100%);
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-card-fallback {
+  color: #4edea3;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(78, 222, 163, 0.34), transparent 34%),
+    radial-gradient(circle at 88% 84%, rgba(104, 156, 255, 0.14), transparent 34%),
+    linear-gradient(145deg, #dcebe1, #aebcb4);
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-media-overlay {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 32%, rgba(18, 32, 24, 0.34));
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-metric {
+  background: rgba(237, 249, 241, 0.78);
+  border-color: rgba(126, 153, 140, 0.30);
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-detail-button {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(68, 226, 205, 0.12));
+  color: #00825d;
+  border-color: rgba(16, 185, 129, 0.30);
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-detail-button:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.20), rgba(68, 226, 205, 0.18));
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-heart {
+  background: rgba(255, 255, 255, 0.70);
+  border-color: rgba(126, 153, 140, 0.30);
+  color: #53645b;
+}
+
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-heart.active,
+.layout-shell[data-theme="light"]:has(.noct-dashboard) .layout-content .recipes-heart:hover {
+  color: #ba1a1a;
+  background: rgba(255, 235, 232, 0.82);
+  border-color: rgba(186, 26, 26, 0.18);
 }
 
 .layout-shell[data-theme="light"]:has(.noct-dashboard) .sidebar {

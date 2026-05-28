@@ -6,13 +6,11 @@ alembic
 python-dotenv
 pydantic-settings
 requests
-httpx
 beautifulsoup4
 lxml
 bcrypt
-deep-translator
 rapidfuzz
 Pillow
 python-multipart
-# Gemini recipe revision support
-google-generativeai
+# Gemini recipe revision and nutrition support
+google-genai

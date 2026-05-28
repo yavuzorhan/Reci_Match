@@ -163,8 +163,8 @@ const HealthyResults = () => {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               fontWeight: '800',
-              background: selectedMenuRecipeId === null ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
-              color: selectedMenuRecipeId === null ? '#003824' : '#bbcabf',
+              background: selectedMenuRecipeId === null ? '#10b981' : 'var(--background-elevated)',
+              color: selectedMenuRecipeId === null ? '#ffffff' : 'var(--text-secondary)',
               boxShadow: selectedMenuRecipeId === null ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
               transition: 'all 0.2s'
             }}
@@ -183,8 +183,8 @@ const HealthyResults = () => {
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 fontWeight: '700',
-                background: selectedMenuRecipeId === recipe.id ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
-                color: selectedMenuRecipeId === recipe.id ? '#003824' : '#bbcabf',
+                background: selectedMenuRecipeId === recipe.id ? '#10b981' : 'var(--background-elevated)',
+                color: selectedMenuRecipeId === recipe.id ? '#ffffff' : 'var(--text-secondary)',
                 boxShadow: selectedMenuRecipeId === recipe.id ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
                 transition: 'all 0.2s'
               }}
@@ -213,8 +213,8 @@ const HealthyResults = () => {
               fontWeight: '750',
               fontSize: '0.88rem',
               whiteSpace: 'nowrap',
-              background: activeFilters.includes(option.value) ? '#4edea3' : 'rgba(28, 43, 60, 0.10)',
-              color: activeFilters.includes(option.value) ? '#003824' : '#bbcabf',
+              background: activeFilters.includes(option.value) ? '#10b981' : 'var(--background-elevated)',
+              color: activeFilters.includes(option.value) ? '#ffffff' : 'var(--text-secondary)',
               borderColor: activeFilters.includes(option.value) ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
               boxShadow: activeFilters.includes(option.value) ? '0 8px 16px rgba(78, 222, 163, 0.2)' : 'none',
             }}

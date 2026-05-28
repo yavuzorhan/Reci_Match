@@ -901,3 +901,86 @@
 .layout-shell:not([data-theme="dark"]) .recipe-image-fallback {
   background: linear-gradient(145deg, #d4f0e2, #eaf7f0) !important;
 }
+
+/* Premium light refresh */
+.layout-shell[data-theme="light"].noct-layout .layout-content:has(.recipe-detail-page) {
+  background-color: #f3fbf6 !important;
+  background-image:
+    radial-gradient(circle at 12% 10%, rgba(78, 222, 163, 0.32) 0%, transparent 32%),
+    radial-gradient(circle at 72% 6%, rgba(104, 156, 255, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 94% 76%, rgba(68, 226, 205, 0.25) 0%, transparent 36%),
+    radial-gradient(circle at 45% 94%, rgba(255, 179, 175, 0.18) 0%, transparent 34%),
+    linear-gradient(135deg, #f8fff9 0%, #eefbf4 42%, #eef9ff 100%) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-detail-page {
+  background: transparent !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-topbar,
+.layout-shell[data-theme="light"].noct-layout .recipe-panel,
+.layout-shell[data-theme="light"].noct-layout .recipe-save-card,
+.layout-shell[data-theme="light"].noct-layout .recipe-nutrition-card,
+.layout-shell[data-theme="light"].noct-layout .recipe-quality-card,
+.layout-shell[data-theme="light"].noct-layout .recipe-macro-grid {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(244, 255, 249, 0.66)),
+    radial-gradient(circle at 16% 0%, rgba(78, 222, 163, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.11), transparent 36%) !important;
+  border-color: rgba(126, 153, 140, 0.32) !important;
+  box-shadow:
+    0 22px 54px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-primary-button,
+.layout-shell[data-theme="light"].noct-layout .recipe-revision-button {
+  background: linear-gradient(135deg, #19c58f, #089c80) !important;
+  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.24) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-portion-control {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-portion-control input[type="number"],
+.layout-shell[data-theme="light"].noct-layout .recipe-portion-control button {
+  height: 48px;
+  min-height: 48px;
+  margin: 0 !important;
+  align-self: stretch;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-portion-control input[type="number"] {
+  text-align: center;
+  line-height: 48px;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-hero-overlay {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.58) 42%,
+    rgba(255, 255, 255, 0.06) 100%
+  ) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-hero-content p {
+  color: #0f2b23 !important;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.7) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-stat-row span {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: rgba(16, 185, 129, 0.26) !important;
+  color: #17332b !important;
+  box-shadow: 0 10px 24px rgba(15, 118, 110, 0.1);
+}
+
+.layout-shell[data-theme="light"].noct-layout .recipe-stat-row svg {
+  color: #059669 !important;
+}

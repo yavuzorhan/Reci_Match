@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *.pyc.*
+*.log
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -27,3 +28,6 @@ repair_mojibake*.py
 
 .DS_Store
 Thumbs.db
+
+# Thesis/local documentation
+location.md

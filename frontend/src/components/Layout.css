@@ -1,10 +1,12 @@
 .layout-shell[data-theme="light"].noct-layout .layout-content {
-  background-color: #f4fbf4 !important;
+  background-color: #f3fbf6 !important;
   background-image:
-    radial-gradient(circle at 10% 18%, rgba(111, 251, 190, 0.28) 0%, transparent 38%),
-    radial-gradient(circle at 90% 78%, rgba(109, 245, 225, 0.20) 0%, transparent 40%),
-    linear-gradient(180deg, #f4fbf4 0%, #eef6ee 100%) !important;
-  color: #161d19 !important;
+    radial-gradient(circle at 12% 10%, rgba(78, 222, 163, 0.32) 0%, transparent 32%),
+    radial-gradient(circle at 72% 6%, rgba(104, 156, 255, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 94% 76%, rgba(68, 226, 205, 0.25) 0%, transparent 36%),
+    radial-gradient(circle at 45% 94%, rgba(255, 179, 175, 0.18) 0%, transparent 34%),
+    linear-gradient(135deg, #f8fff9 0%, #eefbf4 42%, #eef9ff 100%) !important;
+  color: #122018 !important;
 }
 
 .layout-shell[data-theme="light"].noct-layout .sidebar {
@@ -153,12 +155,25 @@
   .noct-modal-content,
   .revision-panel
 ) {
-  background: rgba(255, 255, 255, 0.74) !important;
-  background-color: rgba(255, 255, 255, 0.74) !important;
-  border-color: rgba(187, 202, 191, 0.58) !important;
-  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(244, 255, 249, 0.66)),
+    radial-gradient(circle at 16% 0%, rgba(78, 222, 163, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.11), transparent 36%) !important;
+  background-color: rgba(255, 255, 255, 0.78) !important;
+  border-color: rgba(126, 153, 140, 0.32) !important;
+  box-shadow:
+    0 22px 54px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .noct-hero {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(78, 222, 163, 0.24), transparent 35%),
+    radial-gradient(circle at 78% 12%, rgba(104, 156, 255, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(255, 179, 175, 0.18), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(234, 252, 243, 0.74) 48%, rgba(239, 248, 255, 0.70)) !important;
 }
 
 .layout-shell[data-theme="light"].noct-layout .layout-content :where(
@@ -255,10 +270,10 @@
   .recipe-detail-primary-button,
   .revision-save-button
 ) {
-  background: var(--noct-accent-hover) !important;
+  background: linear-gradient(135deg, #19c58f, #089c80) !important;
   border-color: rgba(16, 185, 129, 0.32) !important;
   color: #ffffff !important;
-  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22) !important;
+  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.24) !important;
 }
 
 .layout-shell[data-theme="light"].noct-layout .layout-content :where(
@@ -435,8 +450,9 @@
   .recipes-filter-row button,
   .recipes-metric
 ) {
-  background: rgba(238, 246, 238, 0.82) !important;
-  border-color: rgba(187, 202, 191, 0.72) !important;
+  background:
+    linear-gradient(135deg, rgba(244, 253, 247, 0.88), rgba(235, 248, 244, 0.72)) !important;
+  border-color: rgba(126, 153, 140, 0.34) !important;
   color: #3c4a42 !important;
 }
 
@@ -511,6 +527,38 @@
   opacity: 1 !important;
 }
 
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-quality-metric.grade-a strong {
+  color: #16a34a !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-quality-metric.grade-b strong {
+  color: #2563eb !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-quality-metric.grade-c strong,
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-quality-metric.grade-d strong {
+  color: #dc2626 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-card-fallback {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(78, 222, 163, 0.34), transparent 34%),
+    radial-gradient(circle at 88% 84%, rgba(104, 156, 255, 0.14), transparent 34%),
+    linear-gradient(145deg, #dcebe1, #aebcb4) !important;
+  color: #4edea3 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-media-overlay {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 32%, rgba(18, 32, 24, 0.34)) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .layout-content .recipes-detail-button {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(68, 226, 205, 0.13)) !important;
+  color: #00825d !important;
+  border-color: rgba(16, 185, 129, 0.32) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.64) !important;
+}
+
 .layout-shell[data-theme="light"].noct-layout .layout-content :where(
   .pantry-panel-glow,
   .hero-glow
@@ -540,11 +588,16 @@
   .recipe-nutrition-card,
   .recipe-quality-card
 ) {
-  background: rgba(255, 255, 255, 0.74) !important;
-  border-color: rgba(187, 202, 191, 0.58) !important;
-  box-shadow: 0 14px 34px rgba(0, 108, 73, 0.08) !important;
-  backdrop-filter: blur(18px) !important;
-  -webkit-backdrop-filter: blur(18px) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(244, 255, 249, 0.66)),
+    radial-gradient(circle at 16% 0%, rgba(78, 222, 163, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.11), transparent 36%) !important;
+  border-color: rgba(126, 153, 140, 0.32) !important;
+  box-shadow:
+    0 22px 54px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
 }
 
 .layout-shell[data-theme="light"].noct-layout .layout-content .recipe-topbar {
@@ -744,4 +797,27 @@
   background: #122131 !important;
   border-color: #3c4a42 !important;
   color: var(--noct-text-primary) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255, 194, 209, 0.34) 0, transparent 28%),
+    radial-gradient(circle at 76% 10%, rgba(167, 243, 208, 0.42) 0, transparent 26%),
+    radial-gradient(circle at 88% 84%, rgba(125, 211, 252, 0.3) 0, transparent 32%),
+    linear-gradient(135deg, #fbfff8 0%, #f2fff7 36%, #ecfffb 68%, #fff8ec 100%) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .layout-content,
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-page {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255, 194, 209, 0.34) 0, transparent 28%),
+    radial-gradient(circle at 76% 10%, rgba(167, 243, 208, 0.42) 0, transparent 26%),
+    radial-gradient(circle at 88% 84%, rgba(125, 211, 252, 0.3) 0, transparent 32%),
+    linear-gradient(135deg, #fbfff8 0%, #f2fff7 36%, #ecfffb 68%, #fff8ec 100%) !important;
+  background-attachment: fixed !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-main,
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-recipes-area {
+  background: transparent !important;
 }

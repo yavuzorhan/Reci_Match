@@ -377,8 +377,8 @@ const ProfileEdit = () => {
 
               <div className="profile-macro-grid">
                 {[
-                  { label: 'Protein', value: macros.protein, width: 65, color: '#10b981' },
-                  { label: 'Karbonhidrat', value: macros.carbs, width: 80, color: '#006b5f' },
+                  { label: 'Protein', value: macros.protein, width: 65, color: '#ffb3af' },
+                  { label: 'Karbonhidrat', value: macros.carbs, width: 80, color: '#44e2cd' },
                   { label: 'Yağ', value: macros.fat, width: 45, color: '#ba1a1a' },
                 ].map((macro) => (
                   <div className="profile-macro" key={macro.label}>
@@ -386,7 +386,7 @@ const ProfileEdit = () => {
                       <span>{macro.label}</span>
                       <strong>{macro.value}g</strong>
                     </div>
-                    <i><b style={{ width: `${macro.width}%`, backgroundColor: macro.color, boxShadow: `0 0 10px ${macro.color}55` }} /></i>
+                    <i><b style={{ width: `${macro.width}%`, backgroundColor: macro.color, boxShadow: `0 0 10px ${macro.color}66` }} /></i>
                   </div>
                 ))}
               </div>

@@ -281,3 +281,39 @@
   border-color: rgba(16,185,129,0.25) !important;
   color: #0f766e !important;
 }
+
+/* Premium light refresh */
+.layout-shell[data-theme="light"].noct-layout .layout-content:has(.noct-rec-container) {
+  background-color: #f3fbf6 !important;
+  background-image:
+    radial-gradient(circle at 12% 10%, rgba(78, 222, 163, 0.32) 0%, transparent 32%),
+    radial-gradient(circle at 72% 6%, rgba(104, 156, 255, 0.16) 0%, transparent 34%),
+    radial-gradient(circle at 94% 76%, rgba(68, 226, 205, 0.25) 0%, transparent 36%),
+    radial-gradient(circle at 45% 94%, rgba(255, 179, 175, 0.18) 0%, transparent 34%),
+    linear-gradient(135deg, #f8fff9 0%, #eefbf4 42%, #eef9ff 100%) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .noct-filters-row.glass-panel,
+.layout-shell[data-theme="light"].noct-layout .noct-rec-container .recipes-glass,
+.layout-shell[data-theme="light"].noct-layout .noct-rec-container .glass-panel {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(244, 255, 249, 0.66)),
+    radial-gradient(circle at 16% 0%, rgba(78, 222, 163, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(104, 156, 255, 0.11), transparent 36%) !important;
+  border-color: rgba(126, 153, 140, 0.32) !important;
+  box-shadow:
+    0 22px 54px rgba(11, 78, 54, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .noct-filter-pill {
+  background: linear-gradient(135deg, rgba(244, 253, 247, 0.88), rgba(235, 248, 244, 0.72)) !important;
+  border-color: rgba(126, 153, 140, 0.34) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout .noct-filter-pill.active {
+  background: linear-gradient(135deg, #19c58f, #089c80) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.24) !important;
+}

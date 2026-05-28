@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import './Login.css';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ArrowLeft, ArrowRight, Target, UserRound, Utensils } from 'lucide-react';
+import { Activity, ArrowLeft, ArrowRight, Target, Utensils } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
 import reciMatchLogo from '../assets/recimatch-logo.png';
@@ -17,7 +18,7 @@ const ProfileSetup = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { user, setProfile } = useApp();
+  const { user, setProfile, isDarkMode } = useApp();
   const navigate = useNavigate();
 
   const handleSave = async (e) => {
@@ -72,15 +73,15 @@ const ProfileSetup = () => {
   };
 
   return (
-    <div className="auth-shell register-shell">
+    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 
       <div className="register-layout">
         <section className="register-showcase">
-          <div className="showcase-badge">
-            <img src={reciMatchLogo} alt="" className="badge-icon" />
-            <span>ReciMatch Profili</span>
+          <div className="brand-hero">
+            <img src={reciMatchLogo} alt="ReciMatch Logo" className="hero-logo" />
+            <h2 className="hero-title">ReciMatch</h2>
           </div>
 
           <h1>Sana uygun kalori hedefini ve tarif deneyimini birlikte şekillendirelim.</h1>
@@ -123,11 +124,11 @@ const ProfileSetup = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSave} className="register-form">
+          <form onSubmit={handleSave} className="register-form profile-setup-form">
             {error && <div className="auth-message error">{error}</div>}
 
             <div className="form-split">
-              <div>
+              <div className="auth-input-group">
                 <label>Yaş</label>
                 <input
                   type="number"
@@ -139,7 +140,7 @@ const ProfileSetup = () => {
                   onChange={(e) => setFormData({ ...formData, age: e.target.value })}
                 />
               </div>
-              <div>
+              <div className="auth-input-group">
                 <label>Cinsiyet</label>
                 <select
                   value={formData.gender}
@@ -152,7 +153,7 @@ const ProfileSetup = () => {
             </div>
 
             <div className="form-split">
-              <div>
+              <div className="auth-input-group">
                 <label>Boy</label>
                 <input
                   type="number"
@@ -164,7 +165,7 @@ const ProfileSetup = () => {
                   onChange={(e) => setFormData({ ...formData, height: e.target.value })}
                 />
               </div>
-              <div>
+              <div className="auth-input-group">
                 <label>Kilo</label>
                 <input
                   type="number"
@@ -178,7 +179,7 @@ const ProfileSetup = () => {
               </div>
             </div>
 
-            <div>
+            <div className="auth-input-group">
               <label>Haftalık Hareket Seviyesi</label>
               <select
                 value={formData.activity}
@@ -193,7 +194,7 @@ const ProfileSetup = () => {
             </div>
 
             <div className="form-split">
-              <div>
+              <div className="auth-input-group">
                 <label>Hedefin</label>
                 <select
                   value={formData.objective}
@@ -204,7 +205,7 @@ const ProfileSetup = () => {
                   <option value="Kilo Koruma">Kilo Koruma</option>
                 </select>
               </div>
-              <div>
+              <div className="auth-input-group">
                 <label>Günlük Öğün Sayısı</label>
                 <select
                   value={formData.meals}
@@ -228,7 +229,7 @@ const ProfileSetup = () => {
                 <ArrowLeft size={18} />
                 <span>Geri Dön</span>
               </button>
-              <button type="submit" className="primary-btn register-submit" disabled={loading}>
+              <button type="submit" className="primary-btn register-submit profile-setup-submit" disabled={loading}>
                 <span>{loading ? 'Kaydediliyor...' : 'Kaydet ve Devam Et'}</span>
                 <ArrowRight size={18} />
               </button>

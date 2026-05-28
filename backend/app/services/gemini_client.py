@@ -1,8 +1,15 @@
-"""Gemini structured nutrition fallback client."""
+"""Gemini structured nutrition client."""
 from __future__ import annotations
 
 import json
 import os
+
+try:
+    from google import genai
+    from google.genai import types as genai_types
+    _GENAI_AVAILABLE = True
+except ImportError:
+    _GENAI_AVAILABLE = False
 
 
 NUTRITION_SCHEMA = {
@@ -16,6 +23,13 @@ NUTRITION_SCHEMA = {
         "fiber_per_100g": {"type": "number"},
         "sugar_per_100g": {"type": "number"},
         "sodium_mg_per_100g": {"type": "number"},
+        "added_sugar_per_100g": {"type": "number"},
+        "trans_fat_per_100g": {"type": "number"},
+        "cholesterol_mg_per_100g": {"type": "number"},
+        "potassium_mg_per_100g": {"type": "number"},
+        "calcium_mg_per_100g": {"type": "number"},
+        "iron_mg_per_100g": {"type": "number"},
+        "vitamin_d_mcg_per_100g": {"type": "number"},
     },
     "required": ["calories_per_100g", "protein_per_100g", "carbs_per_100g", "fat_per_100g"],
 }
@@ -26,28 +40,39 @@ def estimate_nutrition_with_gemini(name: str) -> dict | None:
     if not api_key:
         return None
 
-    try:
-        import google.generativeai as genai
-    except ImportError:
+    if not _GENAI_AVAILABLE:
         return None
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(
-        "gemini-2.5-flash",
-        generation_config={
-            "response_mime_type": "application/json",
-            "response_schema": NUTRITION_SCHEMA,
-        },
-    )
-    prompt = (
-        "100 gram için makro değerlerini ver, sadece JSON dön, açıklama yapma. "
-        f"Malzeme: {name}. Türkçe yerel ürünler için Türk mutfağı bağlamını dikkate al."
-    )
-    response = model.generate_content(prompt)
-    text = getattr(response, "text", "") or ""
-    if not text:
+    try:
+        client = genai.Client(api_key=api_key)
+        prompt = (
+            "Detayli besin degerleri ver: kalori, protein, karbonhidrat, yag, doymus yag, "
+            "lif, seker, sodyum, eklenmis seker, trans yag, kolesterol, potasyum, kalsiyum, "
+            "demir, D vitamini. Bilinmiyorsa 0 yaz. Sadece JSON don, aciklama yapma. "
+            f"Malzeme: {name}. Turkce yerel urunler icin Turk mutfagi baglamini dikkate al."
+        )
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=genai_types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=NUTRITION_SCHEMA,
+            ),
+        )
+        text = getattr(response, "text", "") or ""
+        if not text:
+            return None
+        data = json.loads(text)
+    except Exception as exc:
+        exc_name = type(exc).__name__
+        exc_str = (exc_name + str(exc)).lower()
+        if "resourceexhausted" in exc_str or "429" in exc_str or "quota" in exc_str:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=429,
+                detail="Gemini API günlük istek limiti doldu. Lütfen birkaç dakika sonra tekrar deneyin.",
+            )
         return None
-    data = json.loads(text)
     return {
         "calorie_per_100g": data.get("calories_per_100g", 0),
         "protein_per_100g": data.get("protein_per_100g", 0),
@@ -57,5 +82,11 @@ def estimate_nutrition_with_gemini(name: str) -> dict | None:
         "fiber_per_100g": data.get("fiber_per_100g", 0),
         "sugar_per_100g": data.get("sugar_per_100g", 0),
         "sodium_mg_per_100g": data.get("sodium_mg_per_100g", 0),
-        "fdc_id": None,
+        "added_sugar_per_100g": data.get("added_sugar_per_100g", 0),
+        "trans_fat_per_100g": data.get("trans_fat_per_100g", 0),
+        "cholesterol_mg_per_100g": data.get("cholesterol_mg_per_100g", 0),
+        "potassium_mg_per_100g": data.get("potassium_mg_per_100g", 0),
+        "calcium_mg_per_100g": data.get("calcium_mg_per_100g", 0),
+        "iron_mg_per_100g": data.get("iron_mg_per_100g", 0),
+        "vitamin_d_mcg_per_100g": data.get("vitamin_d_mcg_per_100g", 0),
     }

@@ -9,7 +9,7 @@ import unicodedata
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.db.models import Ingredient, IngredientAlias, UnmatchedIngredient
+from app.db.models import Ingredient, IngredientAlias
 
 
 UNIT_WORDS = {
@@ -236,54 +236,6 @@ def match_ingredient(db: Session, raw_ingredient_name: str) -> IngredientMatch:
         candidate.ingredient_id if candidate else None,
     )
 
-
-def log_unmatched_ingredient(
-    db: Session,
-    *,
-    match: IngredientMatch,
-    recipe_id: int | None,
-    recipe_name: str | None,
-    source_url: str | None,
-    issue_type: str = "unmatched_ingredient",
-) -> UnmatchedIngredient:
-    entry = UnmatchedIngredient(
-        recipe_id=recipe_id,
-        recipe_name=recipe_name,
-        source_url=source_url,
-        raw_name=match.normalized.raw_name[:255] if match.normalized.raw_name else None,
-        normalized_name=match.normalized.normalized_name[:150] if match.normalized.normalized_name else None,
-        suggested_match=match.suggested_match[:150] if match.suggested_match else None,
-        suggested_ingredient_id=match.suggested_ingredient_id,
-        confidence_score=match.confidence_score,
-        issue_type=issue_type,
-        status="pending",
-    )
-    db.add(entry)
-    return entry
-
-
-def log_import_issue(
-    db: Session,
-    *,
-    recipe_id: int | None,
-    recipe_name: str | None,
-    source_url: str | None,
-    issue_type: str,
-    message: str,
-) -> UnmatchedIngredient:
-    entry = UnmatchedIngredient(
-        recipe_id=recipe_id,
-        recipe_name=recipe_name,
-        source_url=source_url,
-        raw_name=None,
-        normalized_name=None,
-        suggested_match=message[:150] if message else None,
-        confidence_score=0.0,
-        issue_type=issue_type,
-        status="pending",
-    )
-    db.add(entry)
-    return entry
 
 
 def validate_recipe_ingredient_matches(raw_count: int, matched_count: int, minimum_matched: int = 3) -> tuple[bool, str | None]:

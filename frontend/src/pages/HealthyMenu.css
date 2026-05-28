@@ -643,3 +643,139 @@
   border-color: rgba(78, 222, 163, 0.20) !important;
   background: rgba(78, 222, 163, 0.08) !important;
 }
+
+/* Premium light refresh */
+.layout-shell[data-theme="light"]:has(.healthy-page) .layout-content:has(.healthy-page) {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255, 194, 209, 0.36) 0, transparent 28%),
+    radial-gradient(circle at 78% 10%, rgba(167, 243, 208, 0.42) 0, transparent 26%),
+    radial-gradient(circle at 88% 84%, rgba(125, 211, 252, 0.3) 0, transparent 32%),
+    linear-gradient(135deg, #fbfff8 0%, #f2fff7 36%, #ecfffb 68%, #fff8ec 100%) !important;
+  color: #17332b;
+}
+
+.layout-shell[data-theme="light"]:has(.healthy-page) .sidebar {
+  border-right-color: rgba(13, 148, 136, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(244, 255, 250, 0.78)),
+    radial-gradient(circle at 0 0, rgba(16, 185, 129, 0.14), transparent 32%) !important;
+  box-shadow: 10px 0 34px rgba(15, 118, 110, 0.08);
+}
+
+.layout-shell[data-theme="light"]:has(.healthy-page) .nav-active-pill {
+  background: linear-gradient(135deg, rgba(209, 250, 229, 0.92), rgba(204, 251, 241, 0.72));
+  box-shadow: inset 3px 0 0 #10b981, 0 12px 28px rgba(16, 185, 129, 0.12);
+}
+
+.layout-shell[data-theme="light"]:has(.healthy-page) .nav-item,
+.layout-shell[data-theme="light"]:has(.healthy-page) .sidebar-action-button {
+  color: #516861 !important;
+}
+
+.layout-shell[data-theme="light"]:has(.healthy-page) .nav-item.active {
+  color: #047857 !important;
+}
+
+.layout-shell[data-theme="light"] .healthy-page {
+  color: #17332b;
+}
+
+.layout-shell[data-theme="light"] .healthy-filter-panel,
+.layout-shell[data-theme="light"] .healthy-recipe-card,
+.layout-shell[data-theme="light"] .healthy-state-card {
+  border-color: rgba(13, 148, 136, 0.18);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(246, 255, 250, 0.72)),
+    radial-gradient(circle at 100% 0%, rgba(45, 212, 191, 0.14), transparent 34%);
+  box-shadow: 0 22px 58px rgba(15, 118, 110, 0.12);
+}
+
+.layout-shell[data-theme="light"] .healthy-panel-heading,
+.layout-shell[data-theme="light"] .healthy-recipes-heading span {
+  color: #059669;
+}
+
+.layout-shell[data-theme="light"] .healthy-panel-heading h2,
+.layout-shell[data-theme="light"] .healthy-recipes-heading h1,
+.layout-shell[data-theme="light"] .healthy-state-card strong,
+.layout-shell[data-theme="light"] .healthy-card-body h3 {
+  color: #06281f !important;
+}
+
+.layout-shell[data-theme="light"] .healthy-search input,
+.layout-shell[data-theme="light"] .healthy-chip,
+.layout-shell[data-theme="light"] .healthy-card-nutrition,
+.layout-shell[data-theme="light"] .healthy-nutrition-item,
+.layout-shell[data-theme="light"] .healthy-card-tags span {
+  border-color: rgba(13, 148, 136, 0.16) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(242, 255, 249, 0.72)) !important;
+  color: #48645c !important;
+}
+
+.layout-shell[data-theme="light"] .healthy-chip.selected,
+.layout-shell[data-theme="light"] .healthy-chip.active,
+.layout-shell[data-theme="light"] .healthy-inspect-button,
+.layout-shell[data-theme="light"] .healthy-assistant-button {
+  border-color: rgba(16, 185, 129, 0.42);
+  background: linear-gradient(135deg, #18c58d, #047c64) !important;
+  color: #ffffff !important;
+  box-shadow: 0 16px 30px rgba(16, 185, 129, 0.22);
+}
+
+.layout-shell[data-theme="light"] .healthy-recipes-heading small,
+.layout-shell[data-theme="light"] .healthy-card-meta,
+.layout-shell[data-theme="light"] .healthy-card-meta span,
+.layout-shell[data-theme="light"] .healthy-card-meta svg,
+.layout-shell[data-theme="light"] .healthy-state-card span,
+.layout-shell[data-theme="light"] .healthy-nutrition-item small {
+  color: #657b74 !important;
+}
+
+.layout-shell[data-theme="light"] .healthy-nutrition-item span {
+  color: #0f2b23 !important;
+}
+
+.layout-shell[data-theme="light"] .healthy-card-fallback {
+  color: rgba(16, 185, 129, 0.52);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(16, 185, 129, 0.18), transparent 32%),
+    linear-gradient(145deg, #f7fffb, #dffaf1);
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-card-meta,
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-card-meta span {
+  color: #49615a !important;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-card-meta svg {
+  color: #10b981 !important;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-card-nutrition {
+  background:
+    linear-gradient(135deg, rgba(209, 250, 229, 0.94), rgba(204, 251, 241, 0.86)) !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-nutrition-item,
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-nutrition-item span,
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-nutrition-item small {
+  color: #15362d !important;
+  -webkit-text-fill-color: #15362d;
+  opacity: 1 !important;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-nutrition-item span {
+  color: #047857 !important;
+  -webkit-text-fill-color: #047857;
+  font-weight: 950;
+}
+
+.layout-shell[data-theme="light"].noct-layout[data-layout-variant="healthy"] .healthy-nutrition-item svg {
+  color: #10b981 !important;
+  stroke: #10b981 !important;
+  opacity: 1 !important;
+}

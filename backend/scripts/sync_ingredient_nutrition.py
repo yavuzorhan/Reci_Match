@@ -1,4 +1,4 @@
-"""Complete missing ingredient nutrition values from USDA FoodData Central."""
+"""Complete missing ingredient nutrition values using Gemini AI."""
 from __future__ import annotations
 
 import argparse

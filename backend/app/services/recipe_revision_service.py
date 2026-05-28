@@ -14,7 +14,8 @@ from app.schemas.recipe_revision import RecipeRevisionRequest, RevisedRecipePayl
 from app.services import recipe_service
 
 try:
-    import google.generativeai as genai
+    from google import genai
+    from google.genai import types as genai_types
     _GEMINI_AVAILABLE = True
 except ImportError:
     _GEMINI_AVAILABLE = False
@@ -138,7 +139,7 @@ def _revise_with_gemini(recipe_json: dict, modifications: dict) -> dict:
     if not _GEMINI_AVAILABLE:
         raise HTTPException(
             status_code=503,
-            detail="Gemini paketi yüklü değil. Lütfen: pip install google-generativeai"
+            detail="Gemini paketi yüklü değil. Lütfen: pip install google-genai"
         )
 
     api_key = (getenv("GEMINI_API_KEY") or "").strip()
@@ -148,14 +149,7 @@ def _revise_with_gemini(recipe_json: dict, modifications: dict) -> dict:
             detail="GEMINI_API_KEY .env dosyasında tanımlı değil."
         )
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(
-        "gemini-2.5-flash",
-        generation_config={
-            "response_mime_type": "application/json",
-            "response_schema": REVISION_RESPONSE_SCHEMA,
-        },
-    )
+    client = genai.Client(api_key=api_key)
     original_ingredient_names = [
         item.get("name")
         for item in recipe_json.get("ingredients", [])
@@ -200,7 +194,23 @@ Su kurallara uy:
 Donmen gereken JSON semasi:
 {json.dumps(REVISION_RESPONSE_SCHEMA, ensure_ascii=False)}
 """
-    response = model.generate_content(prompt)
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=genai_types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=REVISION_RESPONSE_SCHEMA,
+            ),
+        )
+    except Exception as exc:
+        exc_str = (type(exc).__name__ + str(exc)).lower()
+        if "resourceexhausted" in exc_str or "429" in exc_str or "quota" in exc_str:
+            raise HTTPException(
+                status_code=429,
+                detail="Gemini API günlük istek limiti doldu. Lütfen birkaç dakika sonra tekrar deneyin.",
+            )
+        raise HTTPException(status_code=502, detail=f"Gemini API hatası: {exc}")
     return _parse_json_response(getattr(response, "text", "") or "")
 
 

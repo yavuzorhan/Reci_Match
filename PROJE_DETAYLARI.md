@@ -26,7 +26,7 @@ Ana hedefler:
 - Tarif detaylarinda kalori, protein, karbonhidrat, yag ve kalite bilgisini gostermek.
 - Tarifleri makro degerler ve malzeme riskleriyle A/B/C/D kalite seviyesine ayirmak.
 - Tarif miktar ve birimlerini orijinal haliyle koruyup gram karsiliklarini ayri alanda hesaplamak.
-- USDA ve manuel nutrition verileriyle malzeme besin degeri altyapisini desteklemek.
+- Gemini AI ve manuel nutrition verileriyle malzeme besin degeri altyapisini desteklemek.
 
 Bu sistem tibbi teshis, tedavi veya kesin diyet onerisi amaciyla tasarlanmamistir. Health score ve kalite siniflandirmasi, tarifleri yaklasik olarak karsilastirmak icin kullanilir.
 
@@ -42,8 +42,8 @@ Proje artik haftalik plan dokumani degil, calisan bir uygulama ozeti olarak ele 
 - Malzeme, kategori, kiler, sevilmeyen malzeme ve favori tarif yapilari gelistirildi.
 - Tarif listeleme, detay ve oneriler endpointleri olusturuldu.
 - Tarif import/scraper scriptleri eklendi.
-- USDA tabanli malzeme besin degeri import ve eslestirme altyapisi gelistirildi.
-- Malzeme alias, unmatched ingredient ve canonical ingredient eslestirme yapilari kuruldu.
+- Gemini AI tabanli malzeme besin degeri altyapisi gelistirildi (USDA mirasından taşındı).
+- Malzeme alias ve canonical ingredient eslestirme yapilari kuruldu.
 - Tarif malzemeleri icin gram donusum sistemi eklendi.
 - Health score algoritmasi makro ve malzeme risklerine gore genisletildi.
 - React frontend tarafinda sayfalar, routing, context state yonetimi ve tema sistemi kuruldu.
@@ -77,10 +77,10 @@ Frontend:
 
 Veri ve yardimci araclar:
 
-- USDA food/nutrition eslestirme servisleri
+- Gemini 2.5 Flash AI (tarif revizyonu + besin degeri tahmini)
 - Yemek.com, BBC Good Food, EatingWell ve Skinnytaste scraper/import scriptleri
 - Backfill scriptleri
-- Alias ve unmatched ingredient denetim scriptleri
+- Alias ve ingredient denetim scriptleri
 
 ---
 
@@ -111,27 +111,24 @@ backend/
       recipe_repository.py
     services/
       auth_service.py
+      gemini_client.py
       healthy_recipe_service.py
       ingredient_matching_service.py
       ingredient_nutrition_service.py
       ingredient_resolver_service.py
       ingredient_service.py
-      nutrition_mapper.py
+      nutrition_resolver_service.py
       recipe_import_service.py
+      recipe_revision_service.py
       recipe_service.py
-      unit_conversion_service.py
-      usda_client.py
-      usda_mapping_service.py
       user_service.py
     utils/
       helpers.py
       mailer.py
-      nutrition_fetcher.py
       recipe_health.py
+      recipe_helpers.py
       recipe_translation.py
-      usda_food_data.py
-    data/
-      usda_seed_mappings.json
+      text_normalize.py
   alembic/
     versions/
   scraper/
@@ -200,10 +197,11 @@ Servis katmani is mantigini routerlardan ayirir:
 - `recipe_service.py`: Tarif listeleme, detay, serialization, oneriler ve health score entegrasyonunu yonetir.
 - `ingredient_service.py`: Malzeme ve kategori islemleri.
 - `ingredient_matching_service.py`: Malzeme adlarini normalize edip tarif importlarinda eslestirme yapar.
-- `ingredient_resolver_service.py`: Alias/canonical ingredient yaklasimiyla malzeme cozme katmanidir.
-- `ingredient_nutrition_service.py`: Malzeme bazli besin degeri islemleri.
-- `unit_conversion_service.py`: Miktar ve birimlerden gram karsiligi hesaplar.
-- `usda_client.py` ve `usda_mapping_service.py`: USDA veri entegrasyonunu destekler.
+- `ingredient_resolver_service.py`: Alias/canonical ingredient yaklasimiyla malzeme cozme katmanidir. `try_ai=True` parametresiyle Gemini'den besin degeri alir.
+- `ingredient_nutrition_service.py`: Malzeme bazli besin degeri islemleri; toplu backfill ve tek malzeme sync.
+- `nutrition_resolver_service.py`: 2 katmanli besin degeri cozme — once DB (inline kolon), sonra Gemini.
+- `gemini_client.py`: Gemini 2.5 Flash ile structured JSON schema uzerinden 15 besin alani sorgusu.
+- `recipe_revision_service.py`: Gemini ile tarif revizyonu ve `revision_cache` entegrasyonu.
 
 Repository katmani:
 
@@ -308,23 +306,22 @@ Gram normalizasyon alanlari:
 
 Kritik teknik karar: `amount` ve `unit` alanlari orijinal tarif verisi olarak korunur. Gram hesaplama sonucu bu alanlara yazilmaz, ayrica `miktar_gram` alanina kaydedilir.
 
-### 6.5 Nutrition Tablolari
+### 6.5 Inline Nutrition Kolonlari (Mayis 2026 sonrasi)
 
-`ingredient_nutrition_values`, malzeme bazli 100 gramlik besin degerlerini tutar.
+Besin degerleri artik ayri tabloda degil, dogrudan `ingredients` tablosundaki inline kolonlarda saklanir.
 
-Baslica alanlar:
+`ingredients` tablosuna eklenen kolonlar:
 
-- `calories_per_100g`
-- `protein_per_100g`
-- `carbs_per_100g`
-- `fat_per_100g`
-- `saturated_fat_per_100g`
-- `fiber_per_100g`
-- `sugar_per_100g`
-- `sodium_mg_per_100g`
-- `confidence_score`
+- `calorie_per_100g`, `protein_per_100g`, `carbohydrate_per_100g`, `fat_per_100g`
+- `saturated_fat_per_100g`, `fiber_per_100g`, `sugar_per_100g`, `sodium_mg_per_100g`
+- `added_sugar_per_100g`, `trans_fat_per_100g`, `cholesterol_mg_per_100g`
+- `potassium_mg_per_100g`, `calcium_mg_per_100g`, `iron_mg_per_100g`, `vitamin_d_mcg_per_100g`
+- `nutrition_source` (gemini / usda_legacy / manual / db)
+- `nutrition_confidence`, `is_verified`, `source`
 
-`ingredient_unit_conversions`, malzeme ve birim bazli gram/ml/density donusumlerini tutar.
+**KALDIRILDI:** `ingredient_nutrition_values`, `ingredient_usda_mappings`, `unmatched_ingredients`, `ingredient_unit_conversions` tablolari DROP edildi.
+
+Gram donusum icin `unit_to_grams` sozlugu `app/utils/recipe_helpers.py` icinde sabit dict olarak tanimlidir; DB erisimi yoktur.
 
 ### 6.6 Kullanici Iliski Tablolari
 
@@ -334,8 +331,8 @@ Baslica alanlar:
 - `daily_logs`: Gunluk/haftalik beslenme kayitlari.
 - `email_verification_codes`: OTP ve dogrulama kodlari.
 - `ingredient_aliases`: Malzeme alias eslestirmeleri.
-- `unmatched_ingredients`: Import sirasinda eslesmeyen malzemeler.
 - `healthy_recipes`: Saglikli tarif import ve ayrim islemleri icin yardimci yapi.
+- `revision_cache`: Gemini tarif revizyonu cache'i (recipe_id + modifications_hash).
 
 ---
 
@@ -429,28 +426,29 @@ backend/refresh_yemekcom_ingredients.py
 
 ---
 
-## 10. USDA ve Besin Degeri Entegrasyonu
+## 10. Gemini AI Besin Degeri Entegrasyonu (Mayis 2026)
 
-USDA entegrasyonu, malzemelerin 100 gram bazli besin degerlerini sisteme kazandirmak icin gelistirildi.
+USDA entegrasyonu Gemini AI ile degistirildi. Malzemelerin 100 gram bazli besin degerleri artik Gemini 2.5 Flash ile elde edilmektedir.
 
 Ilgili dosyalar:
 
 ```text
-backend/app/services/usda_client.py
-backend/app/services/usda_mapping_service.py
-backend/app/services/nutrition_mapper.py
-backend/app/scripts/import_usda_nutrition.py
-backend/app/data/usda_seed_mappings.json
-backend/sync_ingredient_nutrition_from_usda.py
+backend/app/services/gemini_client.py
+backend/app/services/nutrition_resolver_service.py
+backend/app/services/ingredient_resolver_service.py
+backend/app/services/ingredient_nutrition_service.py
+backend/scripts/sync_ingredient_nutrition_from_usda.py  (adi yaniltici, icerigi Gemini tabanlı)
 ```
 
-Gelistirilen yaklasim:
+Mevcut yaklasim (2 katmanli):
 
-- Ingredient kayitlari USDA food datasiyla eslestirilir.
-- USDA nutrient alanlari uygulamanin `calories/protein/carbs/fat/fiber/sugar/sodium` modeline map edilir.
-- Confidence score ile eslestirme kalitesi takip edilir.
-- Manuel veya inline nutrition girisi desteklenir.
-- Custom ingredient nutrition degerleri daha sonra hesaplamalarda kullanilabilecek sekilde saklanir.
+1. `ingredient.calorie_per_100g > 0` ise veritabanindan dogrudan kullan (kaynak: `db`)
+2. Sifirsa `gemini_client.estimate_nutrition_with_gemini(name)` cagir; 15 alani inline kolonlara yaz (kaynak: `gemini`)
+3. Gemini de basarisiz olursa `manual_required` doner; kullanici manuel girer (kaynak: `manual`)
+
+`nutrition_source` kolonu: `'gemini'`, `'usda_legacy'` (eski USDA verisi), `'manual'`, `'db'`
+
+Turkce malzeme adlari dogrudan Gemini'ye gonderilir; ceviri bagimliligi yoktur.
 
 ---
 
@@ -459,8 +457,11 @@ Gelistirilen yaklasim:
 Ana dosya:
 
 ```text
-backend/app/services/unit_conversion_service.py
+backend/app/utils/recipe_helpers.py
 ```
+
+`unit_to_grams` sozlugu bu dosyada sabit dict olarak tanimlidir; veritabani erisimi yoktur.
+`unit_conversion_service.py` silindi (Mayis 2026).
 
 Amac, tariflerdeki `amount` ve `unit` bilgisinden orijinal veriyi bozmadan gram karsiligi uretmektir.
 
@@ -472,44 +473,6 @@ Desteklenen birim aileleri:
 - Su bardagi, cay bardagi, cup.
 - Adet/tane/parca.
 - Tutam, biraz, goz karari gibi belirsiz birimler.
-
-Ornek aliaslar:
-
-```text
-yemek kasigi, y.k., yk, tbsp, tablespoon -> tablespoon
-tatli kasigi, t.k., tk, dessert spoon -> dessert_spoon
-cay kasigi, tsp, teaspoon -> teaspoon
-su bardagi, bardak, cup -> cup
-cay bardagi -> tea_glass
-adet, tane -> piece
-gram, gr, g -> gram
-kilogram, kg -> kilogram
-ml, mililitre -> ml
-litre, l -> liter
-```
-
-Volume profile destegi:
-
-```text
-yemek_com_profile
-tr_200ml_profile
-us_fda_profile
-```
-
-Backfill scripti:
-
-```text
-backend/scripts/backfill_recipe_ingredient_grams.py
-```
-
-Kullanim:
-
-```bash
-python backend/scripts/backfill_recipe_ingredient_grams.py --dry-run
-python backend/scripts/backfill_recipe_ingredient_grams.py --apply
-```
-
-`--dry-run`, veritabanina kalici yazmadan donusum raporu uretir. `--apply` gercek guncelleme yapar.
 
 ---
 
@@ -871,7 +834,7 @@ frontend/dist/
 - Orijinal tarif miktar ve birim bilgileri korunur.
 - Gram donusum sonucu ayri alanlara yazilir.
 - Protein bonusu, yuksek kalori ve yuksek yag riskini tamamen kapatamaz.
-- Eklenmis seker, USDA verisi olmasa bile malzeme adindan tespit edilir.
+- Eklenmis seker, malzeme adindan tespit edilir (USDA'ya bagli degil).
 - Rafine karbonhidrat ve eklenmis seker birlikteyse skor daha sert dusurulur.
 - Frontend cache, detay response'undaki malzeme listesini ezmemelidir.
 - Backfill scriptleri once `--dry-run` ile calistirilmalidir.
@@ -887,7 +850,7 @@ Bu projede calismaya baslayan bir gelistirici su sirayla ilerlemelidir:
 2. Backend baslangici icin `backend/main.py` dosyasini incele.
 3. Tarif is mantigi icin `backend/app/services/recipe_service.py` dosyasini incele.
 4. Health score icin `backend/app/utils/recipe_health.py` dosyasini incele.
-5. Gram donusum icin `backend/app/services/unit_conversion_service.py` dosyasini incele.
+5. Besin degeri akisi icin `backend/app/services/gemini_client.py` ve `nutrition_resolver_service.py` dosyalarini incele.
 6. Kullanici ve auth akislarini `auth_service.py`, `user_service.py` ve ilgili routerlarda takip et.
 7. Frontend global state icin `frontend/src/context/AppContext.jsx` dosyasini incele.
 8. Tarif detay davranisi icin `frontend/src/pages/RecipeDetailDb.jsx` dosyasini incele.
@@ -898,7 +861,7 @@ Bu projede calismaya baslayan bir gelistirici su sirayla ilerlemelidir:
 
 ## 22. Kisa Sonuc
 
-Reci Match; tarif onerisi, kullanici profili, malzeme yonetimi, kiler takibi, sevilmeyen malzeme filtresi, favoriler, gunluk/haftalik beslenme loglari, USDA destekli nutrition altyapisi, gram donusum sistemi ve health score algoritmasi bulunan kapsamli bir bitirme projesidir.
+Reci Match; tarif onerisi, kullanici profili, malzeme yonetimi, kiler takibi, sevilmeyen malzeme filtresi, favoriler, gunluk/haftalik beslenme loglari, Gemini AI destekli besin degeri altyapisi, gram donusum sistemi ve health score algoritmasi bulunan kapsamli bir bitirme projesidir.
 
 Proje artik yalnizca planlanan bir uygulama degil; backend, frontend, veri isleme scriptleri, skor algoritmasi ve GitHub yayini olan gelistirilmis bir urundur. Bundan sonraki ana odak; kurulum dokumani, demo senaryosu, tez/rapor metni, test kapsami ve son UI/UX kontrollerinin netlestirilmesidir.
 
@@ -914,3 +877,52 @@ Nisan 2026 itibarıyla proje backend'i, endüstri standardı olan **Katmanlı Mi
 4. **Klasör Hiyerarşisi Temizlendi:** Sadece çalıştırma amacıyla kullanılan (cron job veya migration) geçici scriptler `backend/scripts/` altına taşındı. Kullanılmayan eski React mock dosyaları (`mockData.js`) ve sayfası olmayan bileşenler silindi.
 
 Bu yapı sayesinde backend kod tabanı çok daha modüler, test edilebilir ve sürdürülebilir hale getirilmiştir.
+
+---
+
+## 24. USDA → Gemini Migrasyonu (Mayıs 2026)
+
+### Motivasyon
+
+Eski USDA akışı 3 dış bağımlılık zinciri gerektiriyordu:
+`Türkçe ad → deep_translator (İngilizce'ye çeviri) → httpx (USDA FDC API) → parse → ingredient_usda_mappings + ingredient_nutrition_values tablolarına kayıt`
+
+Çeviri hataları, API erişim sorunları ve tablolar arası veri tutarsızlığı nedeniyle bu akış Gemini AI ile değiştirildi.
+
+### Yapılan Değişiklikler
+
+**Silinen tablolar (DROP CASCADE ile kaldırıldı):**
+- `ingredient_nutrition_values`
+- `ingredient_usda_mappings`
+- `unmatched_ingredients`
+- `ingredient_unit_conversions`
+
+**Silinen dosyalar:**
+- `usda_client.py`, `usda_mapping_service.py`, `nutrition_fetcher.py`, `usda_food_data.py`
+- `import_usda_nutrition.py`, `unit_conversion_service.py`, `backfill_recipe_ingredient_grams.py`
+
+**Kaldırılan paketler (requirements.txt):**
+- `deep_translator`, `httpx`
+
+**Eklenen inline kolonlar (ingredients tablosu):**
+15 besin alanı + `nutrition_source`, `nutrition_confidence`, `is_verified`, `source`
+
+**Mevcut tablo sayısı:** 13
+
+### Yeni Akış
+
+```
+resolve_ingredient_for_user(ingredient_name, user_id, try_ai=True)
+  └─ ingredient.calorie_per_100g > 0?
+       ├─ Evet → NutritionResult(source="db")
+       └─ Hayır → estimate_nutrition_with_gemini(name)
+            ├─ Başarılı → upsert_ingredient_nutrition() → inline kolonlara yaz
+            └─ Başarısız → status="manual_required"
+```
+
+### Dikkat Edilecekler
+
+- `try_usda` parametresi yoktur, `try_ai=True` kullanılır
+- `nutrition_value` relationship silindi, `ingredient.calorie_per_100g > 0` kontrolü yapılır
+- `usda_legacy` değeri `nutrition_source` kolonunda eski verilerin etiketidir, silinmez
+- `google.generativeai` paketi deprecated; ileride `google.genai`'ye geçiş gerekecektir

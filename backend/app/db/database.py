@@ -31,8 +31,24 @@ def ensure_ingredient_inline_nutrition_columns(db):
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS protein_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS carbohydrate_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS fat_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS saturated_fat_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS fiber_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS sugar_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS sodium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS added_sugar_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS trans_fat_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS cholesterol_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS potassium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS calcium_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS iron_mg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS vitamin_d_mcg_per_100g DOUBLE PRECISION NOT NULL DEFAULT 0"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS nutrition_source VARCHAR(30) NOT NULL DEFAULT 'manual'"))
+    db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS nutrition_confidence DOUBLE PRECISION NOT NULL DEFAULT 0"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS source VARCHAR(50) NOT NULL DEFAULT 'manual'"))
+    db.execute(text("ALTER TABLE ingredients DROP CONSTRAINT IF EXISTS ck_ingredients_source"))
+    db.execute(text("UPDATE ingredients SET nutrition_source = 'usda_legacy' WHERE source = 'usda_auto'"))
+    db.execute(text("UPDATE ingredients SET source = 'manual' WHERE source = 'usda_auto'"))
     db.execute(text("""
         DO $$
         BEGIN
@@ -43,7 +59,16 @@ def ensure_ingredient_inline_nutrition_columns(db):
             ) THEN
                 ALTER TABLE ingredients
                 ADD CONSTRAINT ck_ingredients_source
-                CHECK (source IN ('manual', 'usda_auto', 'admin'));
+                CHECK (source IN ('manual', 'gemini_auto', 'ai_auto', 'admin'));
+            END IF;
+            IF NOT EXISTS (
+                SELECT 1
+                FROM pg_constraint
+                WHERE conname = 'ck_ingredients_nutrition_source'
+            ) THEN
+                ALTER TABLE ingredients
+                ADD CONSTRAINT ck_ingredients_nutrition_source
+                CHECK (nutrition_source IN ('gemini', 'usda_legacy', 'manual', 'db'));
             END IF;
         END
         $$;

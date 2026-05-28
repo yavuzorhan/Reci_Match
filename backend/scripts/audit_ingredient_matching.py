@@ -16,7 +16,7 @@ if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
 from app.db.database import SessionLocal
-from app.db.models import Ingredient, Recipe, RecipeIngredient, UnmatchedIngredient
+from app.db.models import Ingredient, Recipe, RecipeIngredient
 from app.services.ingredient_matching_service import normalize_raw_ingredient
 
 
@@ -40,18 +40,6 @@ def list_recipes_with_few_ingredients(db, threshold: int = 3):
     )
     return rows
 
-
-def list_unmatched_ingredients(db):
-    try:
-        return (
-            db.query(UnmatchedIngredient)
-            .order_by(UnmatchedIngredient.created_at.desc().nullslast(), UnmatchedIngredient.id.desc())
-            .limit(200)
-            .all()
-        )
-    except Exception:
-        db.rollback()
-        return []
 
 
 def report_duplicate_or_similar_ingredients(db, min_score: float = 92.0):
@@ -93,17 +81,6 @@ def main() -> None:
             print("Sorun bulunmadi.")
         for row in sparse_recipes:
             print(f"#{row.recipe_id} | {row.recipe_name} | ingredient_count={row.ingredient_count} | {row.source_url or '-'}")
-
-        print_section("Unmatched ingredient / import issue kayitlari")
-        unmatched_rows = list_unmatched_ingredients(db)
-        if not unmatched_rows:
-            print("Kayit bulunmadi veya unmatched_ingredients tablosu henuz olusturulmadi.")
-        for row in unmatched_rows:
-            print(
-                f"#{row.id} | recipe={row.recipe_id or '-'} | {row.issue_type} | "
-                f"raw={row.raw_name or '-'} | normalized={row.normalized_name or '-'} | "
-                f"suggested={row.suggested_match or '-'} | score={row.confidence_score or 0}"
-            )
 
         print_section("Duplicate/similar ingredient isimleri")
         duplicates, similar_pairs = report_duplicate_or_similar_ingredients(db)

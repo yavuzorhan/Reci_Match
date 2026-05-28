@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { buildRecipeShortSummary, getHealthMeta } from '../utils/recipeInsights';
 import './RecipeCard.css';
 
-const Metric = ({ icon = null, label, value, color = 'var(--text-primary)' }) => (
-  <div className="recipes-metric">
+const Metric = ({ icon = null, label, value, color = 'var(--text-primary)', className = '' }) => (
+  <div className={`recipes-metric ${className}`}>
     <small>{icon}{label}</small>
     <strong style={{ color }}>{value}</strong>
   </div>
@@ -103,7 +103,12 @@ const RecipeCard = ({
           <Metric icon={<Flame size={13} />} label="Kalori" value={recipe.calorie ? Math.round(recipe.calorie) : '-'} />
           <Metric icon={<UtensilsCrossed size={13} />} label="Protein" value={recipe.protein ? `${Math.round(recipe.protein)}g` : '-'} />
           <Metric icon={<Clock3 size={13} />} label="Süre" value={`${recipe.total_time_minutes || recipe.preparation_time_minutes || 25} dk`} />
-          <Metric label="Kalite" value={healthMeta.display} color={healthMeta.tone.chip} />
+          <Metric
+            label="Kalite"
+            value={healthMeta.display}
+            color={healthMeta.tone.chip}
+            className={`recipes-quality-metric grade-${(healthMeta.grade || 'unknown').toLowerCase()}`}
+          />
         </div>
 
         <button type="button" className="recipes-detail-button">

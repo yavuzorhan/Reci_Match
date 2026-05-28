@@ -15,6 +15,15 @@
   width: 100%;
 }
 
+.layout-shell[data-theme="light"].noct-layout .layout-content:has(.healthy-results-wrapper) {
+  background:
+    radial-gradient(circle at 8% 8%, rgba(255, 194, 209, 0.36) 0, transparent 28%),
+    radial-gradient(circle at 78% 10%, rgba(167, 243, 208, 0.42) 0, transparent 26%),
+    radial-gradient(circle at 88% 84%, rgba(125, 211, 252, 0.3) 0, transparent 32%),
+    linear-gradient(135deg, #fbfff8 0%, #f2fff7 36%, #ecfffb 68%, #fff8ec 100%) !important;
+  color: #17332b;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

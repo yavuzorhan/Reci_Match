@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import IngredientPicker from '../components/IngredientPicker';
 import { API_BASE } from '../config';
+import './DislikedIngredients.css';
 
 const DislikedIngredients = () => {
   const { user, setDislikedIngredients } = useApp();
@@ -50,12 +51,15 @@ const DislikedIngredients = () => {
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', padding: '2rem', background: 'var(--background-color)' }}>
-      <div className="card" style={{ width: '100%', maxWidth: '900px', padding: '2.5rem' }}>
-        <h2 style={{ fontSize: '1.8rem', color: 'var(--primary-color)', marginBottom: '0.5rem' }}>Sevmediğin Malzemeler</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-          Tadını sevmediğin veya alerjin olan malzemeleri seç, sana önermeyelim.
-        </p>
+    <div className="disliked-setup-shell">
+      <div className="disliked-setup-card">
+        <div className="disliked-setup-heading">
+          <span className="disliked-setup-kicker">Tercihlerini ayarla</span>
+          <h2>Sevmediğin Malzemeler</h2>
+          <p>
+            Tadını sevmediğin veya alerjin olan malzemeleri seç, sana önermeyelim.
+          </p>
+        </div>
 
         <IngredientPicker
           userId={user?.id}
@@ -63,7 +67,9 @@ const DislikedIngredients = () => {
           initialSelection={selectedIds}
         />
 
-        <button onClick={handleFinish} className="primary-btn" style={{ width: '100%', marginTop: '2rem' }}>Seçimi Kaydet ve Devam Et</button>
+        <button onClick={handleFinish} className="primary-btn disliked-setup-submit">
+          Seçimi Kaydet ve Devam Et
+        </button>
       </div>
     </div>
   );

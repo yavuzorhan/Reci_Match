@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import './Login.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Mail, ShieldCheck, Undo2 } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
 import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const ForgotPassword = () => {
+  const { isDarkMode } = useApp();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -40,7 +42,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="auth-shell" data-theme="light">
+    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 

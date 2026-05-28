@@ -60,6 +60,13 @@ const getLogNutrition = (log, recipe) => ({
   fat: getLogMacroValue(log, recipe, 'fat', 'fat'),
 });
 
+const toLocalDateISO = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const days = [
   { name: 'Pzt', fullName: 'Pazartesi', index: 1 },
   { name: 'Sal', fullName: 'Salı', index: 2 },
@@ -225,7 +232,7 @@ const WeeklyLogs = () => {
     };
   }, [getDayTotals, calorieTarget]);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = toLocalDateISO(new Date());
 
   return (
     <Layout>
@@ -247,7 +254,7 @@ const WeeklyLogs = () => {
               <span className="noct-picker-label">{formatDate(weekRange.monday)} - {formatDate(weekRange.sunday)}</span>
               <button onClick={() => changeWeek(1)} className="noct-picker-btn"><ChevronRight size={18} /></button>
             </div>
-            <button className="noct-add-meal-btn" onClick={() => openAddModal(new Date().toISOString().split('T')[0])}>
+            <button className="noct-add-meal-btn" onClick={() => openAddModal(toLocalDateISO(new Date()))}>
               <Plus size={20} />
               Öğün Ekle
             </button>
@@ -288,7 +295,7 @@ const WeeklyLogs = () => {
             {days.map((day) => {
               const totals = getDayTotals(day.index);
               const dateObj = new Date(weekRange.monday.getTime() + (day.index === 0 ? 6 : day.index - 1) * 86400000);
-              const dateISO = dateObj.toISOString().split('T')[0];
+              const dateISO = toLocalDateISO(dateObj);
               const isToday = todayStr === dateISO;
               const percent = Math.min(100, (totals.calories / calorieTarget) * 100);
               const isOver = totals.calories > calorieTarget + 50;

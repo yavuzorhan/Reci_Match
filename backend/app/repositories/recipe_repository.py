@@ -45,11 +45,7 @@ def find_recipe_by_id(db: Session, recipe_id: int) -> Recipe | None:
 def find_recipe_by_id_with_relations(db: Session, recipe_id: int) -> Recipe | None:
     return (
         db.query(Recipe)
-        .options(
-            selectinload(Recipe.ingredients)
-            .selectinload(RecipeIngredient.ingredient)
-            .selectinload(Ingredient.nutrition_value)
-        )
+        .options(selectinload(Recipe.ingredients).selectinload(RecipeIngredient.ingredient))
         .filter(Recipe.recipe_id == recipe_id, Recipe.is_active.is_(True))
         .first()
     )
@@ -105,9 +101,7 @@ def get_all_recipes(
     healthy_only: bool = False,
 ) -> list[Recipe]:
     query = db.query(Recipe).options(
-        selectinload(Recipe.ingredients)
-        .selectinload(RecipeIngredient.ingredient)
-        .selectinload(Ingredient.nutrition_value)
+        selectinload(Recipe.ingredients).selectinload(RecipeIngredient.ingredient)
     )
     query = query.filter(Recipe.is_active.is_(True))
     query = query.filter((Recipe.user_id.is_(None)) | (Recipe.user_id == user_id))

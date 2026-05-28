@@ -420,9 +420,9 @@ export const AppProvider = ({ children }) => {
       const multiplier = log.servingMultiplier || 1;
       return {
         calories: acc.calories + (log.calorieIntake || rec?.calorie || 0),
-        protein: acc.protein + ((log.protein ?? (rec?.protein ?? 0)) * multiplier),
-        carb: acc.carb + ((log.carbohydrate ?? (rec?.carbohydrate ?? 0)) * multiplier),
-        fat: acc.fat + ((log.fat ?? (rec?.fat ?? 0)) * multiplier)
+        protein: acc.protein + (log.protein ?? ((rec?.protein ?? 0) * multiplier)),
+        carb: acc.carb + (log.carbohydrate ?? ((rec?.carbohydrate ?? 0) * multiplier)),
+        fat: acc.fat + (log.fat ?? ((rec?.fat ?? 0) * multiplier))
       };
     }, { calories: 0, protein: 0, carb: 0, fat: 0 });
 

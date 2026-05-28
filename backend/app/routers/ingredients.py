@@ -41,12 +41,12 @@ async def create_custom_ingredient(
 async def resolve_ingredient(req: IngredientResolveRequest, db: Session = Depends(get_db)):
     if not req.user_id:
         return {"status": "manual_required", "ingredient_name": req.ingredient_name}
-    ingredient_nutrition_service.ensure_ingredient_nutrition_table(db)
+    ingredient_nutrition_service.ensure_ingredient_columns(db)
     result = await ingredient_resolver_service.resolve_ingredient_for_user(
         db=db,
         user_id=req.user_id,
         ingredient_name=req.ingredient_name,
-        try_usda=True,
+        try_ai=True,
     )
     if result.status == "manual_required":
         db.rollback()
@@ -110,8 +110,8 @@ def get_ingredient_nutrition(ingredient_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/ingredients/nutrition/sync")
-def sync_ingredient_nutrition(req: IngredientNutritionSyncRequest, db: Session = Depends(get_db)):
-    return ingredient_nutrition_service.sync_ingredient_nutrition_from_usda(req.ingredient_id, db)
+async def sync_ingredient_nutrition(req: IngredientNutritionSyncRequest, db: Session = Depends(get_db)):
+    return await ingredient_nutrition_service.sync_ingredient_nutrition_from_gemini(req.ingredient_id, db)
 
 
 @router.post("/ingredients/nutrition/sync-missing")

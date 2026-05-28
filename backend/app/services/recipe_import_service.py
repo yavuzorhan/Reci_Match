@@ -12,9 +12,6 @@ from app.repositories.recipe_repository import (
     replace_recipe_ingredients,
 )
 from app.services.ingredient_matching_service import (
-    IngredientMatch,
-    log_import_issue,
-    log_unmatched_ingredient,
     match_ingredient,
     seed_default_ingredient_aliases,
     validate_recipe_ingredient_matches,
@@ -102,7 +99,6 @@ def save_scraped_recipe(db: Session, recipe_data: dict):
 
     ingredient_rows: list[dict] = []
     seen_ingredient_ids: set[int] = set()
-    unmatched_matches: list[IngredientMatch] = []
     raw_ingredients = recipe_data.get("ingredients") or []
 
     for ingredient_data in raw_ingredients:
@@ -127,7 +123,6 @@ def save_scraped_recipe(db: Session, recipe_data: dict):
 
         match = match_ingredient(db, raw_name)
         if not match.accepted:
-            unmatched_matches.append(match)
             continue
 
         if match.ingredient.ingredient_id in seen_ingredient_ids:
@@ -149,23 +144,6 @@ def save_scraped_recipe(db: Session, recipe_data: dict):
     )
 
     if not is_valid:
-        log_import_issue(
-            db,
-            recipe_id=recipe.recipe_id if recipe else None,
-            recipe_name=recipe_name,
-            source_url=source_url,
-            issue_type="incomplete_recipe",
-            message=validation_error or "Recipe has too few matched ingredients.",
-        )
-        for unmatched in unmatched_matches:
-            log_unmatched_ingredient(
-                db,
-                match=unmatched,
-                recipe_id=recipe.recipe_id if recipe else None,
-                recipe_name=recipe_name,
-                source_url=source_url,
-            )
-        db.commit()
         raise ValueError(validation_error or "Recipe has too few matched ingredients.")
 
     if recipe is None:
@@ -173,15 +151,6 @@ def save_scraped_recipe(db: Session, recipe_data: dict):
     else:
         for field_name, field_value in recipe_fields.items():
             setattr(recipe, field_name, field_value)
-
-    for unmatched in unmatched_matches:
-        log_unmatched_ingredient(
-            db,
-            match=unmatched,
-            recipe_id=recipe.recipe_id,
-            recipe_name=recipe_name,
-            source_url=source_url,
-        )
 
     replace_recipe_ingredients(db, recipe.recipe_id, ingredient_rows)
     db.commit()

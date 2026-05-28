@@ -10,7 +10,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { setUser, setProfile } = useApp();
+  const { setUser, setProfile, isDarkMode } = useApp();
   const navigate = useNavigate();
 
   const parseResponse = async (response) => {
@@ -53,7 +53,7 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-shell" data-theme="light">
+    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 

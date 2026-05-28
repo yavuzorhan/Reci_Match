@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import './Login.css';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, KeyRound, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, KeyRound, ShieldCheck } from 'lucide-react';
+import { useApp } from '../context/AppContext';
 import { API_BASE } from '../config';
 import reciMatchLogo from '../assets/recimatch-logo.png';
 
 const ResetPassword = () => {
+  const { isDarkMode } = useApp();
   const [searchParams] = useSearchParams();
   const initialEmail = searchParams.get('email') || '';
   const navigate = useNavigate();
@@ -34,7 +37,7 @@ const ResetPassword = () => {
         setMessage(data.message);
         setTimeout(() => navigate('/login'), 3000);
       } else {
-        setError(data.detail || 'Islem basarisiz.');
+        setError(data.detail || 'İşlem başarısız.');
       }
     } catch {
       setError('Sunucu ile bağlantı kurulamadı.');
@@ -44,21 +47,21 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" data-theme={isDarkMode ? 'dark' : 'light'}>
       <div className="auth-orb auth-orb-one" />
       <div className="auth-orb auth-orb-two" />
 
       <div className="register-layout">
         <section className="register-showcase">
-          <div className="showcase-badge">
-            <img src={reciMatchLogo} alt="" className="badge-icon" />
-            <span>ReciMatch</span>
+          <div className="brand-hero">
+            <img src={reciMatchLogo} alt="ReciMatch Logo" className="hero-logo" />
+            <h2 className="hero-title">ReciMatch</h2>
           </div>
 
-          <h1>Yeni sifreni belirleyip tekrar devam et.</h1>
+          <h1>Yeni şifreni belirleyip tekrar devam et.</h1>
           <p>
-            E-postana gelen 6 haneli kodu kullan, yeni sifreni tanimla ve hesabina yeniden
-            guvenli sekilde giris yap.
+            E-postana gelen 6 haneli kodu kullan, yeni şifreni tanımla ve hesabına yeniden
+            güvenli şekilde giriş yap.
           </p>
 
           <div className="showcase-grid">
@@ -66,14 +69,14 @@ const ResetPassword = () => {
               <ShieldCheck size={20} />
               <div>
                 <strong>Kod ile doğrulama</strong>
-                <span>Dogru kod olmadan sifre degisikligi tamamlanmaz.</span>
+                <span>Doğru kod olmadan şifre değişikliği tamamlanmaz.</span>
               </div>
             </div>
             <div className="showcase-card">
               <KeyRound size={20} />
               <div>
-                <strong>Yeni sifre olusturma</strong>
-                <span>Eski sifren yerine guclu bir sifre belirleyebilirsin.</span>
+                <strong>Yeni şifre oluşturma</strong>
+                <span>Eski şifren yerine güçlü bir şifre belirleyebilirsin.</span>
               </div>
             </div>
           </div>
@@ -83,14 +86,14 @@ const ResetPassword = () => {
           <div className="register-panel-head">
             <p className="panel-kicker">Yeni Şifre</p>
             <h2>Şifreni güncelle</h2>
-            <p className="panel-copy">Kodunu ve yeni sifreni gir, hesabini yeniden etkinlestir.</p>
+            <p className="panel-copy">Kodunu ve yeni şifreni gir, hesabını yeniden etkinleştir.</p>
           </div>
 
           {message && <div className="auth-message success">{message}</div>}
           {error && <div className="auth-message error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="register-form">
-            <div>
+            <div className="auth-input-group">
               <label>E-posta</label>
               <input
                 type="email"
@@ -101,7 +104,7 @@ const ResetPassword = () => {
               />
             </div>
 
-            <div>
+            <div className="auth-input-group">
               <label>6 Haneli Kod</label>
               <input
                 type="text"
@@ -114,7 +117,7 @@ const ResetPassword = () => {
               />
             </div>
 
-            <div>
+            <div className="auth-input-group">
               <label>Yeni Şifre</label>
               <input
                 type="password"
@@ -133,7 +136,7 @@ const ResetPassword = () => {
           </form>
 
           <p className="register-footer">
-            <Link to="/login">Iptal</Link>
+            <Link to="/login">İptal</Link>
           </p>
         </section>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, ChefHat, ShieldCheck, Sparkles } from 'lucide-react';
 import { API_BASE } from '../config';
@@ -64,9 +65,9 @@ const Register = () => {
 
       <div className="register-layout">
         <section className="register-showcase">
-          <div className="showcase-badge">
-            <img src={reciMatchLogo} alt="" className="badge-icon" />
-            <span>ReciMatch</span>
+          <div className="brand-hero">
+            <img src={reciMatchLogo} alt="ReciMatch Logo" className="hero-logo" />
+            <h2 className="hero-title">ReciMatch</h2>
           </div>
 
           <h1>Damak tadına ve hedeflerine uyan tarifleri birlikte bulalım.</h1>
@@ -112,7 +113,7 @@ const Register = () => {
             {error && <div className="auth-message error">{error}</div>}
 
             <div className="form-split">
-              <div>
+              <div className="auth-input-group">
                 <label>Ad Soyad</label>
                 <input
                   type="text"
@@ -122,7 +123,7 @@ const Register = () => {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
               </div>
-              <div>
+              <div className="auth-input-group">
                 <label>E-posta</label>
                 <input
                   type="email"
@@ -135,7 +136,7 @@ const Register = () => {
             </div>
 
             <div className="form-split">
-              <div>
+              <div className="auth-input-group">
                 <label>Şifre</label>
                 <input
                   type="password"
@@ -146,7 +147,7 @@ const Register = () => {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
               </div>
-              <div>
+              <div className="auth-input-group">
                 <label>Şifre Tekrar</label>
                 <input
                   type="password"

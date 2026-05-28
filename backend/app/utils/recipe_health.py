@@ -144,7 +144,7 @@ def aggregate_recipe_nutrition(recipe) -> dict:
 
     for link in ingredient_links:
         ingredient = getattr(link, "ingredient", None)
-        nutrition = getattr(ingredient, "nutrition_value", None) if ingredient else None
+        nutrition = ingredient
         if not nutrition:
             continue
 
@@ -157,7 +157,7 @@ def aggregate_recipe_nutrition(recipe) -> dict:
         multiplier = amount_grams / 100.0
 
         for field in _nutrition_fields():
-            value = getattr(nutrition, field, None)
+            value = _ingredient_inline_nutrition(nutrition, field)
             if value is None:
                 continue
             totals[field] += float(value) * multiplier
@@ -1219,6 +1219,14 @@ def _nutrition_fields() -> tuple[str, ...]:
         "iron_mg_per_100g",
         "vitamin_d_mcg_per_100g",
     )
+
+
+def _ingredient_inline_nutrition(ingredient, field: str):
+    if field == "calories_per_100g":
+        return getattr(ingredient, "calorie_per_100g", None)
+    if field == "carbs_per_100g":
+        return getattr(ingredient, "carbohydrate_per_100g", None)
+    return getattr(ingredient, field, None)
 
 
 def _safe_float(value) -> float:

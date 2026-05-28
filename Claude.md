@@ -14,7 +14,7 @@
 | Backend   | Python · FastAPI · SQLAlchemy · PostgreSQL/SQLite  |
 | Frontend  | React · Vite · React Router · Context API · CSS   |
 | E-posta   | SMTP (mailer.py) — marka adı: **ReciMatch**        |
-| AI        | Gemini 2.5 Flash (tarif revizyonu için)            |
+| AI        | Gemini 2.5 Flash (tarif revizyonu + besin değeri) |
 | Scraper   | yemekcom, bbcgoodfood, eatingwell, skinnytaste     |
 
 **GitHub:** `https://github.com/yavuzorhan/Reci_Match.git`  
@@ -188,7 +188,7 @@ claude --model claude-sonnet-4-6 \
 - Karmaşık algoritma (health score, nutrition hesaplama)
 - Çok adımlı debugging (backend + frontend birlikte)
 - Veritabanı migration tasarımı
-- USDA eşleştirme mantığı
+- Gemini entegrasyonu veya besin değeri akışı değişikliği
 - **Hiçbir zaman CSS değişikliği için kullanma**
 
 ```bash
@@ -246,6 +246,45 @@ python backend/scripts/backfill_health_scores.py --apply
 1. Health score ≠ öneri skoru (ayrı algoritmalar)
 2. Tarif miktar/birim orijinal haliyle saklanır, gram ayrı alanda
 3. Protein bonusu yüksek kalori/yağ riskini tamamen kapatamaz
-4. Eklenmiş şeker, USDA verisi olmasa bile malzeme adından tespit edilir
+4. Eklenmiş şeker, malzeme adından tespit edilir (USDA'ya bağımlı değil)
 5. Frontend cache, detay response'undaki malzeme listesini ezmemeli
 6. `.env` ve veritabanı dosyaları GitHub'a gönderilmez
+7. Besin değeri kaynağı olarak Gemini AI kullanılmaktadır. `nutrition_source` kolonu `'gemini'`, `'usda_legacy'`, `'manual'`, `'db'` değerlerini alabilir.
+
+---
+
+## 🔄 USDA → Gemini Migrasyonu (Mayıs 2026)
+
+### Yapılan Değişiklik
+Besin değeri altyapısı USDA FoodData Central API'den Gemini AI'a taşındı.
+
+### Motivasyon
+- Eski akış: Türkçe malzeme adı → `deep_translator` (çeviri) → `httpx` (USDA API) → parse → ayrı tablolara kayıt
+- Bu zincir 3 dış bağımlılık ve 2 ekstra tablo gerektiriyordu
+- Çeviri hataları, API erişim sorunları ve eşleştirme güvenilirliği sorunları yaşandı
+
+### Yeni Mimari (2 Katmanlı)
+1. **DB local:** `ingredient.calorie_per_100g > 0` ise doğrudan kullan
+2. **Gemini:** `gemini_client.estimate_nutrition_with_gemini()` → inline kolonlara yaz
+3. İkisi de başarısız → `"manual_required"` → kullanıcıdan manuel giriş
+
+### Kaldırılan Bileşenler
+- **Tablolar (DROP edildi):** `ingredient_nutrition_values`, `ingredient_usda_mappings`, `unmatched_ingredients`, `ingredient_unit_conversions`
+- **Dosyalar:** `usda_client.py`, `usda_mapping_service.py`, `nutrition_fetcher.py`, `usda_food_data.py`, `import_usda_nutrition.py`
+- **Paketler:** `deep_translator`, `httpx`
+
+### Mevcut Tablo Sayısı: 13
+
+### Kritik Dosyalar
+| Dosya | Görev |
+|---|---|
+| `app/services/gemini_client.py` | Gemini'ye structured JSON ile 15 besin alanı sorgusu |
+| `app/services/nutrition_resolver_service.py` | 2 katmanlı çözüm mantığı |
+| `app/services/ingredient_resolver_service.py` | `resolve_ingredient_for_user()`, `upsert_ingredient_nutrition()` |
+| `app/services/ingredient_nutrition_service.py` | Toplu backfill ve tek malzeme sync |
+| `app/db/database.py` | `ensure_ingredient_inline_nutrition_columns()` — inline kolon guard |
+
+### Yapılmaması Gerekenler
+- `try_usda` parametresi kullanma → `try_ai` kullan
+- `nutrition_value` relationship'i kontrol etme → `ingredient.calorie_per_100g > 0` kullan
+- `IngredientNutritionValue` veya `IngredientUsdaMapping` import etme (sınıflar silindi)

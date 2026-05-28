@@ -109,25 +109,13 @@ def calculate_recipe_nutrition(items: list[dict]) -> dict:
     return {key: round(value, 2) for key, value in totals.items()}
 
 def ingredient_calories_per_100g(ingredient: Ingredient) -> float:
-    nutrition = getattr(ingredient, "nutrition_value", None)
-    if nutrition:
-        return float(nutrition.calories_per_100g or 0)
     return float(getattr(ingredient, "calorie_per_100g", 0) or 0)
 
 def ingredient_protein_per_100g(ingredient: Ingredient) -> float:
-    nutrition = getattr(ingredient, "nutrition_value", None)
-    if nutrition:
-        return float(nutrition.protein_per_100g or 0)
     return float(getattr(ingredient, "protein_per_100g", 0) or 0)
 
 def ingredient_carbs_per_100g(ingredient: Ingredient) -> float:
-    nutrition = getattr(ingredient, "nutrition_value", None)
-    if nutrition:
-        return float(nutrition.carbs_per_100g or 0)
     return float(getattr(ingredient, "carbohydrate_per_100g", 0) or 0)
 
 def ingredient_fat_per_100g(ingredient: Ingredient) -> float:
-    nutrition = getattr(ingredient, "nutrition_value", None)
-    if nutrition:
-        return float(nutrition.fat_per_100g or 0)
     return float(getattr(ingredient, "fat_per_100g", 0) or 0)

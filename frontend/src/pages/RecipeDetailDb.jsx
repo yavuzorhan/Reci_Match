@@ -100,19 +100,17 @@ const getQualitySubtitle = (grade) => ({
 }[grade] || 'Kalite bilgisi');
 
 const getQualityRationale = (recipe, grade) => {
-  const summary = stripHtml(recipe?.health_summary || recipe?.health_explanation || '');
-  const cleaned = summary
-    .replace(/^[ABCD]\s*kalite\s*\(\d+\/100\)\.?\s*/i, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (cleaned) return cleaned;
-
   if (grade === 'A') {
     return 'Bu tarif; yüksek protein içeriği, dengeli makro dağılımı ve düşük işlenmiş içerik yapısı nedeniyle A kalite olarak değerlendirilmiştir.';
   }
   if (grade === 'B') {
     return 'Bu tarif genel olarak iyi bir seçenek; porsiyon miktarı ve günlük kalori hedefiyle birlikte değerlendirildiğinde daha dengeli hale gelir.';
+  }
+  if (grade === 'C') {
+    return 'Bu tarif dengeli tüketilmeli; yüksek yağ veya kalori içeriği nedeniyle porsiyon kontrolü önerilir.';
+  }
+  if (grade === 'D') {
+    return 'Bu tarif ağır bir besin profiline sahip; seyrek tüketilmeli ve porsiyon miktarı dikkatlice belirlenmelidir.';
   }
   return 'Bu tarif besin değerleri, kalori miktarı ve makro dağılımı birlikte değerlendirilerek kalite notu almıştır.';
 };
@@ -134,12 +132,7 @@ const getQualityTags = (recipe, grade) => {
   return [...new Set(tags)].slice(0, 4);
 };
 
-const getFallbackSteps = () => [
-  'Somonu baharatlarla marine edin ve 5 dakika bekletin.',
-  'Tavayı orta ateşte ısıtıp az miktarda zeytinyağı ekleyin.',
-  'Somonu her iki tarafı altın sarısı olana kadar yaklaşık 4-5 dakika pişirin.',
-  'Avokadoyu krema ile ezerek pürüzsüz bir sos elde edin ve üzerinde servis edin.',
-];
+const getFallbackSteps = () => [];
 
 const RecipeDetailPage = () => {
   const { id } = useParams();
@@ -344,7 +337,7 @@ const RecipeDetailPage = () => {
                 <div className="recipe-hero-overlay" />
                 <div className="recipe-hero-content">
                   <p>
-                    {stripHtml(recipe.description) || 'Avokado ve somon ile hazırlanan, yüksek proteinli pratik bir ana öğün.'}
+                    {stripHtml(recipe.explanation || recipe.description || '')}
                   </p>
                   <div className="recipe-stat-row">
                     <span><Flame size={16} /> {adjustedValue(recipe.calorie)} kcal</span>
@@ -363,9 +356,9 @@ const RecipeDetailPage = () => {
 
                 <div className="recipe-ingredient-grid">
                   <div>
-                    <h3>Dolabında Olanlar</h3>
+                    <h3>{optionalIngredients.length > 0 ? 'Dolabında Olanlar' : 'Tüm Malzemeler'}</h3>
                     <div className="recipe-ingredient-list">
-                      {(availableIngredients.length ? availableIngredients : [{ name: 'Somon Filet' }, { name: 'Zeytinyağı' }]).map((ingredient, index) => (
+                      {availableIngredients.map((ingredient, index) => (
                         <div className="recipe-ingredient-row available" key={`${getIngredientName(ingredient)}-${index}`}>
                           <span>{getIngredientName(ingredient)}</span>
                           <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
@@ -375,10 +368,11 @@ const RecipeDetailPage = () => {
                     </div>
                   </div>
 
+                  {optionalIngredients.length > 0 && (
                   <div>
-                    <h3>Eksik / Opsiyonel</h3>
+                    <h3>Diğer Malzemeler</h3>
                     <div className="recipe-ingredient-list">
-                      {(optionalIngredients.length ? optionalIngredients.slice(0, 6) : [{ name: 'Olgun Avokado' }, { name: 'Taze Krema' }]).map((ingredient, index) => (
+                      {optionalIngredients.slice(0, 6).map((ingredient, index) => (
                         <div className="recipe-ingredient-row optional" key={`${getIngredientName(ingredient)}-${index}`}>
                           <span>{getIngredientName(ingredient)}</span>
                           <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
@@ -387,11 +381,12 @@ const RecipeDetailPage = () => {
                       ))}
                     </div>
                   </div>
+                  )}
                 </div>
 
-                <p className="recipe-note">
-                  Diğer: Tuz, Karabiber, Limon suyu.
-                </p>
+                {displayIngredients.length === 0 && (
+                  <p className="recipe-note">Malzeme bilgisi girilmemiş.</p>
+                )}
               </article>
 
               <article className="recipe-panel">
@@ -401,7 +396,9 @@ const RecipeDetailPage = () => {
                 </div>
 
                 <div className="recipe-step-list">
-                  {preparationSteps.map((step, index) => (
+                  {preparationSteps.length === 0 ? (
+                    <p style={{ color: 'rgba(187,202,191,0.5)', fontStyle: 'italic', padding: '0.5rem 0' }}>Hazırlanış adımı girilmemiş.</p>
+                  ) : preparationSteps.map((step, index) => (
                     <div className="recipe-step-row" key={`${step}-${index}`}>
                       <span>{index + 1}</span>
                       <p>{step}</p>
