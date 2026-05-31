@@ -1,0 +1,1097 @@
+﻿P0004 [] UYGULAMALI BİLİMLER FAKÜLTESİ
+P0005 [] BİLİŞİM SİSTEMLERİ VE TEKNOLOJİLERİ BÖLÜMÜ
+P0010 [] AKILLI TARİF VE BESLENME ÖNERİ SİSTEMİ
+P0011 [] (RECIMATCH)
+P0015 [] LİSANS BİTİRME PROJESİ
+P0017 [] Yavuz Orhan
+P0018 [] 220702023
+P0020 [] Mayıs 2026
+P0024 [] UYGULAMALI BİLİMLER FAKÜLTESİ
+P0025 [] BİLİŞİM SİSTEMLERİ VE TEKNOLOJİLERİ BÖLÜMÜ
+P0027 [] Akıllı Tarif ve Beslenme Öneri Sistemi(RECIMATCH)
+P0030 [] LİSANS BİTİRME PROJESİ
+P0033 [] Yavuz Orhan
+P0034 [] tarafından lisans derecesi şartını sağlamak için hazırlanmıştır.
+P0036 [] Onaylayan:
+P0037 [] Dr. Öğr. Üyesi Nurşen Topçubaşı
+P0039 [] Mayıs 2026
+P0041 [TBal] İÇİNDEKİLER
+P0042 [T1] ŞEKİLLER LİSTESİi
+P0043 [T1] TABLOLAR LİSTESİiii
+P0044 [T1] KISALTMALAR LİSTESİiv
+P0045 [T1] ÖZETv
+P0046 [T1] ABSTRACTvi
+P0047 [T1] 1. GİRİŞ1
+P0048 [T1] 2. LİTERATÜR ARAŞTIRMASI2
+P0049 [T2] 2.1. Tarif ve beslenme öneri sistemleri2
+P0050 [T2] 2.2. Beslenme takibi ve sağlık puanı yaklaşımı3
+P0051 [T2] 2.3. Benzer uygulamaların incelenmesi3
+P0052 [T3] 2.3.1. Yummly3
+P0053 [T3] 2.3.2. MyFitnessPal4
+P0054 [T3] 2.3.3. SuperCook5
+P0055 [T3] 2.3.4. ReciMatch ile karşılaştırma5
+P0056 [T1] 3. SİSTEM TASARIMI VE TEKNİK ALTYAPI7
+P0057 [T2] 3.1. Kullanılan teknolojiler7
+P0058 [T3] 3.1.1. React7
+P0059 [T3] 3.1.2. Vite7
+P0060 [T3] 3.1.3. CSS7
+P0061 [T3] 3.1.4. FastAPI ve Python7
+P0062 [T3] 3.1.5. SQLAlchemy ORM8
+P0063 [T3] 3.1.6. PostgreSQL8
+P0064 [T3] 3.1.7. Doğrulama ve güvenlik araçları8
+P0065 [T3] 3.1.8. Veri hazırlama ve alias yapısı8
+P0066 [T3] 3.1.9. Gemini API8
+P0067 [T2] 3.2. Sistem mimarisi ve kullanıcı akışı9
+P0068 [T3] 3.2.1. Genel sistem mimarisi9
+P0069 [T3] 3.2.2. Kullanıcı yönetimi ve doğrulama akışları10
+P0070 [T3] 3.2.3. Profil bilgileri ve kalori hedefi10
+P0071 [T3] 3.2.4. Malzeme girişi, Dolabım ve öneri mantığı10
+P0072 [T3] 3.2.5. Sağlık puanı ve tarif revizyonu10
+P0073 [T3] 3.2.6. Besin değeri çözümleme mimarisinin güncellenmesi11
+P0074 [T2] 3.3. Veritabanı tasarımı12
+P0075 [T3] 3.3.1. Güncel veritabanı tablolarının genel özeti13
+P0076 [T3] 3.3.2. users tablosu14
+P0077 [T3] 3.3.3. ingredients tablosu15
+P0078 [T3] 3.3.4. recipes tablosu16
+P0079 [T3] 3.3.5. recipe_ingredients tablosu17
+P0080 [T3] 3.3.6. email_verification_codes tablosu18
+P0081 [T3] 3.3.7. ingredient_categories tablosu18
+P0082 [T3] 3.3.8. ingredient_aliases tablosu18
+P0083 [T3] 3.3.9. healthy_recipes tablosu19
+P0084 [T3] 3.3.10. favorites tablosu19
+P0085 [T3] 3.3.11. disliked_ingredients tablosu19
+P0086 [T3] 3.3.12. owned_ingredients tablosu20
+P0087 [T3] 3.3.13. daily_logs tablosu20
+P0088 [T3] 3.3.14. revision_cache tablosu20
+P0089 [T2] 3.4. Tarif verisinin hazırlanması21
+P0090 [T2] 3.5. Backend katmanlı mimari ve Gemini besin değeri akışı21
+P0091 [T2] 3.6. API yapısı ve güncel uç noktalar23
+P0092 [T1] 4. UYGULAMA EKRANLARI VE TESTLER24
+P0093 [T2] 4.1. Giriş ve kayıt ekranları24
+P0094 [T2] 4.2. Profil ve malzeme tercihi ekranları26
+P0095 [T2] 4.3. Ana menü ve Dolabım ekranları27
+P0096 [T2] 4.4. Tarif listeleme ve sağlıklı tarifler ekranları29
+P0097 [T2] 4.5. Günlük kayıt, favoriler ve profil ekranları30
+P0098 [T2] 4.6. Tarif öneri ve tarif detay ekranları31
+P0099 [T2] 4.7. Testler ve gözlemler33
+P0100 [T1] 5. SONUÇ ve TARTIŞMA35
+P0101 [T2] 5.1. Projenin değerlendirilmesi35
+P0102 [T2] 5.2. Sınırlılıklar ve geliştirme önerileri36
+P0103 [T1] Kaynakça37
+P0104 [T1] EKLER39
+P0105 [T2] EK-1: Gemini ile besin değeri alma kod parçası39
+P0106 [T2] EK-2: İki katmanlı besin değeri çözümleme kod parçası39
+P0107 [T2] EK-3: Sağlık puanı hesaplama kod parçası40
+P0108 [T2] EK-4: Tarif öneri skoru hesaplama kod parçası41
+P0109 [T2] EK-5: Gemini tarif revizyonu ve revision cache kod parçası42
+P0112 [Balk1] ŞEKİLLER LİSTESİ
+P0113 [T1] Şekil 2.1 Yummly ekran görüntüsü 3
+P0114 [T1] Şekil 2.2 MyFitnessPal ekran görüntüsü 4
+P0115 [T1] Şekil 2.3 SuperCook ekran görüntüsü 5
+P0116 [T1] Şekil 3.1 Katmanlı sistem mimarisi diyagramı9
+P0117 [T1] Şekil 4.1 Giriş Ekranı24
+P0118 [T1] Şekil 4.2 Şifremi Unuttum Ekranı25
+P0119 [T1] Şekil 4.3 Kayıt Ekranı25
+P0120 [T1] Şekil 4.4 E-posta Onay Ekranı26
+P0121 [T1] Şekil 4.5 Profil Oluşturma Ekranı26
+P0122 [T1] Şekil 4.6 Sevilmeyen Malzeme Seçimi Ekranı27
+P0123 [T1] Şekil 4.7 Ana Menü Ekranı28
+P0124 [T1] Şekil 4.8 Ana Menü Karanlık Tema Ekranı28
+P0125 [T1] Şekil 4.9 Dolabım Ekranı29
+P0126 [T1] Şekil 4.10 Tarifler Ekranı29
+P0127 [T1] Şekil 4.11 Sağlıklı Tarifler Ekranı30
+P0128 [T1] Şekil 4.12 Günlük ve Haftalık Kayıt Ekranı30
+P0129 [T1] Şekil 4.13 Favoriler Ekranı31
+P0130 [T1] Şekil 4.14 Profil Ekranı31
+P0131 [T1] Şekil 4.15 Tarif Önerme Malzeme Seçimi Ekranı32
+P0132 [T1] Şekil 4.16 Tarif Önerme Eşleşme Ekranı32
+P0133 [T1] Şekil 4.17 Tarif İçerik Ekranı33
+P0134 [T1] Şekil E.1. Gemini ile besin değeri alma kod parçası39
+P0135 [T1] Şekil E.2. Yerel veritabanı ve Gemini tabanlı besin değeri çözümleme akışı40
+P0136 [T1] Şekil E.3. Sağlık puanı hesaplama kod parçası41
+P0137 [T1] Şekil E.4. Tarif öneri skoru hesaplama kod parçası42
+P0138 [T1] Şekil E.5. Gemini tarif revizyonu42
+P0140 [Balk1] TABLOLAR LİSTESİ
+P0141 [T1] Tablo 2.1 Benzer uygulamaların ReciMatch ile karşılaştırılması6
+P0142 [T1] Tablo 3.2 Sağlık puanı kalite eşikleri10
+P0143 [T1] Tablo 3.3 Güncel veritabanı tabloları ve görevleri13
+P0144 [T1] Tablo 3.4 Canlı veritabanı örnek kayıt sayıları14
+P0145 [T1] Tablo 3.5 users tablosu alanları14
+P0146 [T1] Tablo 3.6 ingredients tablosu alanları15
+P0147 [T1] Tablo 3.7 ingredients tablosundan örnek kayıtlar16
+P0148 [T1] Tablo 3.8 recipes tablosu alanları16
+P0149 [T1] Tablo 3.9 recipes tablosundan örnek kayıtlar17
+P0150 [T1] Tablo 3.10 recipe_ingredients tablosu alanları17
+P0151 [T1] Tablo 3.11 email_verification_codes tablosu alanları18
+P0152 [T1] Tablo 3.12 ingredient_categories tablosu alanları18
+P0153 [T1] Tablo 3.13 ingredient_aliases tablosu alanları18
+P0154 [T1] Tablo 3.14 healthy_recipes tablosu alanları19
+P0155 [T1] Tablo 3.15 favorites tablosu alanları19
+P0156 [T1] Tablo 3.16 disliked_ingredients tablosu alanları19
+P0157 [T1] Tablo 3.17 owned_ingredients tablosu alanları20
+P0158 [T1] Tablo 3.18 daily_logs tablosu alanları20
+P0159 [T1] Tablo 3.19 revision_cache tablosu alanları20
+P0160 [T1] Tablo 3.20 Backend servis dosyaları ve görevleri22
+P0161 [T1] Tablo 4.1 Uygulama ekranları ve temel işlevleri24
+P0163 [Balk1] KISALTMALAR LİSTESİ
+P0164 [] AIArtificial Intelligence, yapay zeka
+P0165 [] APIApplication Programming Interface, Uygulama Programlama Arayüzü
+P0166 [] BcryptBlowfish tabanlı şifre hashleme algoritması
+P0167 [] BSTBilişim Sistemleri ve Teknolojileri
+P0168 [] CORSCross-Origin Resource Sharing, Kaynaklar Arası Paylaşım
+P0169 [] CRUDCreate, Read, Update, Delete, temel veri işlemleri
+P0170 [] CSSCascading Style Sheets
+P0171 [] DBDatabase, veritabanı
+P0172 [] EREntity Relationship, varlık ilişki modeli
+P0173 [] GeminiGoogle yapay zeka modeli ve API servisi
+P0174 [] HTMLHyperText Markup Language
+P0175 [] HTTPHyperText Transfer Protocol
+P0176 [] JSONJavaScript Object Notation
+P0177 [] JWTJSON Web Token
+P0178 [] LLMLarge Language Model, büyük dil modeli
+P0179 [] ORMObject Relational Mapping
+P0180 [] OTPOne Time Password, tek kullanımlık doğrulama kodu
+P0181 [] RESTRepresentational State Transfer
+P0182 [] SMTPSimple Mail Transfer Protocol
+P0183 [] SQLStructured Query Language
+P0184 [] UIUser Interface, kullanıcı arayüzü
+P0185 [] USDAUnited States Department of Agriculture
+P0186 [] UXUser Experience, kullanıcı deneyimi
+P0187 [] ViteModern frontend geliştirme ve paketleme aracı
+P0188 [Balk1] ÖZET
+P0189 [] Bu çalışmada ReciMatch adlı web tabanlı bir tarif ve beslenme öneri sistemi geliştirilmiştir. Projenin çıkış noktası günlük hayatta sık karşılaşılan bir durumdur. Kullanıcının evinde malzemeler bulunabilir ancak bu malzemelerle ne pişireceğini hızlı biçimde seçmesi her zaman kolay değildir. ReciMatch bu ihtiyaca cevap vermek için hazırlanmıştır. Kullanıcı elindeki malzemeleri seçer, sistem bu malzemeleri tariflerdeki malzemelerle karşılaştırır ve daha uygun tarifleri üst sıralarda gösterir.
+P0190 [] Uygulamada kullanıcı yönetimi, e-posta doğrulama, profil bilgileri, sevilmeyen malzeme seçimi, dolabım yapısı, favori tarifler ve günlük yemek kayıtları birlikte çalışmaktadır. Arka uçta Python ve FastAPI, veritabanı tarafında PostgreSQL ve SQLAlchemy ORM, ön yüzde ise React ve Vite kullanılmıştır. Tarif verilerinin hazırlanmasında malzeme adlarını düzenleme, ölçü birimlerini grama çevirme ve besin değerlerini tutarlı hale getirme konuları üzerinde durulmuştur. Güncel yapıda besin değerleri önce yerel veritabanından okunmakta, eksik kalan malzemeler için Gemini destekli tahmini tamamlama akışı kullanılmaktadır. Tariflere temel bir sağlık puanı atanmış, bu puan kalori ve makro besin değerleri ile malzeme riskleri dikkate alınarak oluşturulmuştur.
+P0191 [] Projeye ayrıca Gemini destekli Revize Et özelliği eklenmiştir. Bu özellik kullanıcının seçtiği tarifi daha hafif, daha proteinli ya da belirli malzemeler çıkarılmış şekilde yeniden düzenlemesine yardımcı olur. Son durumda ReciMatch, malzeme bazlı tarif önerisi, temel beslenme takibi ve yapay zeka destekli tarif uyarlama özelliklerini bir araya getiren kullanılabilir bir web uygulaması haline gelmiştir.
+P0192 [] Anahtar Kelimeler: tarif öneri sistemi, ReciMatch, beslenme takibi, sağlık puanı, web uygulaması, malzeme eşleştirme
+P0194 [Balk1] ABSTRACT
+P0195 [] INTELLIGENT RECIPE AND NUTRITION RECOMMENDATION SYSTEM
+P0196 [] RECIMATCH
+P0197 [] This project presents ReciMatch, a web-based recipe and nutrition recommendation system. The main idea comes from a common everyday problem. A user may have several ingredients at home but may not know what to cook with them. ReciMatch helps the user select available ingredients and see suitable recipes. The system compares selected ingredients with recipe ingredients and lists better matching recipes first.
+P0198 [] The application includes user authentication, e-mail verification, profile information, disliked ingredient selection, pantry management, favorite recipes and daily meal records. Python and FastAPI were used for the backend. PostgreSQL and SQLAlchemy ORM were used for database operations. React and Vite were used for the interface. Ingredient name normalization, unit to gram conversion and nutrition data organization were important parts of the development process. In the current architecture, nutrition values are first checked in the local database. If local data is missing, Gemini assisted estimation is used to complete the ingredient values. A basic health score was also added to evaluate recipes by calories, macronutrients and ingredient based risks.
+P0199 [] The project also includes a recipe revision feature supported by Gemini. This feature helps users adapt a selected recipe according to their needs, such as making it lighter or removing a certain ingredient. As a result, ReciMatch became a practical web application that combines ingredient based recipe recommendation, basic meal tracking and AI assisted recipe customization.
+P0200 [] Keywords: recipe recommendation, ReciMatch, meal tracking, health score, web application, ingredient matching
+P0202 [Balk1] 1. GİRİŞ
+P0203 [] Yemek seçmek günlük yaşamda basit bir karar gibi görünür. Buna rağmen evdeki malzemeler, zaman, kişisel tercihler, kalori hedefi ve sevilmeyen yiyecekler birlikte düşünüldüğünde karar verme süreci zorlaşır. Kullanıcı çoğu zaman uzun tarif listeleri arasında dolaşmak istemez. Elindeki malzemelerle ne hazırlayabileceğini hızlıca görmek ister.
+P0204 [] ReciMatch bu ihtiyaçtan hareketle geliştirilmiştir. Uygulamanın temel amacı, kullanıcının elindeki malzemeleri alarak bu malzemelere uygun tarifleri önermektir. Proje yalnızca tarif listeleyen bir yapı olarak tasarlanmamıştır. Kullanıcı profili, sevilmeyen malzemeler, Dolabım, favoriler ve günlük yemek kayıtları da sisteme eklenmiştir.
+P0205 [] Proje teknik olarak çalışan bir web uygulaması şeklinde hazırlanmıştır. Arka uç tarafında FastAPI, veritabanı tarafında PostgreSQL, arayüz tarafında ise React ve Vite kullanılmıştır. Backend kodları Router, Service, Repository ve Model katmanlarına ayrılmıştır. Bu ayrım geliştirme sırasında hataları daha kolay bulmayı ve yeni özellik eklemeyi kolaylaştırmıştır.
+P0206 [] İlk aşamada tarifleri yalnızca malzeme eşleşmesine göre sıralamak yeterli gibi görünmüştür. Daha sonra bunun tek başına eksik kaldığı anlaşılmıştır. Bir tarif eldeki malzemelerle yapılabilir olsa da beslenme açısından dengeli olmayabilir. Bu nedenle sisteme temel bir sağlık puanı eklenmiştir. Bu puan tıbbi tavsiye değildir. Kullanıcının tarifleri karşılaştırmasını kolaylaştıran yardımcı bir göstergedir.
+P0207 [] Projeye son aşamada Revize Et özelliği eklenmiştir. Bu özellikte kullanıcı seçtiği tarifi Gemini yapay zeka desteğiyle kendi isteğine göre değiştirebilir. Böylece uygulama yalnızca tarif gösteren bir yapıdan çıkarak kullanıcıyla daha etkileşimli çalışan bir sisteme dönüşmüştür.
+P0208 [] Bu raporda önce literatür araştırması sunulmuştur. Daha sonra sistem mimarisi, kullanılan teknolojiler, kullanıcı akışları, öneri mantığı, sağlık puanı, veritabanı tasarımı ve arayüz ekranları açıklanmıştır. Son bölümde projenin genel değerlendirmesi, sınırlılıkları ve geliştirme önerileri ele alınmıştır.
+P0209 [Balk1] 2. LİTERATÜR ARAŞTIRMASI
+P0210 [] Tarif öneri sistemleri, öneri sistemlerinin yiyecek alanına uyarlanmış özel bir biçimi olarak değerlendirilebilir. Bu alanda yalnızca kullanıcının beğenileri değil, malzeme uygunluğu, beslenme hedefi, zaman ve alışkanlıklar da önemlidir. Bu nedenle yemek önerisi yapmak klasik ürün önerisinden daha fazla değişken içerir.
+P0211 [] Öneri sistemleri genel olarak içerik tabanlı filtreleme, işbirlikçi filtreleme ve hibrit yaklaşımlar üzerinden açıklanır. Budak ve Gümüştaş tarafından yapılan çalışmada kullanıcı bazlı işbirlikçi filtreleme ile kümeleme yöntemlerini birleştiren hibrit bir öneri sistemi ele alınmıştır. ReciMatch benzer biçimde tek bir değişkene bağlı kalmamış, malzeme eşleşmesi, dolap bilgisi, sevilmeyen malzemeler ve sağlık puanını birlikte değerlendirmiştir.
+P0212 [] Rodrigues, Fidalgo ve Oliveira tarafından geliştirilen RecipeIS çalışması, kullanıcının yüklediği malzeme görsellerinden tarif önerisi üretmeye odaklanmıştır. ReciMatch görsel tanıma kullanmaz. Bunun yerine kullanıcı seçimi ve düzenlenmiş malzeme verisi üzerinden çalışır. İki yaklaşımın ortak noktası, tarif aramasını kullanıcının elindeki malzemelerden başlatmasıdır.
+P0213 [Balk2] 2.1. Tarif ve beslenme öneri sistemleri
+P0214 [] Gao ve diğerleri tarafından yapılan sistematik derleme, 2006 ile 2023 yılları arasındaki yemek öneri sistemlerini incelemiştir. Çalışmada içerik tabanlı, işbirlikçi filtreleme, bilgi grafiği tabanlı ve hibrit yöntemler karşılaştırılmıştır. Bu çalışmalar, beslenme bilgisinin öneri kalitesini artırabildiğini ve kullanıcı tercihlerinin tek boyutlu ele alınmaması gerektiğini göstermektedir.
+P0215 [] ReciMatch bu çerçevede malzeme eşleşmesini merkeze alan, ancak bu eşleşmeyi kullanıcı tercihleri ve temel beslenme verisiyle destekleyen bir uygulamadır. Sistem kullanıcının o anki malzeme durumunu dikkate alır. Aynı zamanda daha önce sevilmeyen olarak işaretlenen malzemelerin öneri sonucunu olumsuz etkilemesini sağlar.
+P0217 [Balk2] 2.2. Beslenme takibi ve sağlık puanı yaklaşımı
+P0218 [] Beslenme uygulamalarında kalori takibi önemli bir yer tutar. Ancak yalnızca kaloriye bakmak çoğu zaman yeterli değildir. Protein, karbonhidrat, yağ oranları ve tarifte kullanılan malzemelerin niteliği de değerlendirme sürecine dahil edilmelidir. ReciMatch sağlık puanı bu nedenle kalori dışında makro besin değerleri ve malzeme risklerini de dikkate alır.
+P0219 [] USDA FoodData Central gibi veri kaynakları, malzemelerin 100 gram üzerinden besin değerlerini incelemek için kullanılabilecek önemli kaynaklardır. ReciMatch projesinin ilk tasarımında bu yaklaşım değerlendirilmiştir. Ancak Türkçe malzeme adlarının İngilizceye çevrilmesi, doğru kayıtla eşleşmesi ve her malzeme için aynı doğrulukta sonuç alınması geliştirme sürecini zorlaştırmıştır. Bu nedenle güncel mimaride önce yerel veritabanı kontrol edilmekte, eksik besin değerleri için Gemini destekli yapılandırılmış JSON çıktısı kullanılmaktadır.
+P0220 [Balk2] 2.3. Benzer uygulamaların incelenmesi
+P0221 [] Bu bölümde Yummly, MyFitnessPal ve SuperCook uygulamaları incelenmiştir. Bu üç uygulama ReciMatch ile aynı soruna tamamen aynı açıdan yaklaşmaz. Buna rağmen tarif önerisi, beslenme takibi ve malzeme bazlı arama konularında karşılaştırma yapmak için anlamlı örneklerdir.
+P0222 [Balk3] 2.3.1. Yummly
+P0223 [] Yummly, kişiselleştirilmiş tarif önerileri ve yemek planlama özellikleriyle öne çıkan bir tarif platformu olarak değerlendirilebilir. Yummly tarafında kullanıcıların damak zevki, beslenme tercihleri ve farklı filtrelerle tarif bulması hedeflenmiştir. Platformun duyurularında yapay zeka destekli kişiselleştirme, yemek planlama, alışveriş listesi ve tarifleri kaydetme özellikleri vurgulanmaktadır, Yummly, 2023.
+P0224 [] ReciMatch ile Yummly arasındaki temel fark, ReciMatch’in daha dar ama daha uygulama odaklı bir problem üzerine kurulmasıdır. ReciMatch kullanıcının elindeki malzemeleri doğrudan öneri sisteminin merkezine alır. Ayrıca tariflere sağlık puanı atar, günlük tüketim kaydı tutar ve kullanıcının sevmediği malzemeleri öneri sonucuna dahil eder.
+P0226 [ResimYazs] Şekil 2.1 Yummly ekran görüntüsü
+P0227 [Balk3] 2.3.2. MyFitnessPal
+P0228 [] MyFitnessPal daha çok kalori, makro besin, egzersiz ve kilo takibi üzerine kurulu bir uygulamadır. Resmi tanıtımında kalori, makro, yemek, antrenman ve benzeri kayıtların tek yerde takip edilebildiği belirtilmektedir, MyFitnessPal, 2026. Bu yönüyle MyFitnessPal beslenme takibi tarafında güçlü bir örnek olarak görülebilir.
+P0229 [] ReciMatch ise yalnızca günlük kalori takibi yapan bir uygulama değildir. Sistemin ilk amacı kullanıcının elindeki malzemelerle tarif önermektir. Günlük kayıt yapısı bu öneri sistemini tamamlayan bir modül olarak eklenmiştir. Bu nedenle MyFitnessPal ayrıntılı takip tarafında daha kapsamlı iken ReciMatch malzeme bazlı tarif bulma ve tarif uyarlama tarafına daha fazla odaklanır.
+P0231 [] Şekil 2.2 MyFitnessPal ekran görüntüsü
+P0233 [Balk3] 2.3.3. SuperCook
+P0234 [] SuperCook, kullanıcının evindeki malzemelerden yola çıkarak tarif bulmaya odaklanan bir sistemdir. Uygulama açıklamasında kullanıcının sahip olduğu malzemeleri girerek şimdi yapılabilecek tarifleri görebileceği belirtilmektedir, SuperCook, 2026. Bu açıdan SuperCook, ReciMatch’in malzeme bazlı öneri fikrine en yakın örneklerden biridir.
+P0235 [] Buna karşın ReciMatch, malzeme eşleşmesini tek başına bırakmaz. Kullanıcının sevilmeyen malzemelerini, Dolabım yapısını, favorilerini, günlük kayıtlarını ve sağlık puanını aynı sistem içinde ele alır. Ayrıca Gemini desteğiyle tarif revizyonu yapılabilmesi, SuperCook’tan ayrılan önemli bir özelliktir.
+P0237 [ResimYazs] Şekil 2.3 SuperCook ekran görüntüsü
+P0238 [Balk3] 2.3.4. ReciMatch ile karşılaştırma
+P0239 [] İncelenen uygulamalar ReciMatch için doğrudan rakipten çok karşılaştırma noktası olarak kullanılmıştır. Yummly kişiselleştirilmiş tarif deneyimini, MyFitnessPal beslenme takibini, SuperCook ise evdeki malzemeye göre tarif aramayı temsil eder. ReciMatch bu üç yaklaşımın belirli parçalarını daha küçük ölçekli ama bütünleşik bir bitirme projesi içinde birleştirmeyi hedeflemiştir.
+P0241 [ResimYazs] Tablo 2.1 Benzer uygulamaların ReciMatch ile karşılaştırılması
+P0242 [] Uygulama
+P0243 [] Temel Odak
+P0244 [] Güçlü Yön
+P0245 [] ReciMatch ile Farkı
+P0246 [] Yummly
+P0247 [] Kişiselleştirilmiş tarif keşfi
+P0248 [] Filtreleme, yemek planlama, tarif kaydetme
+P0249 [] ReciMatch eldeki malzeme, sağlık puanı ve günlük kayıt yapısını birlikte kullanır
+P0250 [] MyFitnessPal
+P0251 [] Kalori ve makro takibi
+P0252 [] Geniş besin veritabanı, günlük takip, hedef yönetimi
+P0253 [] ReciMatch takipten önce tarif önerisi üretir ve tarifi malzeme uyumuna göre sıralar
+P0254 [] SuperCook
+P0255 [] Evdeki malzemeye göre tarif bulma
+P0256 [] Malzeme bazlı arama mantığı
+P0257 [] ReciMatch sevilmeyen malzeme, Dolabım, sağlık puanı ve yapay zeka revizyonunu ekler
+P0258 [] ReciMatch
+P0259 [] Malzeme bazlı tarif ve beslenme desteği
+P0260 [] Öneri, takip, sağlık puanı ve revizyonun tek uygulamada olması
+P0261 [] Bitirme projesi kapsamında geliştirilen özgün sistemdir
+P0263 [Balk1] 3. SİSTEM TASARIMI VE TEKNİK ALTYAPI
+P0265 [Balk2] 3.1. Kullanılan teknolojiler
+P0266 [] Projede kullanılan teknolojiler seçilirken uygulamanın tarayıcı üzerinden çalışması, kullanıcı işlemlerini güvenli biçimde yönetmesi, verileri ilişkisel olarak saklaması ve tarif öneri sürecinin hızlı ilerlemesi dikkate alınmıştır. Bu nedenle her teknoloji, projenin belirli bir ihtiyacını karşılayacak şekilde kullanılmıştır.
+P0267 [Balk3] 3.1.1. React
+P0268 [] React, uygulamanın kullanıcı arayüzünü oluşturmak için kullanılmıştır. Kayıt, giriş, ana menü, tarif listesi, tarif detayı, favoriler ve günlük kayıt ekranları React bileşenleri halinde düzenlenmiştir. Bu tercih, ekranların ayrı parçalar halinde yönetilmesini ve arayüzde tekrar eden yapıların daha kolay kullanılmasını sağlamıştır.
+P0269 [Balk3] 3.1.2. Vite
+P0270 [] Vite, React projesinin geliştirme ve çalıştırma ortamında kullanılmıştır. Geliştirme sırasında yapılan arayüz değişikliklerinin hızlı görülmesi gerektiği için tercih edilmiştir. Böylece ekran tasarımları ve bileşen düzenlemeleri daha kısa sürede kontrol edilebilmiştir.
+P0271 [Balk3] 3.1.3. CSS
+P0272 [] CSS, uygulamanın görsel düzeninin hazırlanmasında kullanılmıştır. Menü yapısı, tarif kartları, form alanları, tema renkleri ve ekranlar arası görünüm bütünlüğü CSS ile düzenlenmiştir. Bu kullanım, arayüzün sadece çalışır değil aynı zamanda okunabilir ve düzenli görünmesini sağlamıştır.
+P0273 [Balk3] 3.1.4. FastAPI ve Python
+P0274 [] FastAPI, backend tarafında API uç noktalarını hazırlamak ve frontendden gelen istekleri karşılamak için kullanılmıştır. Kullanıcı kaydı, giriş, profil, malzeme seçimi, tarif önerisi, favoriler, günlük kayıtlar ve Gemini revizyon işlemleri bu API yapısı üzerinden yürütülmüştür. Python tabanlı olması, servis katmanındaki iş kurallarının daha sade biçimde yazılmasına yardımcı olmuştur.
+P0275 [Balk3] 3.1.5. SQLAlchemy ORM
+P0276 [] SQLAlchemy ORM, Python kodu ile PostgreSQL tabloları arasındaki veri erişimini düzenlemek için kullanılmıştır. Model sınıfları üzerinden kullanıcı, tarif, malzeme ve günlük kayıt tabloları temsil edilmiştir. Bu yapı doğrudan SQL yazma ihtiyacını azaltmış ve repository katmanındaki veritabanı işlemlerini daha okunabilir hale getirmiştir.
+P0277 [Balk3] 3.1.6. PostgreSQL
+P0278 [] PostgreSQL, projenin ilişkisel veritabanı olarak kullanılmıştır. Kullanıcı bilgileri, tarifler, malzemeler, tarif malzeme ilişkileri, favoriler, sevilmeyen malzemeler, günlük kayıtlar ve revizyon önbelleği bu veritabanında tutulmuştur. İlişkisel yapı sayesinde bir tarifin birden fazla malzemeyle, bir kullanıcının da birçok kayıtla bağlantılı şekilde yönetilmesi mümkün olmuştur.
+P0279 [Balk3] 3.1.7. Doğrulama ve güvenlik araçları
+P0280 [] Kullanıcı hesaplarının güvenliği için e-posta doğrulama, tek kullanımlık doğrulama kodu ve bcrypt tabanlı şifre saklama yapısı kullanılmıştır. Bu yapı, kullanıcı hesabının yalnızca doğru e-posta doğrulamasından sonra aktif hale gelmesini ve şifrelerin açık metin olarak tutulmamasını sağlamıştır.
+P0281 [Balk3] 3.1.8. Veri hazırlama ve alias yapısı
+P0282 [] Tarif ve malzeme verilerini sisteme uygun hale getirmek için scraper ve alias yapısı kullanılmıştır. Scraper hattı tarif başlığı, malzeme listesi, hazırlanış adımları, porsiyon ve besin bilgisi gibi alanları toplamak için hazırlanmıştır. Alias yapısı ise aynı malzemenin farklı yazımlarını tek bir malzeme kaydıyla eşleştirmek için kullanılmıştır.
+P0283 [Balk3] 3.1.9. Gemini API
+P0284 [] Gemini API, sistemde iki farklı amaçla kullanılmıştır. İlk kullanım alanı, besin değeri eksik olan malzemeler için yapılandırılmış JSON çıktısı ile yaklaşık değer üretmektir. İkinci kullanım alanı ise kullanıcının seçtiği tarifi daha hafif, daha proteinli veya belirli malzemeler çıkarılmış şekilde revize etmektir. Gemini çıktıları kesin sağlık bilgisi olarak değil, sistem içinde yardımcı ve tahmini veri olarak değerlendirilmiştir.
+P0285 [Balk2] 3.2. Sistem mimarisi ve kullanıcı akışı
+P0286 [] ReciMatch üç ana katmandan oluşmaktadır. Kullanıcı arayüzü React ile hazırlanmıştır. API katmanı FastAPI üzerinden çalışmaktadır. Veritabanı katmanı ise PostgreSQL üzerinde tutulmaktadır. Bu ayrım sistemin bakımını ve geliştirilmesini kolaylaştırır.
+P0288 [ResimYazs] Şekil 3.1 Katmanlı sistem mimarisi diyagramı
+P0289 [Balk3] 3.2.1. Genel sistem mimarisi
+P0290 [] Kullanıcı uygulamaya kayıt ekranı ile başlar. E-posta doğrulamasını yaptıktan sonra giriş yapar ve profil bilgilerini tamamlar. Ardından malzeme seçimi yaparak tarif önerileri alır. Tarif detay ekranında malzemeler, hazırlanış adımları, kalori bilgisi, makro değerler ve sağlık puanı gösterilir.
+P0291 [Balk3] 3.2.2. Kullanıcı yönetimi ve doğrulama akışları
+P0292 [] Kullanıcı yönetimi bu proje için önemlidir çünkü favoriler, sevilmeyen malzemeler, profil bilgileri ve günlük kayıtlar her kullanıcı için farklıdır. Kayıt sırasında kullanıcının temel bilgileri alınır. Şifre düz metin olarak saklanmaz, bcrypt ile güvenli biçimde hashlenir. E-posta doğrulaması için tek kullanımlık kod kullanılır. Şifremi unuttum işlemi de aynı doğrulama mantığı üzerine kurulmuştur.
+P0293 [Balk3] 3.2.3. Profil bilgileri ve kalori hedefi
+P0294 [] Profil ekranında yaş, cinsiyet, boy, kilo, hedef, aktivite düzeyi, öğün sayısı ve günlük kalori hedefi yer alır. Bu bilgiler öneri sistemini tek başına belirlemez ancak uygulamanın kullanıcıya daha uygun çalışmasına yardımcı olur. Günlük kalori hedefi yaklaşık takip amacıyla kullanılır ve tıbbi öneri olarak değerlendirilmemelidir.
+P0295 [Balk3] 3.2.4. Malzeme girişi, Dolabım ve öneri mantığı
+P0296 [] ReciMatch’in ana mantığı kullanıcının elindeki malzemelerle yapılabilecek en uyumlu tarifleri bulmaktır. Kullanıcı malzemelerini kategorize edilmiş listeden seçer. Sistem bu malzeme listesini tariflerdeki malzemelerle karşılaştırır. Seçili malzeme eşleşmesi skoru artırır. Dolap malzemesi ek avantaj sağlar. Eksik malzeme sayısı skoru düşürür. Sevilmeyen malzeme varsa ceza puanı uygulanır.
+P0297 [] Bu yaklaşım kullanıcının gerçek durumuna daha yakın sonuç üretmeyi amaçlar. Örneğin kullanıcı domates, yumurta ve peynir seçtiğinde bu malzemeleri içeren tarifler daha üstte listelenir. Kullanıcının sevmediği bir malzeme varsa sistem bu malzemeyi içeren tarifleri daha aşağıya çekebilir veya ayara göre tamamen dışarıda bırakabilir.
+P0298 [Balk3] 3.2.5. Sağlık puanı ve tarif revizyonu
+P0299 [] ReciMatch içinde tarifler yalnızca malzeme uyumuna göre sıralanmamıştır. Kullanıcı bir tarifi seçerken tarifin beslenme yönünü de görmek ister. Bu nedenle sistemde temel bir sağlık puanı yaklaşımı kullanılmıştır. Puan hesaplanırken kalori, protein, karbonhidrat, yağ, doymuş yağ, lif, şeker ve sodyum değerleri birlikte değerlendirilir.
+P0300 [] Bu puan tıbbi bir karar mekanizması değildir. Amaç, tarifleri kendi içinde daha anlaşılır biçimde karşılaştırmaktır. Kullanıcı A, B, C ve D harfleri sayesinde tarifin genel dengesini hızlıca görebilir. A sınıfı daha dengeli tarifleri, D sınıfı ise özellikle kalori, yağ, şeker veya sodyum açısından daha dikkatli tüketilmesi gereken tarifleri gösterir.
+P0301 [] Tablo 3.2 Sağlık puanı kalite eşikleri
+P0302 [] Puan Aralığı
+P0303 [] Kalite
+P0304 [] Açıklama
+P0305 [] 80 - 100
+P0306 [] A
+P0307 [] Daha dengeli ve sağlıklı tarif
+P0308 [] 60 - 79
+P0309 [] B
+P0310 [] Genel olarak dengeli tarif
+P0311 [] 40 - 59
+P0312 [] C
+P0313 [] Kontrollü tüketilmesi gereken tarif
+P0314 [] 0 - 39
+P0315 [] D
+P0316 [] Beslenme açısından daha ağır tarif
+P0317 [] Tarif revizyonu tarafında Gemini 2.5 Flash desteği kullanılmaktadır. Kullanıcı bir tarifi daha hafif, daha proteinli veya belirli malzemeler çıkarılmış şekilde görmek istediğinde sistem bu isteği tarifin mevcut bilgileriyle birlikte işler.
+P0318 [] Revizyon sonucu doğrudan asıl tarifin üzerine yazılmaz. Kullanıcıya öneri olarak gösterilir. Kullanıcı isterse bu sonucu kendi özel tarifi olarak kaydedebilir. Bu tercih, orijinal tarif verisinin korunmasını ve kullanıcının kendi ihtiyacına göre yeni bir sürüm oluşturabilmesini sağlar.
+P0319 [Balk3] 3.2.6. Besin değeri çözümleme mimarisinin güncellenmesi
+P0320 [] Projenin ilk sürümlerinde malzeme bazlı besin değerlerinin USDA FoodData Central üzerinden alınması düşünülmüştür. Bu yöntemde Türkçe malzeme adının İngilizceye çevrilmesi, uygun kaydın bulunması, dönen verinin ayrıştırılması ve bu eşleşmenin ayrıca saklanması gerekiyordu. Geliştirme sırasında bu akışın Türkçe malzeme adlarında beklenen kararlılığı vermediği görülmüştür.
+P0321 [] Bu nedenle besin değeri altyapısı sadeleştirilmiş ve iki katmanlı bir yapıya alınmıştır. Sistem önce ingredients tablosundaki yerel besin değeri alanlarını kontrol eder. Eğer malzemeye ait veri varsa bu değer kullanılır. Veri yoksa Gemini 2.5 Flash modelinden yapılandırılmış JSON çıktısı alınır ve sonuç başarılıysa aynı malzeme satırına kaydedilir.
+P0322 [] Güncel yapıda ayrı nutrition tabloları ve USDA eşleştirme tabloları aktif değildir. Besin değerleri ingredients tablosunda tutulan 8 temel alan üzerinden yönetilir. Bu alanlar kalori, protein, karbonhidrat, yağ, doymuş yağ, lif, şeker ve sodyum değerleridir. Böylece tarif hesaplamaları sırasında ek ilişki yüklemeye gerek kalmadan malzeme kaydı üzerinden değerler okunabilir. nutrition_source ve nutrition_confidence alanları bu akışın izlenebilir olmasını sağlar. nutrition_source verinin yerel veritabanından mı, manuel girişten mi, Gemini tahmininden mi yoksa önceki mimariden kalan eski bir kayıttan mı geldiğini gösterir. nutrition_confidence ise bu veriye duyulan güveni 0 ile 1 arasında tutar. Bu yapı, tahmini değerler ile daha güvenilir değerlerin birbirinden ayrılmasına yardımcı olur.
+P0323 [] Gemini burada kesin bir beslenme otoritesi gibi kullanılmamıştır. Eksik malzeme verisini yaklaşık biçimde tamamlayan yardımcı bir kaynak olarak konumlandırılmıştır. Bu nedenle sistemde gösterilen besin değerleri tarifleri karşılaştırma amacı taşır ve sağlık tavsiyesi olarak değerlendirilmemelidir.
+P0324 [Balk2] 3.3. Veritabanı tasarımı
+P0325 [] Veritabanında ilişkisel model kullanılmıştır. Kullanıcılar, tarifler, malzemeler, günlük kayıtlar ve Gemini revizyonları ayrı tablolar üzerinden yönetilir. Bir tarif birden fazla malzeme içerebilir. Aynı malzeme de birden fazla tarifte kullanılabilir. Bu ilişki recipe_ingredients tablosu ile kurulmuştur.
+P0326 [] Güncel sistemde besin değeri verileri için ayrı USDA eşleştirme tabloları kullanılmamaktadır. Önceki mimaride malzeme adlarının İngilizceye çevrilmesi ve USDA üzerinde aranması denenmiştir. Ancak Türkçe malzeme adlarında yaşanan eşleşme belirsizlikleri ve gereksiz tablo bağımlılıkları nedeniyle bu yapı sadeleştirilmiştir.
+P0327 [] Besin değerleri artık ingredients tablosundaki inline kolonlarda tutulur. Sistem önce yerel veritabanındaki değeri kullanır. Eksik kalan malzemeler için Gemini 2.5 Flash modelinden tahmini değer alınır. Bu yaklaşım veri erişimini kolaylaştırmış, tarif hesaplamalarında kullanılan sorguları da daha anlaşılır hale getirmiştir.
+P0328 [Balk3] 3.3.1. Güncel veritabanı tablolarının genel özeti
+P0329 [] Projenin güncel veritabanı yapısı 13 temel tablodan oluşmaktadır. Bu tablolar kullanıcı yönetimi, malzeme yönetimi, tarif kayıtları, sağlıklı tarif ayrımı, favoriler, günlük tüketim kayıtları, e-posta doğrulama ve Gemini revizyon önbelleği gibi işlevleri karşılar.
+P0330 [ResimYazs] Tablo 3.3 Güncel veritabanı tabloları ve görevleri
+P0331 [] Tablo adı
+P0332 [] Görevi
+P0333 [] Users
+P0334 [] Kullanıcı hesap bilgileri, profil verileri ve günlük kalori hedefi
+P0335 [] email_verification_codes
+P0336 [] Kayıt, e-posta doğrulama, şifre sıfırlama ve güvenlik işlemleri için geçici doğrulama kodları
+P0337 [] ingredient_categories
+P0338 [] Malzemelerin kategori bilgisini tutar
+P0339 [] ingredients
+P0340 [] Global ve kullanıcıya özel malzemeleri, ayrıca 8 temel besin değeri alanını saklar
+P0341 [] ingredient_aliases
+P0342 [] Aynı malzemenin farklı yazım biçimlerini eşleştirmek için kullanılır
+P0343 [] recipes
+P0344 [] Tarif adı, açıklama, hazırlık bilgisi, kategori, porsiyon, makro değerler ve sağlık puanı bilgilerini tutar
+P0345 [] recipe_ingredients
+P0346 [] Tarifler ile malzemeler arasındaki çoktan çoğa ilişkiyi, miktar ve birim bilgileriyle birlikte saklar
+P0347 [] healthy_recipes
+P0348 [] Sağlıklı tarif listesine alınan tarifleri ayrı olarak işaretler
+P0349 [] favorites
+P0350 [] Kullanıcıların favoriye aldığı tarifleri saklar
+P0351 [] disliked_ingredients
+P0352 [] Kullanıcının önerilerde görmek istemediği malzemeleri tutar
+P0353 [] owned_ingredients
+P0354 [] Kullanıcının dolabında bulunan malzemeleri saklar
+P0355 [] daily_logs
+P0356 [] Kullanıcının günlük ve haftalık tüketim kayıtlarını, porsiyon ve makro değerlerle birlikte tutar
+P0357 [] revision_cache
+P0358 [] Gemini ile yapılan tarif revizyonlarını aynı istek tekrarlandığında yeniden üretmemek için önbelleğe alır
+P0359 [] Geliştirme ortamındaki örnek veriler teslim öncesinde kontrol edilmiştir. Veritabanı yeniden oluşturulursa bu sayıların değişebileceği unutulmamalıdır.
+P0360 [ResimYazs] Tablo 3.4 Canlı veritabanı örnek kayıt sayıları
+P0361 [] Varlık
+P0362 [] Kayıt sayısı
+P0363 [] Kullanıcı users
+P0364 [] 4
+P0365 [] Malzeme ingredients
+P0366 [] 241
+P0367 [] Tarif recipes
+P0368 [] 484
+P0369 [] Tarif malzeme ilişkisi recipe_ingredients
+P0370 [] 3569
+P0371 [] Malzeme kategorisi ingredient_categories
+P0372 [] 14
+P0373 [] Malzeme alias kaydı ingredient_aliases
+P0374 [] 0
+P0375 [Balk3] 3.3.2. users tablosu
+P0376 [] users tablosu uygulamadaki kullanıcı hesaplarını ve kişiselleştirme için gerekli profil bilgilerini tutar. Kullanıcı kayıt olduktan sonra e-posta, şifre özeti, yaş, cinsiyet, boy, kilo, hedef, aktivite seviyesi, günlük öğün sayısı ve günlük kalori hedefi gibi bilgiler bu tabloda saklanır.
+P0377 [ResimYazs] Tablo 3.5 users tablosu alanları
+P0378 [] Alan
+P0379 [] Tür
+P0380 [] Açıklama
+P0381 [] user_id
+P0382 [] Integer
+P0383 [] Birincil anahtar
+P0384 [] name_surname
+P0385 [] String 100
+P0386 [] Kullanıcının ad soyad bilgisi
+P0387 [] email
+P0388 [] String 100
+P0389 [] Benzersiz e-posta adresi
+P0390 [] password_hash
+P0391 [] String 255
+P0392 [] Hashlenmiş şifre
+P0393 [] age
+P0394 [] Integer
+P0395 [] Kullanıcının yaşı
+P0396 [] gender
+P0397 [] String 20
+P0398 [] Cinsiyet bilgisi
+P0399 [] height_cm
+P0400 [] Integer
+P0401 [] Boy bilgisi
+P0402 [] weight_kg
+P0403 [] Numeric 5,2
+P0404 [] Kilo bilgisi
+P0405 [] objective
+P0406 [] String 50
+P0407 [] Kullanıcının hedefi
+P0408 [] activity
+P0409 [] String 50
+P0410 [] Aktivite düzeyi
+P0411 [] meals
+P0412 [] Integer
+P0413 [] Günlük öğün sayısı
+P0414 [] daily_calorie
+P0415 [] Integer
+P0416 [] Hesaplanan veya girilen günlük kalori hedefi
+P0417 [] created_at
+P0418 [] DateTime
+P0419 [] Kayıt tarihi
+P0420 [] is_verified
+P0421 [] Boolean
+P0422 [] E-posta doğrulama durumu
+P0424 [Balk3] 3.3.3. ingredients tablosu
+P0425 [] ingredients tablosu sistemde kullanılan global ve kullanıcıya özel malzemeleri saklar. Global malzemelerde user_id alanı boş bırakılır. Kullanıcı tarafından eklenen özel malzemelerde ise ilgili kullanıcının kimliği tutulur. Böylece ortak malzeme havuzu ile kişisel malzemeler aynı yapı içinde yönetilebilir.
+P0426 [] Güncel mimaride besin değeri bilgileri de bu tablo üzerinde tutulmaktadır. Önceki yapıda besin değerleri ayrı tablolarla yönetilmeye çalışılmıştır. Son sürümde tarif hesaplamalarını sadeleştirmek için 8 temel besin kolonu doğrudan ingredients tablosuna eklenmiştir.
+P0427 [ResimYazs] Tablo 3.6 ingredients tablosu alanları
+P0428 [] Alan
+P0429 [] Tür
+P0430 [] Açıklama
+P0431 [] ingredient_id
+P0432 [] Integer
+P0433 [] Birincil anahtar
+P0434 [] ingredient_name
+P0435 [] String 100
+P0436 [] Malzeme adı
+P0437 [] user_id
+P0438 [] Integer nullable
+P0439 [] Malzeme kullanıcıya özel ise kullanıcı ID değeri, global ise NULL
+P0440 [] category
+P0441 [] String 50
+P0442 [] Kategori adı
+P0443 [] category_id
+P0444 [] Integer
+P0445 [] ingredient_categories tablosu ile ilişki
+P0446 [] calorie_per_100g
+P0447 [] Float
+P0448 [] 100 gram başına kalori
+P0449 [] protein_per_100g
+P0450 [] Float
+P0451 [] 100 gram başına protein
+P0452 [] carbohydrate_per_100g
+P0453 [] Float
+P0454 [] 100 gram başına karbonhidrat
+P0455 [] fat_per_100g
+P0456 [] Float
+P0457 [] 100 gram başına yağ
+P0458 [] saturated_fat_per_100g
+P0459 [] Float
+P0460 [] 100 gram başına doymuş yağ
+P0461 [] fiber_per_100g
+P0462 [] Float
+P0463 [] 100 gram başına lif
+P0464 [] sugar_per_100g
+P0465 [] Float
+P0466 [] 100 gram başına şeker
+P0467 [] sodium_mg_per_100g
+P0468 [] Float
+P0469 [] 100 gram başına sodyum
+P0470 [] nutrition_source
+P0471 [] String 30
+P0472 [] Besin değeri kaynağı. manual, db, gemini veya usda_legacy
+P0473 [] nutrition_confidence
+P0474 [] Float
+P0475 [] Besin değeri güven skoru
+P0476 [] is_verified
+P0477 [] Boolean
+P0478 [] Malzeme doğrulama durumu
+P0479 [] source
+P0480 [] String 50
+P0481 [] Malzemenin sisteme eklenme kaynağı
+P0483 [] nutrition_source alanı besin değerinin hangi yolla oluştuğunu gösterir. nutrition_confidence alanı ise bu değere duyulan güveni sayısal olarak tutar. Gemini ile gelen değerler yaklaşık niteliktedir. Bu yüzden sistem bu değerleri kullanıcıya kesin sağlık bilgisi olarak değil, tarif karşılaştırmasını kolaylaştıran yardımcı bilgi olarak sunar.
+P0484 [ResimYazs] Tablo 3.7 ingredients tablosundan örnek kayıtlar
+P0485 [] id
+P0486 [] Malzeme
+P0487 [] Kalori
+P0488 [] Protein
+P0489 [] Karbonhidrat
+P0490 [] Yağ
+P0491 [] Kaynak
+P0492 [] 2
+P0493 [] domates
+P0494 [] 18.0
+P0495 [] 0.9
+P0496 [] 3.9
+P0497 [] 0.2
+P0498 [] gemini
+P0499 [] 5
+P0500 [] zeytinyağı
+P0501 [] 884.0
+P0502 [] 0.0
+P0503 [] 0.0
+P0504 [] 100.0
+P0505 [] gemini
+P0506 [] 12
+P0507 [] tuz
+P0508 [] 0.0
+P0509 [] 0.0
+P0510 [] 0.0
+P0511 [] 0.0
+P0512 [] manual
+P0513 [] Örnek kayıtlarda tuz gibi bazı malzemelerin kalori değerinin sıfır olması beklenen bir durumdur. Geliştirme ortamında kalori değeri sıfır kalan kayıtlar ayrıca kontrol edilmiş, su, tuz, soda ve kabartma tozu gibi gerçekçi biçimde sıfır kabul edilebilecek malzemelerden oluştuğu görülmüştür.
+P0514 [Balk3] 3.3.4. recipes tablosu
+P0515 [] recipes tablosu tariflerin temel bilgilerini tutar. Global tariflerde user_id alanı NULL değerindedir. Kullanıcının oluşturduğu özel tariflerde ise user_id ilgili kullanıcıyı gösterir. Bu yapı genel tarif havuzu ile kişisel tariflerin aynı tablo üzerinden yönetilmesini sağlar.
+P0516 [ResimYazs] Tablo 3.8 recipes tablosu alanları
+P0517 [] Alan
+P0518 [] Tür
+P0519 [] Açıklama
+P0520 [] recipe_id
+P0521 [] Integer
+P0522 [] Birincil anahtar
+P0523 [] recipe_name
+P0524 [] String 150
+P0525 [] Tarif adı
+P0526 [] user_id
+P0527 [] Integer nullable
+P0528 [] Kullanıcıya özel tariflerde kullanıcı ID değeri
+P0529 [] source
+P0530 [] String 20
+P0531 [] Tarif kaynağı. yemekcom, yemekcom_diet veya custom
+P0532 [] source_url
+P0533 [] String 500
+P0534 [] Tarifin alındığı kaynak bağlantısı
+P0535 [] recipe_category
+P0536 [] String 50
+P0537 [] Tarif kategorisi
+P0538 [] explanation
+P0539 [] Text
+P0540 [] Tarif açıklaması
+P0541 [] preparation
+P0542 [] Text
+P0543 [] Hazırlanış metni
+P0544 [] cooking_type
+P0545 [] String 50
+P0546 [] Pişirme türü
+P0547 [] cooking_method
+P0548 [] String 50
+P0549 [] Pişirme yöntemi
+P0550 [] total_time_minutes
+P0551 [] Integer
+P0552 [] Toplam süre
+P0553 [] serving
+P0554 [] Integer
+P0555 [] Porsiyon sayısı
+P0556 [] calorie
+P0557 [] Numeric 6,2
+P0558 [] Tarif kalori değeri
+P0559 [] protein
+P0560 [] Numeric 6,2
+P0561 [] Tarif protein değeri
+P0562 [] carbohydrate
+P0563 [] Numeric 6,2
+P0564 [] Tarif karbonhidrat değeri
+P0565 [] fat
+P0566 [] Numeric 6,2
+P0567 [] Tarif yağ değeri
+P0568 [] health_score
+P0569 [] Integer
+P0570 [] 0 ile 100 arası sağlık puanı
+P0571 [] health_grade
+P0572 [] String 1
+P0573 [] A, B, C, D kalite sınıfı
+P0574 [] health_explanation
+P0575 [] Text
+P0576 [] Sağlık puanı açıklaması
+P0577 [] image_url
+P0578 [] String 255
+P0579 [] Tarif görseli
+P0580 [] is_active
+P0581 [] Boolean
+P0582 [] Tarifin aktiflik durumu
+P0584 [ResimYazs] Tablo 3.9 recipes tablosundan örnek kayıtlar
+P0585 [] id
+P0586 [] Tarif
+P0587 [] Kategori
+P0588 [] Porsiyon
+P0589 [] Kalori
+P0590 [] Protein
+P0591 [] Karbonhidrat
+P0592 [] Yağ
+P0593 [] 1085
+P0594 [] Tam Ölçülü Pankek
+P0595 [] Kahvaltı
+P0596 [] 4
+P0597 [] 1040.00
+P0598 [] 24.00
+P0599 [] 180.00
+P0600 [] 24.00
+P0601 [] 1086
+P0602 [] Menemen
+P0603 [] Kahvaltı
+P0604 [] 4
+P0605 [] 592.00
+P0606 [] 20.00
+P0607 [] 20.00
+P0608 [] 48.00
+P0609 [] 1089
+P0610 [] Patatesli Omlet
+P0611 [] Kahvaltı
+P0612 [] 1
+P0613 [] 566.00
+P0614 [] 17.00
+P0615 [] 16.00
+P0616 [] 47.00
+P0618 [Balk3] 3.3.5. recipe_ingredients tablosu
+P0619 [] recipe_ingredients tablosu tarifler ile malzemeler arasındaki ilişkiyi kurar. Bir tarif birden fazla malzeme içerebilir ve aynı malzeme birden fazla tarifte yer alabilir. Bu nedenle ilişki ayrı bir tablo ile modellenmiştir.
+P0620 [ResimYazs] Tablo 3.10 recipe_ingredients tablosu alanları
+P0621 [] Alan
+P0622 [] Tür
+P0623 [] Açıklama
+P0624 [] recipe_ingredient_id
+P0625 [] Integer
+P0626 [] Birincil anahtar
+P0627 [] recipe_id
+P0628 [] Integer
+P0629 [] İlgili tarif
+P0630 [] ingredient_id
+P0631 [] Integer
+P0632 [] İlgili malzeme
+P0633 [] amount
+P0634 [] Numeric 6,2
+P0635 [] Kullanıcının veya scraper çıktısının verdiği miktar
+P0636 [] unit
+P0637 [] String 50
+P0638 [] Ölçü birimi
+P0639 [] miktar_gram
+P0640 [] Numeric 10,2
+P0641 [] Gram cinsinden tahmini miktar
+P0642 [] donusum_kaynagi
+P0643 [] String 100
+P0644 [] Gram dönüşümünün kaynağı
+P0645 [] donusum_guveni
+P0646 [] String 20
+P0647 [] Dönüşüm güven seviyesi
+P0648 [] donusum_notu
+P0649 [] Text
+P0650 [] Dönüşüm ile ilgili açıklama
+P0652 [Balk3] 3.3.6. email_verification_codes tablosu
+P0653 [] Bu tablo kullanıcı kayıt, e-posta doğrulama ve şifre sıfırlama süreçlerinde kullanılan geçici kodları saklar. Kodun kullanım amacı purpose alanında tutulur ve expires_at alanı ile geçerlilik süresi sınırlandırılır.
+P0654 [ResimYazs] Tablo 3.11 email_verification_codes tablosu alanları
+P0655 [] Alan
+P0656 [] Açıklama
+P0657 [] id
+P0658 [] Birincil anahtar
+P0659 [] user_id
+P0660 [] Mevcut kullanıcıya bağlı kodlarda kullanıcı ID değeri
+P0661 [] email
+P0662 [] Doğrulanacak e-posta adresi
+P0663 [] code
+P0664 [] Doğrulama kodu
+P0665 [] purpose
+P0666 [] Kayıt, şifre sıfırlama veya e-posta güncelleme amacı
+P0667 [] expires_at
+P0668 [] Kodun geçerlilik bitiş zamanı
+P0669 [] created_at
+P0670 [] Kodun oluşturulma zamanı
+P0671 [] temp_name, temp_password
+P0672 [] Kayıt sürecinde geçici tutulan bilgiler
+P0674 [Balk3] 3.3.7. ingredient_categories tablosu
+P0675 [] ingredient_categories tablosu malzemeleri sebze, et, süt ürünü, bakliyat ve benzeri kategorilere ayırmak için kullanılır. Kategori bilgisi arayüzde malzeme seçimini kolaylaştırır ve veri düzenini korur.
+P0676 [ResimYazs] Tablo 3.12 ingredient_categories tablosu alanları
+P0677 [] Alan
+P0678 [] Açıklama
+P0679 [] category_id
+P0680 [] Birincil anahtar
+P0681 [] category_name
+P0682 [] Kategori adı
+P0684 [Balk3] 3.3.8. ingredient_aliases tablosu
+P0685 [] Bu tablo aynı malzemenin farklı yazım biçimlerini tek bir malzemeye bağlamak için tasarlanmıştır. Kullanıcı yeşil biber, sivri biber veya karakter farklılıklarıyla giriş yaptığında sistem alias yapısıyla daha doğru eşleşme yapabilir.
+P0686 [ResimYazs] Tablo 3.13 ingredient_aliases tablosu alanları
+P0687 [] Alan
+P0688 [] Açıklama
+P0689 [] id
+P0690 [] Birincil anahtar
+P0691 [] ingredient_id
+P0692 [] Asıl malzeme kaydı
+P0693 [] alias_name
+P0694 [] Kullanıcının yazabileceği alternatif ad
+P0695 [] normalized_alias_name
+P0696 [] Normalize edilmiş alias değeri
+P0697 [] created_at
+P0698 [] Kayıt zamanı
+P0699 [Balk3] 3.3.9. healthy_recipes tablosu
+P0700 [] healthy_recipes tablosu sağlıklı tarifler ekranında gösterilecek tarifleri işaretlemek için kullanılır. Tarif bilgileri recipes tablosunda tutulmaya devam eder. Bu tablo yalnızca sağlıklı liste ile ilişkiyi yönetir.
+P0701 [ResimYazs] Tablo 3.14 healthy_recipes tablosu alanları
+P0702 [] Alan
+P0703 [] Açıklama
+P0704 [] healthy_recipe_id
+P0705 [] Birincil anahtar
+P0706 [] recipe_id
+P0707 [] Sağlıklı listeye alınan tarif
+P0708 [] source
+P0709 [] Kayıt kaynağı
+P0710 [] synced_at
+P0711 [] Senkronizasyon zamanı
+P0713 [Balk3] 3.3.10. favorites tablosu
+P0714 [] favorites tablosu kullanıcının beğendiği ve daha sonra tekrar ulaşmak istediği tarifleri saklar. Favoriye ekleme işlemi tüketim kaydı anlamına gelmediği için günlük kayıt tablosundan ayrı tasarlanmıştır.
+P0715 [ResimYazs] Tablo 3.15 favorites tablosu alanları
+P0716 [] Alan
+P0717 [] Açıklama
+P0718 [] favorite_id
+P0719 [] Favori kaydının birincil anahtarı
+P0720 [] user_id
+P0721 [] Favoriyi oluşturan kullanıcı
+P0722 [] recipe_id
+P0723 [] Favoriye alınan tarif
+P0725 [Balk3] 3.3.11. disliked_ingredients tablosu
+P0726 [] disliked_ingredients tablosu kullanıcının tüketmek istemediği veya önerilerde görmek istemediği malzemeleri tutar. Öneri skoru hesaplanırken bu tabloda yer alan malzemeler için ceza puanı uygulanır.
+P0727 [ResimYazs] Tablo 3.16 disliked_ingredients tablosu alanları
+P0728 [] Alan
+P0729 [] Açıklama
+P0730 [] disliked_id
+P0731 [] Sevilmeyen malzeme kaydının birincil anahtarı
+P0732 [] user_id
+P0733 [] İlgili kullanıcı
+P0734 [] ingredient_id
+P0735 [] Sevilmeyen malzeme
+P0737 [Balk3] 3.3.12. owned_ingredients tablosu
+P0738 [] owned_ingredients tablosu Dolabım bölümünde kullanıcıya ait malzemeleri saklamak için kullanılır. Kullanıcı sık kullandığı malzemeleri burada tutarak öneri sürecinde tekrar seçim yapmak zorunda kalmaz.
+P0739 [ResimYazs] Tablo 3.17 owned_ingredients tablosu alanları
+P0740 [] Alan
+P0741 [] Açıklama
+P0742 [] owned_id
+P0743 [] Dolap kaydının birincil anahtarı
+P0744 [] user_id
+P0745 [] Malzemeyi dolabına ekleyen kullanıcı
+P0746 [] ingredient_id
+P0747 [] Dolapta bulunan malzeme
+P0748 [] added_at
+P0749 [] Kayıt zamanı
+P0751 [Balk3] 3.3.13. daily_logs tablosu
+P0752 [] daily_logs tablosu kullanıcının hangi tarihte, hangi öğünde ve hangi porsiyonla tarif tükettiğini kayıt altına alır. Bu tablo favorilerden ayrıdır çünkü yemeği beğenmek ile gerçekten tüketmek farklı işlemlerdir.
+P0753 [ResimYazs] Tablo 3.18 daily_logs tablosu alanları
+P0754 [] Alan
+P0755 [] Açıklama
+P0756 [] log_id
+P0757 [] Günlük kayıt için birincil anahtar
+P0758 [] user_id
+P0759 [] Kaydı oluşturan kullanıcı
+P0760 [] recipe_id
+P0761 [] Tüketilen tarif
+P0762 [] log_date
+P0763 [] Tüketim tarihi
+P0764 [] meal_type
+P0765 [] Kahvaltı, öğle veya akşam gibi öğün bilgisi
+P0766 [] calorie_intake
+P0767 [] Tüketimden gelen yaklaşık kalori
+P0768 [] serving_count
+P0769 [] Porsiyon miktarı
+P0771 [Balk3] 3.3.14. revision_cache tablosu
+P0772 [] Gemini ile tarif revizyonu dış servise bağlı ve tekrarlandığında maliyet oluşturabilecek bir işlemdir. Aynı tarif için aynı değişiklikler tekrar istendiğinde Geminiye yeniden istek göndermek yerine daha önce alınan cevap revision_cache tablosundan döndürülebilir. Bu tablo performansı artırır ve API kota tüketimini azaltır.
+P0773 [ResimYazs] Tablo 3.19 revision_cache tablosu alanları
+P0774 [] Alan
+P0775 [] Açıklama
+P0776 [] cache_id
+P0777 [] Birincil anahtar
+P0778 [] recipe_id
+P0779 [] Revize edilen tarif
+P0780 [] modifications_hash
+P0781 [] Kullanıcının revizyon isteğinin hash değeri
+P0782 [] response_json
+P0783 [] Gemini tarafından dönen revize tarif JSON cevabı
+P0784 [] created_at
+P0785 [] Önbellek kaydının oluşturulma zamanı
+P0787 [Balk2] 3.4. Tarif verisinin hazırlanması
+P0788 [] Tarif önerilerinin doğru çalışması için verinin düzenli olması gerekir. Bu nedenle tarifler sisteme aktarılırken scraper ve import yapısı kullanılmıştır. Güncel sistemde aktif veri toplama hattı yemek.com ve yemek.com diyet kaynaklarına odaklanmıştır. Normal tarifler yemekcom kaynağı ile, sağlıklı tarif ekranında kullanılan diyet tarifler ise yemekcom_diet kaynağı ile sisteme alınmaktadır.
+P0789 [] Scraper yapısı tarif sayfalarından başlık, açıklama, kategori, pişirme türü, toplam süre, porsiyon, temel makro değerler, malzeme listesi, hazırlanış adımları, görsel bağlantısı ve kaynak URL gibi alanları ayrıştırır. Veriler doğrudan yazılmadan önce servis katmanında işlenir. Bu aşamada kaynak URL kontrol edilir, aynı tarifin tekrar eklenmesi engellenir, malzeme adları normalleştirilir ve uygun malzeme kayıtlarıyla eşleştirilir.
+P0790 [] Önceki geliştirme sürecinde BBC Good Food, EatingWell ve SkinnyTaste gibi İngilizce kaynaklara yönelik scraper denemeleri yapılmıştır. Bu hatlar güncel veritabanında aktif veri üretmediği ve bakım maliyetini artırdığı için temizlenmiştir. Güncel sürümde veri hazırlama kapsamı Türkçe yemek.com kaynaklarıyla sınırlandırılmıştır.
+P0791 [] Geliştirme ortamındaki güncel veri setinde 484 tarif, 241 malzeme ve 3569 tarif malzeme ilişkisi bulunmaktadır. Bu yapı, uygulamanın hazır tarifleri ve kullanıcı tarafından eklenen özel tarifleri aynı öneri sistemi içinde değerlendirmesine imkân tanımaktadır.
+P0792 [Balk2] 3.5. Backend katmanlı mimari ve Gemini besin değeri akışı
+P0793 [] Backend tarafı FastAPI tabanlı olarak geliştirilmiştir. Kodlar tek bir dosyada toplanmamış, router, service, repository ve model katmanlarına ayrılmıştır. Router katmanı HTTP isteklerini karşılar. Service katmanı iş kurallarını yürütür. Repository katmanı veritabanı sorgularını izole eder. Model katmanı ise SQLAlchemy sınıfları ile veritabanındaki tabloları temsil eder.
+P0794 [] Kullanıcı özel tarif eklediğinde frontend ilgili API endpointine istek gönderir. Backend önce isteği router katmanında karşılar. Daha sonra servis katmanı tarif bilgilerini işler, malzemeleri çözer ve repository katmanı üzerinden recipes ile recipe_ingredients tablolarına kayıt yapılır. Bu akış, arayüzden gelen verinin kontrollü biçimde veritabanına aktarılmasını sağlar.
+P0795 [] Güncel besin değeri akışı da aynı katmanlı düzen içinde çalışır. Sistem önce yerel ingredients kaydındaki inline nutrition alanlarını kontrol eder. Yerel veri yoksa Gemini 2.5 Flash modelinden yapılandırılmış JSON formatında yaklaşık değer alınır. Sonuç başarılıysa doğrudan ingredients tablosundaki 8 temel besin alanına yazılır.
+P0796 [] Alembic klasörü güncel tek bilgisayar geliştirme kurulumunda kullanılmamaktadır. Bunun yerine mevcut lokal veritabanının yeni kolonlarla uyumlu kalabilmesi için çalışma zamanında koruyucu kontrol fonksiyonları kullanılmaktadır. Bu fonksiyonlar eksik inline nutrition kolonlarını kontrol eder ve eski lokal veritabanlarının uygulamayla uyumlu çalışmasına yardımcı olur.
+P0797 [ResimYazs] Tablo 3.20 Backend servis dosyaları ve görevleri
+P0798 [] Dosya
+P0799 [] Görev
+P0800 [] app/services/gemini_client.py
+P0801 [] Gemini APIye yapılandırılmış JSON schema ile besin değeri isteği gönderir
+P0802 [] app/services/nutrition_resolver_service.py
+P0803 [] Yerel veritabanı ve Gemini arasında iki katmanlı çözümleme yapar
+P0804 [] app/services/ingredient_resolver_service.py
+P0805 [] Malzeme eşleştirme, yeni malzeme oluşturma ve besin değerini kaydetme işlemlerini yürütür
+P0806 [] app/services/ingredient_nutrition_service.py
+P0807 [] Tekil veya toplu besin değeri tamamlama işlemlerini sağlar
+P0808 [] app/db/database.py
+P0809 [] Eski veritabanlarında eksik inline kolonları çalışma zamanında kontrol eder
+P0810 [] Bu ayrım küçük bir proje için ilk bakışta fazla görünebilir. Ancak proje büyüdükçe hata takibi, yeni endpoint ekleme ve servisleri ayrı ayrı test etme süreci daha kolay hale gelmiştir.
+P0811 [Balk2] 3.6. API yapısı ve güncel uç noktalar
+P0812 [] Uygulamanın frontend ve backend iletişimi REST API yapısı üzerinden sağlanmaktadır. Tüm API yolları /api öneki altında toplanmıştır. Endpointler işlevlerine göre kimlik doğrulama, malzeme yönetimi, tarif işlemleri, Gemini revizyonu ve kullanıcı işlemleri olarak ayrılmıştır.
+P0813 [] Kimlik doğrulama tarafında kayıt, e-posta doğrulama, giriş, şifre sıfırlama ve güvenlik kodu işlemleri bulunmaktadır. Kullanıcı kayıt olduğunda sistem doğrulama kodu üretir ve doğrulama tamamlandıktan sonra hesap aktif hale gelir.
+P0814 [] Malzeme tarafında kategorili malzeme listesi, kullanıcıya özel malzeme oluşturma, Dolabım güncelleme, sevilmeyen malzeme seçimi, manuel besin değeri girişi ve Gemini ile eksik besin değerlerini tamamlama endpointleri yer alır. Tarif tarafında ise tarif listeleme, tarif detayı, malzemeye göre öneri üretme, sağlıklı tarifleri eşitleme, kullanıcı özel tarifi oluşturma, güncelleme ve silme işlemleri bulunmaktadır.
+P0815 [] Gemini revizyon endpointi kullanıcının seçtiği tarifi belirli isteklerle yeniden düzenlemesini sağlar. Revize edilen tarif doğrudan ana tarifi değiştirmez. Kullanıcı isterse bu sonucu kendi özel tarifi olarak kaydedebilir. Kullanıcı işlemleri tarafında profil okuma ve güncelleme, favoriler, günlük kayıtlar ve günlük toplamlar yönetilmektedir.
+P0818 [Balk1] 4. UYGULAMA EKRANLARI VE TESTLER
+P0819 [] Bu bölümde ReciMatch uygulamasının kullanıcı arayüzleri ve ekranlar arası kullanım akışı açıklanmıştır. Ekran görüntülerinin altında yalnızca şekil numarası ve kısa başlık verilmiştir. Ekranların hangi amaçla kullanıldığı metin içinde açıklanmıştır.
+P0820 [ResimYazs] Tablo 4.1 Uygulama ekranları ve temel işlevleri
+P0821 [] Ekran
+P0822 [] Temel İşlev
+P0823 [] Kullanıcıya Sağladığı Katkı
+P0824 [] Register ve Login
+P0825 [] Sisteme kayıt ve giriş
+P0826 [] Kişisel verilerin kullanıcı bazında ayrılması
+P0827 [] VerifyEmail
+P0828 [] E-posta doğrulama
+P0829 [] Hesap güvenliği
+P0830 [] ProfileSetup
+P0831 [] Profil ve kalori hedefi
+P0832 [] Kişiselleştirme
+P0833 [] IngredientSelection
+P0834 [] Malzeme seçimi
+P0835 [] Tarif önerisi almayı kolaylaştırma
+P0836 [] Recommendations
+P0837 [] Tarif önerisi listesi
+P0838 [] Uygun tariflere hızlı ulaşım
+P0839 [] RecipeDetail
+P0840 [] Tarif detayı ve besin değerleri
+P0841 [] Bilinçli karar verme
+P0842 [] Revize Et
+P0843 [] Yapay zeka ile tarif düzenleme
+P0844 [] Kişisel uyarlanabilirlik
+P0845 [] Favorites
+P0846 [] Favori tarifler
+P0847 [] Tekrar erişim kolaylığı
+P0848 [] DailyLogs
+P0849 [] Günlük yemek kayıtları
+P0850 [] Beslenme geçmişi takibi
+P0852 [Balk2] 4.1. Giriş ve kayıt ekranları
+P0853 [] Giriş ekranı kullanıcının ReciMatch hesabına erişmesini sağlar. Kullanıcı e-posta ve şifre bilgilerini girerek sisteme giriş yapar. Şifresini hatırlamayan kullanıcılar için şifre sıfırlama ekranı hazırlanmıştır. Bu iki ekran uygulamanın kimlik doğrulama akışının başlangıç noktasıdır.
+P0855 [ResimYazs] Şekil 4.1 Giriş Ekranı
+P0857 [ResimYazs] Şekil 4.2 Şifremi Unuttum Ekranı
+P0858 [] Kayıt ekranında kullanıcı temel hesap bilgilerini girerek sisteme kayıt olur. Kayıt işleminden sonra mail onay ekranı ile kullanıcının e-posta adresini doğrulaması istenir. Bu yapı sistemde kayıtlı kullanıcıların doğrulanmış hesaplar üzerinden işlem yapmasını sağlar.
+P0860 [ResimYazs] Şekil 4.3 Kayıt Ekranı
+P0862 [ResimYazs] Şekil 4.4 E-posta Onay Ekranı
+P0863 [Balk2] 4.2. Profil ve malzeme tercihi ekranları
+P0864 [] Profil oluşturma ekranı, kullanıcının kişisel bilgilerini ve günlük kalori hedefini sisteme girmesi için hazırlanmıştır. Bu bilgiler uygulamanın kullanıcıya daha kişisel bir deneyim sunmasına yardımcı olur. Sevilmeyen malzeme seçimi ekranı ise kullanıcının önerilerde görmek istemediği malzemeleri belirlemesini sağlar.
+P0866 [ResimYazs] Şekil 4.5 Profil Oluşturma Ekranı
+P0868 [ResimYazs] Şekil 4.6 Sevilmeyen Malzeme Seçimi Ekranı
+P0869 [Balk2] 4.3. Ana menü ve Dolabım ekranları
+P0870 [] Ana menü ekranı kullanıcının uygulama içindeki temel işlemlere hızlı erişmesini sağlar. Bu ekranda tarif önerileri, günlük kalori takibi, favoriler, dolap bilgileri ve farklı modüllere geçiş alanları yer almaktadır. Uygulamada açık ve karanlık tema desteği bulunduğundan ana menünün iki farklı görünümü hazırlanmıştır.
+P0872 [ResimYazs] Şekil 4.7 Ana Menü Ekranı
+P0874 [ResimYazs] Şekil 4.8 Ana Menü Karanlık Tema Ekranı
+P0875 [] Dolabım ekranı kullanıcının elinde bulunan veya sık kullandığı malzemeleri saklaması için oluşturulmuştur. Bu ekran sayesinde kullanıcı öneri alırken her defasında aynı malzemeleri tekrar seçmek zorunda kalmaz ve sistem dolap malzemelerini öneri skoruna dahil edebilir.
+P0877 [ResimYazs] Şekil 4.9 Dolabım Ekranı
+P0878 [Balk2] 4.4. Tarif listeleme ve sağlıklı tarifler ekranları
+P0879 [] Tarifler ekranı sistemde kayıtlı tariflerin kullanıcıya kart yapısı ile gösterildiği bölümdür. Kullanıcı tarif kartları üzerinden tarif adı, görsel, kategori, kalori ve kalite bilgisi gibi özet bilgilere ulaşabilir. Sağlıklı tarifler ekranı ise daha dengeli olarak değerlendirilen tariflere erişimi kolaylaştırmak için hazırlanmıştır.
+P0881 [ResimYazs] Şekil 4.10 Tarifler Ekranı
+P0883 [ResimYazs] Şekil 4.11 Sağlıklı Tarifler Ekranı
+P0884 [Balk2] 4.5. Günlük kayıt, favoriler ve profil ekranları
+P0885 [] Günlük ve haftalık kayıt ekranı kullanıcının tükettiği yemekleri öğün ve tarih bilgisiyle takip etmesini sağlar. Favoriler ekranı ise kullanıcının daha sonra tekrar bakmak istediği tarifleri saklar. Bu iki ekran farklı amaçlara hizmet ettiği için veritabanında ayrı tablolar ile desteklenmiştir.
+P0887 [ResimYazs] Şekil 4.12 Günlük ve Haftalık Kayıt Ekranı
+P0889 [ResimYazs] Şekil 4.13 Favoriler Ekranı
+P0890 [] Profil ekranı kullanıcının kişisel bilgilerini, hedeflerini ve hesap ayarlarını görüntülediği bölümdür. Bu ekran uygulamanın kişiselleştirme tarafını destekler ve kullanıcının kendi bilgilerini düzenlemesine olanak sağlar.
+P0892 [ResimYazs] Şekil 4.14 Profil Ekranı
+P0893 [Balk2] 4.6. Tarif öneri ve tarif detay ekranları
+P0894 [] Tarif önerme akışında kullanıcı önce elindeki malzemeleri seçer. Sistem bu seçilen malzemeleri tariflerdeki malzemelerle karşılaştırır ve en yüksek eşleşme oranına sahip tarifleri üstte gösterir. Eşleşme ekranı kullanıcının hangi tariflerin mevcut malzemelerine daha uygun olduğunu hızlıca görmesini sağlar.
+P0896 [ResimYazs] Şekil 4.15 Tarif Önerme Malzeme Seçimi Ekranı
+P0898 [ResimYazs] Şekil 4.16 Tarif Önerme Eşleşme Ekranı
+P0899 [] Tarif içerik ekranı seçilen tarifin detaylarının gösterildiği bölümdür. Bu ekranda tarifin görseli, malzemeleri, hazırlanış bilgileri, kalori değeri, makro besin bilgileri ve sağlık puanı yer alır. Kullanıcı bu ekrandan tarifi favorilerine ekleyebilir veya günlük kayda alabilir.
+P0901 [ResimYazs] Şekil 4.17 Tarif İçerik Ekranı
+P0902 [Balk2] 4.7. Testler ve gözlemler
+P0903 [] Testlerde önce temel kullanıcı işlemleri denenmiştir. Kayıt olma, e-posta doğrulama, giriş yapma, profil düzenleme, malzeme seçme, tarif önerisi alma, tarif detayına bakma, favoriye ekleme, sevilmeyen malzeme ekleme ve günlük kayıt oluşturma adımları kontrol edilmiştir.
+P0904 [] Kod tarafında eski USDA tabanlı besin değeri yapısının aktif backend akışından kaldırıldığı doğrulanmıştır. IngredientNutritionValue ve IngredientUsdaMapping gibi eski model sınıfları kullanılmamaktadır. Health score hesabında da ayrı nutrition ilişkisi yerine ingredients tablosundaki inline besin değeri kolonları kullanılmaktadır.
+P0905 [] Besin değeri hesaplamasında sistemin 8 temel alanla çalıştığı kontrol edilmiştir. Bu alanlar kalori, protein, karbonhidrat, yağ, doymuş yağ, lif, şeker ve sodyum değerleridir. Önceki sürümde düşünülen bazı ek mikro besin kolonları sadeleştirme kapsamında aktif sağlık puanı hesabına dahil edilmemiştir.
+P0906 [] Veritabanı bütünlük kontrollerinde sistemde 13 temel tablo bulunduğu, tarif, malzeme ve tarif malzeme ilişkilerinin beklenen şekilde kayıtlı olduğu görülmüştür. Geliştirme ortamında 484 tarif, 241 malzeme, 3569 tarif malzeme ilişkisi ve 14 malzeme kategorisi bulunmaktadır.
+P0907 [] Scraper tarafında yalnızca yemek.com ve yemek.com diyet hattının aktif olduğu doğrulanmıştır. BBC Good Food, EatingWell ve SkinnyTaste kaynaklarına ait eski dosyalar güncel backend referanslarından kaldırılmıştır. Böylece aktif veri kaynağı Türkçe tarif yapısıyla daha uyumlu hale getirilmiştir.
+P0908 [] Sistemde bilinen bazı kısıtlar da vardır. Gemini 2.5 Flash dış servis olduğu için ücretsiz kullanımda kota sınırına takılabilir. Bu durumda backend kullanıcıya uygun hata kodu döndürür. Gemini tarafından üretilen besin değerleri yaklaşık değerlerdir. Sağlık puanı da tıbbi öneri değil, tarifleri karşılaştırmaya yardımcı olan bir göstergedir.
+P0910 [Balk1] 5. SONUÇ ve TARTIŞMA
+P0911 [] Bu çalışma sonunda ReciMatch, kullanıcının elindeki malzemelerden yola çıkarak tarif önerisi sunan ve bu önerileri temel beslenme değerleriyle destekleyen çalışan bir web uygulaması haline gelmiştir. Kullanıcı malzeme seçebilir, sevmediği malzemeleri sisteme ekleyebilir, beğendiği tarifleri saklayabilir, tükettiği yemekleri günlük kayıt olarak tutabilir ve Revize Et özelliği ile seçtiği tarifi kendi ihtiyacına göre yeniden düzenletebilir.
+P0912 [] Proje ilk aşamada malzemeye göre tarif bulma fikriyle başlamıştır. Geliştirme ilerledikçe kullanıcı yönetimi, Dolabım, favoriler, günlük kayıtlar, sağlık puanı, Gemini destekli besin değeri tamamlama ve tarif revizyonu gibi modüller eklenmiştir. Bu süreçte veritabanının düzenli tutulması ve backend kodlarının katmanlara ayrılması projenin sürdürülebilirliği açısından önemli olmuştur.
+P0913 [Balk2] 5.1. Projenin değerlendirilmesi
+P0914 [] ReciMatch’in güçlü yönlerinden biri katmanlı mimari yapısıdır. Router, service, repository ve model katmanları birbirinden ayrılmıştır. Bu ayrım geliştirme sırasında bir bölümde yapılan değişikliğin diğer bölümleri daha az etkilemesini sağlamıştır. Veritabanı yapısı da bu açıdan önemlidir. Tarif ve malzeme ilişkisi ayrı tabloyla kurulmuş, favoriler ve günlük kayıtlar farklı anlam taşıdığı için ayrı tutulmuştur.
+P0915 [] Çalışmanın teknik açıdan en belirgin kazanımlarından biri besin değeri altyapısının sadeleştirilmesidir. İlk mimaride USDA tabanlı çeviri ve eşleştirme yaklaşımı değerlendirilmiştir. Ancak Türkçe malzeme adlarında oluşan belirsizlikler ve ek tablo bağımlılıkları nedeniyle güncel sistem Gemini destekli ve inline nutrition kolonlarına dayalı bir yapıya geçirilmiştir. Bu değişiklik servis katmanını sadeleştirmiş ve tarif hesaplamalarının daha doğrudan yapılmasını sağlamıştır.
+P0916 [] Bir diğer kazanım scraper kapsamının sadeleştirilmesidir. Güncel sistemde aktif veri kaynağı yemek.com ve yemek.com diyet hattı ile sınırlandırılmıştır. Bu karar Türkçe malzeme normalizasyonunu güçlendirmiş ve aktif olmayan İngilizce scraper hatlarının bakım yükünü ortadan kaldırmıştır.
+P0917 [] Sağlık puanı ve Revize Et özellikleri uygulamaya ek bir değerlendirme ve kişiselleştirme katmanı kazandırmıştır. Kullanıcı yalnızca tarifin yapılabilir olup olmadığını değil, genel beslenme dengesini de görebilir. Ayrıca seçtiği tarifi kendi ihtiyacına göre yeniden düzenletebilir.
+P0918 [Balk2] 5.2. Sınırlılıklar ve geliştirme önerileri
+P0919 [] Projenin bazı sınırlılıkları bulunmaktadır. İlk sınırlılık tarif verileridir. Aynı malzeme farklı kaynaklarda farklı şekilde yazılabilir ve ölçü birimleri her zaman aynı kesinlikte olmayabilir. Bu nedenle alias yapısı ve gram dönüşümü kullanılmıştır. Yine de her tarif için yüzde yüz doğru besin değeri üretmek pratikte zordur.
+P0920 [] Gemini tarafından üretilen besin değerleri yaklaşık niteliktedir. Bu değerler tarifleri karşılaştırmaya yardımcı olur ancak tıbbi kesinlik taşımaz. Benzer şekilde sağlık puanı da kullanıcının sağlık geçmişini, alerjilerini veya özel diyet ihtiyacını dikkate alan profesyonel bir değerlendirme değildir.
+P0921 [] Dış servis kullanımı da ayrı bir sınırlılıktır. Gemini 2.5 Flash kota, bağlantı ve yanıt süresi gibi durumlara bağlı çalışır. Bu nedenle sistemde yerel veri öncelikli kullanılmış, aynı revizyon isteğinin tekrar üretilmesini azaltmak için revision_cache yapısı eklenmiştir.
+P0922 [] İleride sistem daha gelişmiş hale getirilebilir. Kullanıcının favorileri, yediği tarifler ve sık seçtiği malzemeler incelenerek daha kişisel öneriler sunulabilir. Alışveriş listesi, haftalık menü planı, mobil uygulama, grafiklerle beslenme takibi, admin paneli ve kullanıcı yorumları gibi özellikler sonraki sürümlerde değerlendirilebilir. Daha geniş ve doğrulanmış besin veri setleriyle çalışmak da sağlık puanının güvenilirliğini artırabilir.
+P0925 [Balk1] Kaynakça
+P0926 [Kaynaka] Altundağ, Ö. Ö. (2025). Günümüz Yapay Zeka Teknolojileri ile Menü Planlaması ve Besin Öğeleri Analizi: ChatGPT Tabanlı Bir Yaklaşım. Çukurova Üniversitesi Sosyal Bilimler Enstitüsü Dergisi, 16-35. doi:10.35379/cusosbil.1642390
+P0927 [Kaynaka] Bondevik, J. N., Bennin, K. E., Babur, Ö., & Ersch, C. (2024). A systematic review on food recommender systems. Expert Systems with Applications, 122166. doi:10.1016/j.eswa.2023.122166
+P0928 [Kaynaka] Budak, H., & Gümüştaş, E. (2022). Kişiselleştirilmiş Ürün Öneri Sistemi için Kullanıcı Bazlı İşbirlikçi Filtreleme ve Kümeleme Kullanan Hibrit Bir Yaklaşım. İstanbul Ticaret Üniversitesi Sosyal Bilimler Dergisi, 21(43), 253-268. doi:10.46928/iticusbe.1055162
+P0929 [Kaynaka] FastAPI. (tarih yok). FastAPI documentation. FastAPI: https://fastapi.tiangolo.com/ adresinden alındı
+P0930 [Kaynaka] Google. (tarih yok). Gemini API documentation. Google AI for Developers: https://ai.google.dev/gemini-api/docs adresinden alındı
+P0931 [Kaynaka] Group, P. G. (tarih yok). PostgreSQL documentation. PostgreSQL: https://www.postgresql.org/docs/ adresinden alındı
+P0932 [Kaynaka] Hacıoğlu, T., & Güneş, A. (2019). Çok Katmanlı Çok Kullanıcılı Web Sistemlerinde Performans Analizi ve Bir Uygulama. Engineering Sciences (NWSAENS), 88-103. doi:10.12739/NWSA.2019.14.3.1A0434
+P0933 [Kaynaka] MyFitnessPal. (tarih yok). Nutrition tracking for real life. MyFitnessPal: https://www.myfitnesspal.com/ adresinden alındı
+P0934 [Kaynaka] Rodrigues, M. S., Oliveira, A., & Fidalgo, F. (2023). RecipeIS: Recipe recommendation system based on recognition of food ingredients. Applied Sciences, 13(13), 7880. doi:10.3390/app13137880
+P0935 [Kaynaka] Source, M. O. (tarih yok). React documentation. React: https://react.dev/ adresinden alındı
+P0936 [Kaynaka] SQLAlchemy. (tarih yok). SQLAlchemy documentation. SQLAlchemy: https://docs.sqlalchemy.org/ adresinden alındı
+P0937 [Kaynaka] SuperCook. (tarih yok). SuperCook zero waste recipe generator. SuperCook: https://www.supercook.com/ adresinden alındı
+P0938 [Kaynaka] T.C. Sağlık Bakanlığı Halk Sağlığı Genel Müdürlüğü. (2022). Türkiye Beslenme Rehberi (TÜBER) 2022. Ankara: T.C. Sağlık Bakanlığı Halk Sağlığı Genel Müdürlüğü.
+P0939 [Kaynaka] U.S. Department of Agriculture and U.S. Department of Health and Human Services. (2020). Dietary Guidelines for Americans, 2020-2025. U.S. Department of Agriculture and U.S. Department of Health and Human Services.
+P0940 [Kaynaka] U.S. Department of Agriculture, Agricultural Research Service. (tarih yok). FoodData Central. USDA FoodData Central: https://fdc.nal.usda.gov/ adresinden alındı
+P0941 [Kaynaka] Ülker, İ., & Ayyıldız, F. (2021). Artificial intelligence applications in nutrition and dietetics. Journal of Intelligent Systems with Applications, 125-127. doi:10.54856/jiswa.202112175
+P0942 [Kaynaka] Yemek.com. (tarih yok). Yemek tarifleri. Yemek.com: https://www.yemek.com/ adresinden alındı
+P0943 [Kaynaka] Yummly. (tarih yok). The Yummly app introduces 3 new features to simplify mealtime inspiration and planning. PR Newswire: https://www.prnewswire.com/news-releases/the-yummly-app-introduces-3-new-features-to-simplify-mealtime-inspiration--planning-301943590.html adresinden alındı
+P0945 [Balk1] EKLER
+P0946 [Balk2] EK-1: Gemini ile besin değeri alma kod parçası
+P0947 [] Bu kod parçası Gemini tarafından dönmesi beklenen yapılandırılmış JSON cevabının temel şemasını göstermektedir. Güncel şemada 8 temel besin değeri alanı kullanılır.
+P0949 [] Şekil E.1. Gemini ile besin değeri alma kod parçası
+P0950 [Balk2] EK-2: İki katmanlı besin değeri çözümleme kod parçası
+P0951 [] Bu kodda sistem önce yerel veritabanını kontrol eder. Yerel veri bulunamazsa Gemini çağrısı yapılır.
+P0953 [] Şekil E.2. Yerel veritabanı ve Gemini tabanlı besin değeri çözümleme akışı
+P0954 [Balk2] EK-3: Sağlık puanı hesaplama kod parçası
+P0955 [] Bu ek sağlık puanının 8 temel besin alanı üzerinden hesaplandığı kod bölümünü göstermelidir. Kod parçası proje deposundaki güncel health score fonksiyonundan alınmalıdır.
+P0957 [] Şekil E.3. Sağlık puanı hesaplama kod parçası
+P0959 [Balk2] EK-4: Tarif öneri skoru hesaplama kod parçası
+P0960 [] Bu ek seçili malzemeler, Dolabım bilgisi, sevilmeyen malzemeler ve eksik malzeme cezası üzerinden çalışan öneri skoru bölümünü göstermelidir.
+P0962 [] Şekil E.4. Tarif öneri skoru hesaplama kod parçası
+P0964 [Balk2] EK-5: Gemini tarif revizyonu ve revision cache kod parçası
+P0965 [] Bu ek aynı tarif ve aynı revizyon isteği için Gemini çağrısını tekrar etmemek amacıyla kullanılan önbellek yapısını göstermelidir.
+P0967 [] Şekil E.5. Gemini tarif revizyonu
+
+--- TABLE 1 ---
+Uygulama | Temel Odak | Güçlü Yön | ReciMatch ile Farkı
+Yummly | Kişiselleştirilmiş tarif keşfi | Filtreleme, yemek planlama, tarif kaydetme | ReciMatch eldeki malzeme, sağlık puanı ve günlük kayıt yapısını birlikte kullanır
+MyFitnessPal | Kalori ve makro takibi | Geniş besin veritabanı, günlük takip, hedef yönetimi | ReciMatch takipten önce tarif önerisi üretir ve tarifi malzeme uyumuna göre sıralar
+SuperCook | Evdeki malzemeye göre tarif bulma | Malzeme bazlı arama mantığı | ReciMatch sevilmeyen malzeme, Dolabım, sağlık puanı ve yapay zeka revizyonunu ekler
+ReciMatch | Malzeme bazlı tarif ve beslenme desteği | Öneri, takip, sağlık puanı ve revizyonun tek uygulamada olması | Bitirme projesi kapsamında geliştirilen özgün sistemdir
+
+--- TABLE 2 ---
+Puan Aralığı | Kalite | Açıklama
+80 - 100 | A | Daha dengeli ve sağlıklı tarif
+60 - 79 | B | Genel olarak dengeli tarif
+40 - 59 | C | Kontrollü tüketilmesi gereken tarif
+0 - 39 | D | Beslenme açısından daha ağır tarif
+
+--- TABLE 3 ---
+Tablo adı | Görevi
+Users | Kullanıcı hesap bilgileri, profil verileri ve günlük kalori hedefi
+email_verification_codes | Kayıt, e-posta doğrulama, şifre sıfırlama ve güvenlik işlemleri için geçici doğrulama kodları
+ingredient_categories | Malzemelerin kategori bilgisini tutar
+ingredients | Global ve kullanıcıya özel malzemeleri, ayrıca 8 temel besin değeri alanını saklar
+ingredient_aliases | Aynı malzemenin farklı yazım biçimlerini eşleştirmek için kullanılır
+recipes | Tarif adı, açıklama, hazırlık bilgisi, kategori, porsiyon, makro değerler ve sağlık puanı bilgilerini tutar
+recipe_ingredients | Tarifler ile malzemeler arasındaki çoktan çoğa ilişkiyi, miktar ve birim bilgileriyle birlikte saklar
+healthy_recipes | Sağlıklı tarif listesine alınan tarifleri ayrı olarak işaretler
+favorites | Kullanıcıların favoriye aldığı tarifleri saklar
+disliked_ingredients | Kullanıcının önerilerde görmek istemediği malzemeleri tutar
+owned_ingredients | Kullanıcının dolabında bulunan malzemeleri saklar
+daily_logs | Kullanıcının günlük ve haftalık tüketim kayıtlarını, porsiyon ve makro değerlerle birlikte tutar
+revision_cache | Gemini ile yapılan tarif revizyonlarını aynı istek tekrarlandığında yeniden üretmemek için önbelleğe alır
+
+--- TABLE 4 ---
+Varlık | Kayıt sayısı
+Kullanıcı users | 4
+Malzeme ingredients | 241
+Tarif recipes | 484
+Tarif malzeme ilişkisi recipe_ingredients | 3569
+Malzeme kategorisi ingredient_categories | 14
+Malzeme alias kaydı ingredient_aliases | 0
+
+--- TABLE 5 ---
+Alan | Tür | Açıklama
+user_id | Integer | Birincil anahtar
+name_surname | String 100 | Kullanıcının ad soyad bilgisi
+email | String 100 | Benzersiz e-posta adresi
+password_hash | String 255 | Hashlenmiş şifre
+age | Integer | Kullanıcının yaşı
+gender | String 20 | Cinsiyet bilgisi
+height_cm | Integer | Boy bilgisi
+weight_kg | Numeric 5,2 | Kilo bilgisi
+objective | String 50 | Kullanıcının hedefi
+activity | String 50 | Aktivite düzeyi
+meals | Integer | Günlük öğün sayısı
+daily_calorie | Integer | Hesaplanan veya girilen günlük kalori hedefi
+created_at | DateTime | Kayıt tarihi
+is_verified | Boolean | E-posta doğrulama durumu
+
+--- TABLE 6 ---
+Alan | Tür | Açıklama
+ingredient_id | Integer | Birincil anahtar
+ingredient_name | String 100 | Malzeme adı
+user_id | Integer nullable | Malzeme kullanıcıya özel ise kullanıcı ID değeri, global ise NULL
+category | String 50 | Kategori adı
+category_id | Integer | ingredient_categories tablosu ile ilişki
+calorie_per_100g | Float | 100 gram başına kalori
+protein_per_100g | Float | 100 gram başına protein
+carbohydrate_per_100g | Float | 100 gram başına karbonhidrat
+fat_per_100g | Float | 100 gram başına yağ
+saturated_fat_per_100g | Float | 100 gram başına doymuş yağ
+fiber_per_100g | Float | 100 gram başına lif
+sugar_per_100g | Float | 100 gram başına şeker
+sodium_mg_per_100g | Float | 100 gram başına sodyum
+nutrition_source | String 30 | Besin değeri kaynağı. manual, db, gemini veya usda_legacy
+nutrition_confidence | Float | Besin değeri güven skoru
+is_verified | Boolean | Malzeme doğrulama durumu
+source | String 50 | Malzemenin sisteme eklenme kaynağı
+
+--- TABLE 7 ---
+id | Malzeme | Kalori | Protein | Karbonhidrat | Yağ | Kaynak
+2 | domates | 18.0 | 0.9 | 3.9 | 0.2 | gemini
+5 | zeytinyağı | 884.0 | 0.0 | 0.0 | 100.0 | gemini
+12 | tuz | 0.0 | 0.0 | 0.0 | 0.0 | manual
+
+--- TABLE 8 ---
+Alan | Tür | Açıklama
+recipe_id | Integer | Birincil anahtar
+recipe_name | String 150 | Tarif adı
+user_id | Integer nullable | Kullanıcıya özel tariflerde kullanıcı ID değeri
+source | String 20 | Tarif kaynağı. yemekcom, yemekcom_diet veya custom
+source_url | String 500 | Tarifin alındığı kaynak bağlantısı
+recipe_category | String 50 | Tarif kategorisi
+explanation | Text | Tarif açıklaması
+preparation | Text | Hazırlanış metni
+cooking_type | String 50 | Pişirme türü
+cooking_method | String 50 | Pişirme yöntemi
+total_time_minutes | Integer | Toplam süre
+serving | Integer | Porsiyon sayısı
+calorie | Numeric 6,2 | Tarif kalori değeri
+protein | Numeric 6,2 | Tarif protein değeri
+carbohydrate | Numeric 6,2 | Tarif karbonhidrat değeri
+fat | Numeric 6,2 | Tarif yağ değeri
+health_score | Integer | 0 ile 100 arası sağlık puanı
+health_grade | String 1 | A, B, C, D kalite sınıfı
+health_explanation | Text | Sağlık puanı açıklaması
+image_url | String 255 | Tarif görseli
+is_active | Boolean | Tarifin aktiflik durumu
+
+--- TABLE 9 ---
+id | Tarif | Kategori | Porsiyon | Kalori | Protein | Karbonhidrat | Yağ
+1085 | Tam Ölçülü Pankek | Kahvaltı | 4 | 1040.00 | 24.00 | 180.00 | 24.00
+1086 | Menemen | Kahvaltı | 4 | 592.00 | 20.00 | 20.00 | 48.00
+1089 | Patatesli Omlet | Kahvaltı | 1 | 566.00 | 17.00 | 16.00 | 47.00
+
+--- TABLE 10 ---
+Alan | Tür | Açıklama
+recipe_ingredient_id | Integer | Birincil anahtar
+recipe_id | Integer | İlgili tarif
+ingredient_id | Integer | İlgili malzeme
+amount | Numeric 6,2 | Kullanıcının veya scraper çıktısının verdiği miktar
+unit | String 50 | Ölçü birimi
+miktar_gram | Numeric 10,2 | Gram cinsinden tahmini miktar
+donusum_kaynagi | String 100 | Gram dönüşümünün kaynağı
+donusum_guveni | String 20 | Dönüşüm güven seviyesi
+donusum_notu | Text | Dönüşüm ile ilgili açıklama
+
+--- TABLE 11 ---
+Alan | Açıklama
+id | Birincil anahtar
+user_id | Mevcut kullanıcıya bağlı kodlarda kullanıcı ID değeri
+email | Doğrulanacak e-posta adresi
+code | Doğrulama kodu
+purpose | Kayıt, şifre sıfırlama veya e-posta güncelleme amacı
+expires_at | Kodun geçerlilik bitiş zamanı
+created_at | Kodun oluşturulma zamanı
+temp_name, temp_password | Kayıt sürecinde geçici tutulan bilgiler
+
+--- TABLE 12 ---
+Alan | Açıklama
+category_id | Birincil anahtar
+category_name | Kategori adı
+
+--- TABLE 13 ---
+Alan | Açıklama
+id | Birincil anahtar
+ingredient_id | Asıl malzeme kaydı
+alias_name | Kullanıcının yazabileceği alternatif ad
+normalized_alias_name | Normalize edilmiş alias değeri
+created_at | Kayıt zamanı
+
+--- TABLE 14 ---
+Alan | Açıklama
+healthy_recipe_id | Birincil anahtar
+recipe_id | Sağlıklı listeye alınan tarif
+source | Kayıt kaynağı
+synced_at | Senkronizasyon zamanı
+
+--- TABLE 15 ---
+Alan | Açıklama
+favorite_id | Favori kaydının birincil anahtarı
+user_id | Favoriyi oluşturan kullanıcı
+recipe_id | Favoriye alınan tarif
+
+--- TABLE 16 ---
+Alan | Açıklama
+disliked_id | Sevilmeyen malzeme kaydının birincil anahtarı
+user_id | İlgili kullanıcı
+ingredient_id | Sevilmeyen malzeme
+
+--- TABLE 17 ---
+Alan | Açıklama
+owned_id | Dolap kaydının birincil anahtarı
+user_id | Malzemeyi dolabına ekleyen kullanıcı
+ingredient_id | Dolapta bulunan malzeme
+added_at | Kayıt zamanı
+
+--- TABLE 18 ---
+Alan | Açıklama
+log_id | Günlük kayıt için birincil anahtar
+user_id | Kaydı oluşturan kullanıcı
+recipe_id | Tüketilen tarif
+log_date | Tüketim tarihi
+meal_type | Kahvaltı, öğle veya akşam gibi öğün bilgisi
+calorie_intake | Tüketimden gelen yaklaşık kalori
+serving_count | Porsiyon miktarı
+
+--- TABLE 19 ---
+Alan | Açıklama
+cache_id | Birincil anahtar
+recipe_id | Revize edilen tarif
+modifications_hash | Kullanıcının revizyon isteğinin hash değeri
+response_json | Gemini tarafından dönen revize tarif JSON cevabı
+created_at | Önbellek kaydının oluşturulma zamanı
+
+--- TABLE 20 ---
+Dosya | Görev
+app/services/gemini_client.py | Gemini APIye yapılandırılmış JSON schema ile besin değeri isteği gönderir
+app/services/nutrition_resolver_service.py | Yerel veritabanı ve Gemini arasında iki katmanlı çözümleme yapar
+app/services/ingredient_resolver_service.py | Malzeme eşleştirme, yeni malzeme oluşturma ve besin değerini kaydetme işlemlerini yürütür
+app/services/ingredient_nutrition_service.py | Tekil veya toplu besin değeri tamamlama işlemlerini sağlar
+app/db/database.py | Eski veritabanlarında eksik inline kolonları çalışma zamanında kontrol eder
+
+--- TABLE 21 ---
+Ekran | Temel İşlev | Kullanıcıya Sağladığı Katkı
+Register ve Login | Sisteme kayıt ve giriş | Kişisel verilerin kullanıcı bazında ayrılması
+VerifyEmail | E-posta doğrulama | Hesap güvenliği
+ProfileSetup | Profil ve kalori hedefi | Kişiselleştirme
+IngredientSelection | Malzeme seçimi | Tarif önerisi almayı kolaylaştırma
+Recommendations | Tarif önerisi listesi | Uygun tariflere hızlı ulaşım
+RecipeDetail | Tarif detayı ve besin değerleri | Bilinçli karar verme
+Revize Et | Yapay zeka ile tarif düzenleme | Kişisel uyarlanabilirlik
+Favorites | Favori tarifler | Tekrar erişim kolaylığı
+DailyLogs | Günlük yemek kayıtları | Beslenme geçmişi takibi
