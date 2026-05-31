@@ -1,6 +1,3 @@
-"""
-Kullanıcı (User) veri erişim katmanı.
-"""
 from sqlalchemy.orm import Session
 
 from app.db.models import DailyLog, Favorite, Recipe, User
@@ -18,7 +15,6 @@ def find_recipe_by_id(db: Session, recipe_id: int) -> Recipe | None:
     return db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
 
 
-# ─── Favorites ──────────────────────────────────────────────────────────────
 
 def find_favorites_by_user(db: Session, user_id: int) -> list[Favorite]:
     return (
@@ -43,7 +39,6 @@ def create_favorite(db: Session, user_id: int, recipe_id: int) -> Favorite:
     return favorite
 
 
-# ─── Daily Logs ─────────────────────────────────────────────────────────────
 
 def find_daily_logs_with_recipe(db: Session, user_id: int):
     return (

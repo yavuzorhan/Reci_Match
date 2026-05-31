@@ -1,4 +1,3 @@
-"""Ingredient nutrition sync and lookup logic."""
 from __future__ import annotations
 
 from sqlalchemy.orm import Session

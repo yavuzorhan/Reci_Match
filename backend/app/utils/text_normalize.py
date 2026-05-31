@@ -1,4 +1,3 @@
-"""Text normalization helpers shared by ingredient and health matching."""
 from __future__ import annotations
 
 import re

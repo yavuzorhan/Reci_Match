@@ -1,6 +1,3 @@
-"""
-Kimlik doğrulama (Auth) ile ilgili Pydantic şemaları.
-"""
 from pydantic import BaseModel
 
 

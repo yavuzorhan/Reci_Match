@@ -1,9 +1,3 @@
-"""
-Akıllı Tarif ve Beslenme Sistemi — Ana Uygulama Giriş Noktası
-
-Bu dosya yalnızca FastAPI uygulamasını oluşturur, middleware'i ekler
-ve router'ları dahil eder. İş mantığı service katmanındadır.
-"""
 import sys
 import os
 

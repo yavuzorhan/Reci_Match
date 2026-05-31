@@ -1,9 +1,3 @@
-"""
-Malzeme adlarını normalize eden ve kategori çıkarımı yapan yardımcılar.
-
-Büyük alias/rule listeleri kodun okunabilir kalması için
-app/data/ingredient_normalization.json dosyasında tutulur.
-"""
 from __future__ import annotations
 
 import json

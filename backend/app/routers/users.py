@@ -1,6 +1,3 @@
-"""
-Kullanıcı (User) router'i - profil, favoriler ve günlük kayıtlar.
-"""
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 

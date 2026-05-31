@@ -1,3 +1,0 @@
-"""
-Veri erisim katmani.
-"""

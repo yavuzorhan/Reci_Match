@@ -28,18 +28,15 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
   const [imagePreview, setImagePreview] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   
-  // Ingredient search & select
   const [searchTerm, setSearchTerm] = useState('');
   const [categorizedItems, setCategorizedItems] = useState([]);
   const [flatItems, setFlatItems] = useState([]);
-  
-  // Custom ingredient add state
+
   const [showAddCustom, setShowAddCustom] = useState(false);
   const [customIngName, setCustomIngName] = useState('');
   const [customIngCategory, setCustomIngCategory] = useState('');
 
   useEffect(() => {
-    // Fetch all ingredients to allow selection
     const fetchIngs = async () => {
       try {
         const query = user?.id ? `?user_id=${user.id}` : '';
@@ -237,7 +234,6 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
       {error && <div className="arf-error-banner">{error}</div>}
       
       <form onSubmit={handleSubmit}>
-        {/* Temel Bilgiler */}
         <section className="arf-section">
           <h4 className="arf-section-title">1. Temel Bilgiler</h4>
           <div className="arf-grid-2">
@@ -309,7 +305,6 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
           </div>
         </section>
 
-        {/* Tarif Görseli */}
         <section className="arf-section">
           <h4 className="arf-section-title">2. Tarif Görseli</h4>
           
@@ -346,7 +341,6 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
           )}
         </section>
 
-        {/* Açıklama */}
         <section className="arf-section">
           <h4 className="arf-section-title">3. Açıklama</h4>
           <div className="arf-description-stack">
@@ -375,7 +369,6 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
           </div>
         </section>
 
-        {/* Malzemeler */}
         <section className="arf-section">
           <h4 className="arf-section-title">4. Malzemeler <span className="arf-label-error">*</span></h4>
           
@@ -448,7 +441,6 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
           </p>
         </section>
 
-        {/* Footer Actions */}
         <div className="arf-footer">
           <button className="arf-btn-cancel" type="button" onClick={onCancel} disabled={loading}>
             İptal

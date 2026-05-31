@@ -3,14 +3,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from ..config.settings import settings
 
-# Veritabanı motorunu (engine) oluşturuyoruz
-# PostgreSQL bağlantı URL'sini settings içinden çekiyoruz
 engine = create_engine(settings.DATABASE_URL)
 
-# Veritabanı oturumu (Session) fabrikası
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Modellerimizin kalıtım alacağı ana sınıf
 Base = declarative_base()
 
 _ingredient_inline_nutrition_ready = False
@@ -82,9 +78,6 @@ def ensure_daily_log_macro_columns(db):
     _daily_log_macros_ready = True
 
 def get_db():
-    """
-    HTTP isteklerinde bağımsız veritabanı oturumları açıp kapatmak için kullanılır. (FastAPI pattern)
-    """
     db = SessionLocal()
     try:
         ensure_ingredient_inline_nutrition_columns(db)

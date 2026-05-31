@@ -398,7 +398,6 @@ def update_daily_log(
     }
 
 
-# ─── Private Helpers ────────────────────────────────────────────────────────
 
 def _normalize_serving_count(value) -> int:
     if value is None:

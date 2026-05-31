@@ -7,7 +7,6 @@ from app.db.models import User, EmailVerificationCode
 from app.utils.mailer import send_verification_email, send_password_reset_email, generate_otp
 
 
-# ─── OTP Yardımcıları ───────────────────────────────────────────────────────
 
 def _create_otp_record(
     db: Session,
@@ -48,7 +47,6 @@ def _validate_otp(db: Session, user_id: int, code: str, purpose: str) -> EmailVe
     return record
 
 
-# ─── Kayıt ──────────────────────────────────────────────────────────────────
 
 def register_user(name: str, email: str, password: str, db: Session) -> dict:
     if db.query(User).filter(User.email == email).first():
@@ -62,7 +60,6 @@ def register_user(name: str, email: str, password: str, db: Session) -> dict:
     }
 
 
-# ─── E-posta Doğrulama ──────────────────────────────────────────────────────
 
 def verify_email(email: str, code: str, db: Session) -> dict:
     record = (
@@ -112,7 +109,6 @@ def verify_email(email: str, code: str, db: Session) -> dict:
     }
 
 
-# ─── Giriş ──────────────────────────────────────────────────────────────────
 
 def login_user(email: str, password: str, db: Session) -> dict:
     user = db.query(User).filter(User.email == email).first()
@@ -165,7 +161,6 @@ def login_user(email: str, password: str, db: Session) -> dict:
     }
 
 
-# ─── Şifre Sıfırlama ────────────────────────────────────────────────────────
 
 def forgot_password(email: str, db: Session) -> dict:
     user = db.query(User).filter(User.email == email).first()
@@ -205,7 +200,6 @@ def reset_password(email: str, code: str, new_password: str, db: Session) -> dic
     return {"message": "Şifreniz başarıyla güncellendi. Artık yeni şifrenizle giriş yapabilirsiniz."}
 
 
-# ─── Güvenlik Güncelleme (OTP İsteme / Şifre / E-posta Değiştirme) ──────────
 
 def request_otp_for_update(user_id: int, email: str, db: Session) -> dict:
     user = db.query(User).filter(User.user_id == user_id).first()

@@ -65,11 +65,9 @@ const IngredientPicker = ({
     if (onSelectionChange) onSelectionChange(newSelection);
   };
 
-  // Flat list of all ingredients for searching
   const allIngredients = categories.flatMap(cat => cat.ingredients.map(ing => ({ ...ing, categoryName: cat.name })));
 
-  // Filter logic
-  const displayedIngredients = searchTerm 
+  const displayedIngredients = searchTerm
     ? allIngredients.filter(ing => ing.name.toLowerCase().includes(searchTerm.toLowerCase()))
     : categories.find(cat => cat.id === activeCategory)?.ingredients || [];
 

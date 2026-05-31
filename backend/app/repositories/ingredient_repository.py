@@ -93,7 +93,6 @@ def find_local_nutrition_match(db: Session, user_id: int, normalized_name: str) 
     return alias.ingredient if alias else None
 
 
-# ─── Owned Ingredients (Pantry) ──────────────────────────────────────────────
 
 def find_owned_ingredients_by_user(db: Session, user_id: int) -> list[OwnedIngredient]:
     return db.query(OwnedIngredient).filter(OwnedIngredient.user_id == user_id).all()
@@ -109,7 +108,6 @@ def create_owned_ingredient(db: Session, user_id: int, ingredient_id: int) -> Ow
     return owned
 
 
-# ─── Disliked Ingredients ───────────────────────────────────────────────────
 
 def find_disliked_ingredients_by_user(db: Session, user_id: int) -> list[DislikedIngredient]:
     return db.query(DislikedIngredient).filter(DislikedIngredient.user_id == user_id).all()

@@ -1,8 +1,3 @@
-"""
-SQLAlchemy modelleri - mevcut PostgreSQL tablolariyla uyumlu.
-Runtime table creation sadece sonradan eklenen yardimci tablolar icin kullaniliyor.
-"""
-
 from sqlalchemy import (
     Boolean,
     Column,

@@ -1,6 +1,3 @@
-"""
-Tarif (Recipe) router'i - listeleme, detay, öneri ve özel tarif oluşturma.
-"""
 import requests
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import Response

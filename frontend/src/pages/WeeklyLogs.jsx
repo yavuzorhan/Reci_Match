@@ -236,7 +236,6 @@ const WeeklyLogs = () => {
   return (
     <Layout>
       <div className="noct-weekly-logs">
-        {/* Header Section */}
         <header className="noct-header">
           <div className="noct-header-left">
             <div className="noct-badge">
@@ -260,7 +259,6 @@ const WeeklyLogs = () => {
           </div>
         </header>
 
-        {/* Weekly Summary Row */}
         <div className="noct-summary-row glass-panel">
           <div className="noct-summary-item">
             <div className="noct-summary-label">
@@ -287,7 +285,6 @@ const WeeklyLogs = () => {
           </div>
         </div>
 
-        {/* Daily Progress Grid */}
         <div className="noct-progress-card glass-panel">
           <h2 className="noct-card-title">Günlük İlerleme</h2>
           <div className="noct-progress-grid">
@@ -333,7 +330,6 @@ const WeeklyLogs = () => {
           </div>
         </div>
 
-        {/* Today's Meals Section */}
         <div className="noct-meals-card glass-panel">
           <div className="noct-meals-header">
             <div className="noct-meals-title-group">

@@ -71,7 +71,6 @@ const Recommendations = () => {
   return (
     <Layout>
       <div className="noct-rec-container">
-        {/* Header Section */}
         <header className="noct-header">
           <div className="noct-header-left">
             <div className="noct-badge">
@@ -90,7 +89,6 @@ const Recommendations = () => {
           </div>
         </header>
 
-        {/* Filters Section */}
         <div className="noct-filters-row glass-panel">
           <div className="noct-filter-label">
             <Filter size={16} />
@@ -112,7 +110,6 @@ const Recommendations = () => {
           </div>
         </div>
 
-        {/* Content Section */}
         <div className="noct-content">
           {!selectedIngredients.length ? (
             <div className="noct-empty-warning glass-panel">

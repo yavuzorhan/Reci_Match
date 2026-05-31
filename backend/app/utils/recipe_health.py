@@ -1,11 +1,9 @@
-"""Recipe nutrition aggregation and health scoring helpers."""
 from __future__ import annotations
 
 import unicodedata
 from app.utils.text_normalize import contains_any_word
 
 
-# ─── SABİTLER VE TERM SETLERİ ────────────────────────────────────────────────
 
 UNIT_TO_GRAMS = {
     "g": (1.0, 1.0),
@@ -90,7 +88,6 @@ _GRADE_BASES = {
 }
 
 
-# ─── YARDIMCI FONKSİYONLAR ───────────────────────────────────────────────────
 
 def _clamp(value: float) -> int:
     return max(0, min(100, round(value)))
@@ -207,7 +204,6 @@ def _ingredient_bonus_points(normalized_name: str) -> int:
     return 0
 
 
-# ─── SUBSCORE HESAPLAYICILAR ──────────────────────────────────────────────────
 
 def _calorie_subscore(calories: float) -> int:
     """Porsiyon başı kalori miktarına göre 25–90 aralığında skor üretir."""
@@ -330,7 +326,6 @@ def _health_grade(score: int) -> str:
     return "D"
 
 
-# ─── ANA SKOR FONKSİYONU ─────────────────────────────────────────────────────
 
 def _weighted_name_category_adjustment(
     recipe_name: str | None,
@@ -545,7 +540,6 @@ def calculate_health_score(
     }
 
 
-# ─── MALZEME RİSK ANALİZİ ────────────────────────────────────────────────────
 
 def _risk_unit_key(unit: str | None) -> str | None:
     normalized = _fold_text(unit or "")
@@ -781,7 +775,6 @@ def analyze_recipe_ingredient_risks(recipe) -> dict:
     }
 
 
-# ─── NUTRİTİON AGGREGATE ─────────────────────────────────────────────────────
 
 def estimate_amount_in_grams(amount, unit) -> tuple[float | None, float]:
     if amount is None:
@@ -888,7 +881,6 @@ def recalculate_recipe_macros_from_grams(recipe, min_confidence: float = 0.75) -
     }
 
 
-# ─── PROFİL OLUŞTURUCU ───────────────────────────────────────────────────────
 
 def _resolve_general_macro_source(recipe, nutrition_rollup: dict) -> dict:
     recipe_macros = recipe_macro_values_per_serving(recipe)

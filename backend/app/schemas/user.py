@@ -1,6 +1,3 @@
-"""
-Kullanıcı (User) profili ile ilgili Pydantic şemaları.
-"""
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 

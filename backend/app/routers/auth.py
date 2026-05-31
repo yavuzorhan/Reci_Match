@@ -1,6 +1,3 @@
-"""
-Kimlik doğrulama (Auth) router'ı — register, verify, login, şifre sıfırlama.
-"""
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -44,7 +41,6 @@ def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
     return auth_service.reset_password(req.email, req.code, req.new_password, db)
 
 
-# ─── Güvenlik Güncelleme Endpointleri ────────────────────────────────────────
 
 @router.post("/users/{user_id}/request-otp")
 def request_otp_for_update(user_id: int, req: RequestOTPRequest, db: Session = Depends(get_db)):

@@ -1,6 +1,3 @@
-"""
-Tarif (Recipe) ile ilgili Pydantic şemaları.
-"""
 from pydantic import BaseModel, ConfigDict
 
 

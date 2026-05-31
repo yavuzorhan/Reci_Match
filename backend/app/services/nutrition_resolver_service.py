@@ -1,4 +1,3 @@
-"""Nutrition resolver: local DB first, Gemini second."""
 from __future__ import annotations
 
 from dataclasses import dataclass

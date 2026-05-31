@@ -28,7 +28,6 @@ const IngredientSelection = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch ingredients for local display of chips and grid
   useEffect(() => {
     const fetchIngredients = async () => {
       try {
@@ -78,7 +77,6 @@ const IngredientSelection = () => {
   return (
     <Layout>
       <div className="noct-selection-container">
-        {/* Header Section */}
         <header className="noct-header">
           <div className="noct-badge">
             <Sparkles size={14} className="noct-glow-icon" />
@@ -89,9 +87,7 @@ const IngredientSelection = () => {
         </header>
 
         <div className="noct-selection-grid">
-          {/* Left Column: Selection & Pantry */}
           <aside className="noct-selection-sidebar">
-            {/* Selected Ingredients Card */}
             <div className="noct-card glass-panel">
               <div className="noct-card-header">
                 <div className="noct-card-title-group">
@@ -131,7 +127,6 @@ const IngredientSelection = () => {
               </div>
             </div>
 
-            {/* Pantry Quick Add Card */}
             {pantryIngredients && pantryIngredients.length > 0 && (
               <div className="noct-card glass-panel">
                 <div className="noct-card-header">
@@ -159,7 +154,6 @@ const IngredientSelection = () => {
             )}
           </aside>
 
-          {/* Right Column: Library */}
           <main className="noct-selection-main">
             <div className="noct-card glass-panel h-full">
               <div className="noct-library-header">

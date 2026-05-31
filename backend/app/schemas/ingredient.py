@@ -1,6 +1,3 @@
-"""
-Malzeme (Ingredient) ile ilgili Pydantic şemaları.
-"""
 from pydantic import BaseModel
 
 

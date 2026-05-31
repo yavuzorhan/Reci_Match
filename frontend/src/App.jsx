@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 
-// Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -23,10 +22,8 @@ import Favorites from './pages/FavoritesDb';
 import WeeklyLogs from './pages/WeeklyLogs';
 import ProfileEdit from './pages/ProfileEdit';
 
-// PrivateRoute component
 const PrivateRoute = ({ children }) => {
   const { user } = useApp();
-  // If no user, redirect to Login
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };
@@ -36,14 +33,12 @@ const App = () => {
     <AppProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           
-          {/* Protected Routes */}
           <Route path="/setup" element={<PrivateRoute><ProfileSetup /></PrivateRoute>} />
           <Route path="/disliked" element={<PrivateRoute><DislikedIngredients /></PrivateRoute>} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
@@ -60,7 +55,6 @@ const App = () => {
           <Route path="/weekly-logs" element={<PrivateRoute><WeeklyLogs /></PrivateRoute>} />
           <Route path="/profile-edit" element={<PrivateRoute><ProfileEdit /></PrivateRoute>} />
 
-          {/* Fallback */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

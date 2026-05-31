@@ -1,6 +1,3 @@
-"""
-Malzeme (Ingredient) router'ı — Kategorize listeleme, özel malzeme, kiler, sevilmeyenler.
-"""
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
@@ -80,7 +77,6 @@ def create_manual_ingredient(
     }
 
 
-# ─── Kiler (Pantry / Elimdekiler) ───────────────────────────────────────────
 
 @router.get("/users/{user_id}/ingredients")
 def get_user_ingredients(user_id: int, db: Session = Depends(get_db)):
@@ -92,7 +88,6 @@ def update_user_ingredients(user_id: int, req: IngredientUpdate, db: Session = D
     return ingredient_service.update_user_ingredients(user_id, req.ingredient_ids, db)
 
 
-# ─── Sevilmeyen Malzemeler ───────────────────────────────────────────────────
 
 @router.get("/users/{user_id}/disliked-ingredients")
 def get_user_disliked_ingredients(user_id: int, db: Session = Depends(get_db)):

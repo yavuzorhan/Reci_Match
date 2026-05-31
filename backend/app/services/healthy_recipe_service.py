@@ -1,6 +1,3 @@
-"""
-Saglikli tarifleri ayri tabloda tutmak icin yardimci servis.
-"""
 from __future__ import annotations
 
 from sqlalchemy import text
