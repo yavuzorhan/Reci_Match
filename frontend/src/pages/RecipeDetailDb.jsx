@@ -56,6 +56,14 @@ const getIngredientAmount = (ingredient, multiplier) => {
   return `${formatNumber(adjusted)} ${ingredient.unit || ''}`.trim();
 };
 
+const normalizeStr = (s) =>
+  (s || '')
+    .toLowerCase()
+    .replace(/[çÇ]/g, 'c').replace(/[şŞ]/g, 's')
+    .replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u')
+    .replace(/[öÖ]/g, 'o').replace(/[ıİ]/g, 'i')
+    .trim();
+
 const getHealthLabels = (recipe) => {
   const labels = [];
   if (!recipe) return labels;
@@ -138,7 +146,7 @@ const RecipeDetailPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, favorites, toggleFavorite, addDailyLog, fetchRecipeById } = useApp();
+  const { user, favorites, toggleFavorite, addDailyLog, fetchRecipeById, pantryIngredients } = useApp();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -186,15 +194,30 @@ const RecipeDetailPage = () => {
     return steps.length ? steps : getFallbackSteps();
   }, [recipe?.preparation]);
   const displayIngredients = useMemo(() => recipe?.ingredients || [], [recipe]);
-  const availableIngredients = displayIngredients.slice(0, Math.min(2, displayIngredients.length));
-  const optionalIngredients = displayIngredients.slice(availableIngredients.length);
+  const availableIngredients = useMemo(
+    () => displayIngredients.filter((ingredient) =>
+      (pantryIngredients || []).some((p) =>
+        p.id === ingredient.id ||
+        normalizeStr(p.name) === normalizeStr(getIngredientName(ingredient))
+      )
+    ),
+    [displayIngredients, pantryIngredients]
+  );
+  const optionalIngredients = useMemo(
+    () => displayIngredients.filter((ingredient) =>
+      !(pantryIngredients || []).some((p) =>
+        p.id === ingredient.id ||
+        normalizeStr(p.name) === normalizeStr(getIngredientName(ingredient))
+      )
+    ),
+    [displayIngredients, pantryIngredients]
+  );
   const healthMeta = getHealthMeta(recipe);
   const healthGrade = healthMeta.grade;
   const healthTone = healthMeta.tone;
-  const qualityRationale = useMemo(() => getQualityRationale(recipe, healthGrade), [recipe, healthGrade]);
   const qualityTags = useMemo(() => getQualityTags(recipe, healthGrade), [recipe, healthGrade]);
   const healthLabels = useMemo(() => getHealthLabels(recipe), [recipe]);
-  const matchScore = location.state?.matchScore || recipe?.score || 92;
+  const matchScore = location.state?.matchScore ?? null;
   const nutritionEstimated = Boolean(recipe?.nutrition_is_estimated);
   const nutritionConfidence = recipe?.recipe_nutrition_confidence ?? 0;
 
@@ -295,11 +318,13 @@ const RecipeDetailPage = () => {
             <div>
               <h1>{recipe.name || 'Kremalı Avokadolu Somon'}</h1>
               <div className="recipe-pill-row">
-                <span className="recipe-pill primary">
-                  <Sparkles size={14} />
-                  {matchScore}% Eşleşme
-                </span>
-                {(healthLabels.length ? healthLabels : ['Tava', 'Yüksek Protein', 'Omega-3']).map((label) => (
+                {matchScore !== null && (
+                  <span className="recipe-pill primary">
+                    <Sparkles size={14} />
+                    {matchScore}% Eşleşme
+                  </span>
+                )}
+                {(healthLabels.length ? healthLabels : []).map((label) => (
                   <span key={label} className="recipe-pill">{label}</span>
                 ))}
               </div>
@@ -336,9 +361,6 @@ const RecipeDetailPage = () => {
                 )}
                 <div className="recipe-hero-overlay" />
                 <div className="recipe-hero-content">
-                  <p>
-                    {stripHtml(recipe.explanation || recipe.description || '')}
-                  </p>
                   <div className="recipe-stat-row">
                     <span><Flame size={16} /> {adjustedValue(recipe.calorie)} kcal</span>
                     <span><Activity size={16} /> {adjustedValue(recipe.protein)}g Protein</span>
@@ -356,23 +378,26 @@ const RecipeDetailPage = () => {
 
                 <div className="recipe-ingredient-grid">
                   <div>
-                    <h3>{optionalIngredients.length > 0 ? 'Dolabında Olanlar' : 'Tüm Malzemeler'}</h3>
+                    <h3>{availableIngredients.length > 0 ? 'Dolabında Olanlar' : 'Tüm Malzemeler'}</h3>
                     <div className="recipe-ingredient-list">
-                      {availableIngredients.map((ingredient, index) => (
-                        <div className="recipe-ingredient-row available" key={`${getIngredientName(ingredient)}-${index}`}>
+                      {(availableIngredients.length > 0 ? availableIngredients : displayIngredients).map((ingredient, index) => (
+                        <div
+                          className={`recipe-ingredient-row ${availableIngredients.length > 0 ? 'available' : 'optional'}`}
+                          key={`${getIngredientName(ingredient)}-${index}`}
+                        >
                           <span>{getIngredientName(ingredient)}</span>
                           <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
-                          <Check size={17} />
+                          {availableIngredients.length > 0 ? <Check size={17} /> : <Plus size={17} />}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {optionalIngredients.length > 0 && (
+                  {availableIngredients.length > 0 && optionalIngredients.length > 0 && (
                   <div>
                     <h3>Diğer Malzemeler</h3>
                     <div className="recipe-ingredient-list">
-                      {optionalIngredients.slice(0, 6).map((ingredient, index) => (
+                      {optionalIngredients.map((ingredient, index) => (
                         <div className="recipe-ingredient-row optional" key={`${getIngredientName(ingredient)}-${index}`}>
                           <span>{getIngredientName(ingredient)}</span>
                           <small>{getIngredientAmount(ingredient, ingredientMultiplier)}</small>
@@ -421,7 +446,11 @@ const RecipeDetailPage = () => {
                 </div>
 
                 <strong style={{ color: healthTone.chip }}>{healthMeta.grade ? getQualityTitle(healthGrade) : healthMeta.label}</strong>
-                <small>{getQualitySubtitle(healthGrade)}</small>
+                {healthGrade && (
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: '4px 0 0', fontWeight: 600 }}>
+                    {({ A: 'Mükemmel bir seçenek', B: 'İyi bir seçenek', C: 'Dikkatli tüketilebilir', D: 'Sınırlı tüketilmeli' }[healthGrade])}
+                  </p>
+                )}
                 <div className="recipe-quality-meter">
                   <i
                     className={!healthMeta.hasScore ? 'neutral' : ''}
@@ -432,7 +461,21 @@ const RecipeDetailPage = () => {
                     }}
                   />
                 </div>
-                <p>{qualityRationale}</p>
+
+                {recipe.health_explanation && (
+                  <div style={{
+                    padding: '1rem 1.2rem',
+                    borderRadius: '12px',
+                    background: 'var(--background-elevated)',
+                    border: '1px solid var(--border-color)',
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.95rem',
+                    lineHeight: '1.6',
+                    marginBottom: '1rem',
+                  }}>
+                    {recipe.health_explanation}
+                  </div>
+                )}
 
                 <div className="recipe-quality-tags">
                   {(qualityTags.length ? qualityTags : ['Yüksek Protein', 'Dengeli Yağ', 'Düşük İşlenmiş İçerik', 'Kalori Hedefiyle Uyumlu']).map((tag) => (
@@ -554,6 +597,5 @@ const RecipeDetailPage = () => {
     </Layout>
   );
 };
-
 
 export default RecipeDetailPage;

@@ -16,14 +16,12 @@ from app.services import ingredient_resolver_service
 
 router = APIRouter(prefix="/api", tags=["Ingredients"])
 
-
 @router.get("/ingredients/categorized")
 def get_categorized_ingredients(
     user_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
     return ingredient_service.get_categorized_ingredients(user_id, db)
-
 
 @router.post("/users/{user_id}/custom-ingredients")
 async def create_custom_ingredient(
@@ -32,7 +30,6 @@ async def create_custom_ingredient(
     db: Session = Depends(get_db),
 ):
     return await ingredient_service.create_custom_ingredient(user_id, req.name, req.category_id, db)
-
 
 @router.post("/ingredients/resolve")
 async def resolve_ingredient(req: IngredientResolveRequest, db: Session = Depends(get_db)):
@@ -55,7 +52,6 @@ async def resolve_ingredient(req: IngredientResolveRequest, db: Session = Depend
         "ingredient": ingredient_resolver_service.serialize_ingredient(result.ingredient),
     }
 
-
 @router.post("/users/{user_id}/ingredients/manual")
 def create_manual_ingredient(
     user_id: int,
@@ -76,38 +72,29 @@ def create_manual_ingredient(
         "ingredient": ingredient_resolver_service.serialize_ingredient(ingredient),
     }
 
-
-
 @router.get("/users/{user_id}/ingredients")
 def get_user_ingredients(user_id: int, db: Session = Depends(get_db)):
     return ingredient_service.get_user_ingredients(user_id, db)
-
 
 @router.post("/users/{user_id}/ingredients")
 def update_user_ingredients(user_id: int, req: IngredientUpdate, db: Session = Depends(get_db)):
     return ingredient_service.update_user_ingredients(user_id, req.ingredient_ids, db)
 
-
-
 @router.get("/users/{user_id}/disliked-ingredients")
 def get_user_disliked_ingredients(user_id: int, db: Session = Depends(get_db)):
     return ingredient_service.get_disliked_ingredients(user_id, db)
-
 
 @router.post("/users/{user_id}/disliked-ingredients")
 def update_user_disliked_ingredients(user_id: int, req: IngredientUpdate, db: Session = Depends(get_db)):
     return ingredient_service.update_disliked_ingredients(user_id, req.ingredient_ids, db)
 
-
 @router.get("/ingredients/{ingredient_id}/nutrition")
 def get_ingredient_nutrition(ingredient_id: int, db: Session = Depends(get_db)):
     return ingredient_nutrition_service.get_ingredient_nutrition(ingredient_id, db)
 
-
 @router.post("/ingredients/nutrition/sync")
 async def sync_ingredient_nutrition(req: IngredientNutritionSyncRequest, db: Session = Depends(get_db)):
     return await ingredient_nutrition_service.sync_ingredient_nutrition_from_gemini(req.ingredient_id, db)
-
 
 @router.post("/ingredients/nutrition/sync-missing")
 async def sync_missing_ingredient_nutrition(

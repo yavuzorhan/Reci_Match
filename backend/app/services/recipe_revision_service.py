@@ -20,7 +20,6 @@ try:
 except ImportError:
     _GEMINI_AVAILABLE = False
 
-
 REVISION_RESPONSE_SCHEMA = {
     "type": "object",
     "properties": {
@@ -48,7 +47,6 @@ REVISION_RESPONSE_SCHEMA = {
     },
     "required": ["recipe_name", "ingredients", "preparation"],
 }
-
 
 async def revise_recipe(
     db: Session,
@@ -85,7 +83,6 @@ async def revise_recipe(
     )
     db.commit()
     return {"status": "success", "cached": False, "revised_recipe": revised_payload.model_dump()}
-
 
 async def save_revised_recipe(
     db: Session,
@@ -129,11 +126,9 @@ async def save_revised_recipe(
         result["redirect_to"] = "/recipes"
     return result
 
-
 def _hash_modifications(modifications: dict) -> str:
     payload = json.dumps(modifications, ensure_ascii=False, sort_keys=True)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
 
 def _revise_with_gemini(recipe_json: dict, modifications: dict) -> dict:
     if not _GEMINI_AVAILABLE:
@@ -214,7 +209,6 @@ Donmen gereken JSON semasi:
 
     parsed = _parse_json_response(getattr(response, "text", "") or "")
 
-    # Filter out ingredients Gemini hallucinated — only original + requested additions allowed
     if parsed.get("ingredients"):
         removed_norms = {ascii_fold(r) for r in requested_removals if r}
         allowed_norms = (
@@ -230,7 +224,6 @@ Donmen gereken JSON semasi:
                 parsed["ingredients"] = filtered
 
     return parsed
-
 
 def _parse_json_response(text: str) -> dict:
     cleaned = text.strip()

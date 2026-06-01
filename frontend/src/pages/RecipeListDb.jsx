@@ -23,8 +23,6 @@ import {
 } from '../utils/recipeInsights';
 import RecipeCard from '../components/RecipeCard';
 
-
-
 const RecipeListDb = () => {
   const {
     fetchAllRecipes,
@@ -54,7 +52,7 @@ const RecipeListDb = () => {
         const data = await fetchAllRecipes();
         let filtered = activeTab === 'mine'
           ? data.filter((recipe) => recipe.user_id === user?.id)
-          : data;
+          : data.filter((recipe) => recipe.user_id == null);
 
         filtered = applyRecipeFilters(
           filtered,

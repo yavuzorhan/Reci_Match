@@ -12,7 +12,6 @@ from app.services.healthy_recipe_service import sync_healthy_recipes
 
 router = APIRouter(prefix="/api", tags=["Recipes"])
 
-
 @router.get("/recipe-image")
 def proxy_recipe_image(url: str = Query(...)):
     if not url.startswith(("http://", "https://")):
@@ -37,7 +36,6 @@ def proxy_recipe_image(url: str = Query(...)):
         headers={"Cache-Control": "public, max-age=86400"},
     )
 
-
 @router.get("/recipes")
 def get_recipes(
     user_id: int | None = Query(default=None),
@@ -49,11 +47,9 @@ def get_recipes(
 ):
     return recipe_service.get_recipes(user_id, ids, source, recipe_category, healthy_only, db)
 
-
 @router.get("/recipes/{recipe_id}")
 def get_recipe_detail(recipe_id: int, db: Session = Depends(get_db)):
     return recipe_service.get_recipe_detail(recipe_id, db)
-
 
 @router.post("/recipes/recommendations")
 def get_recipe_recommendations(
@@ -72,11 +68,9 @@ def get_recipe_recommendations(
         db=db,
     )
 
-
 @router.post("/healthy-recipes/sync")
 def sync_curated_healthy_recipes(db: Session = Depends(get_db)):
     return sync_healthy_recipes(db)
-
 
 @router.post("/recipes/{recipe_id}/revise", response_model=RecipeRevisionResponse)
 async def revise_recipe(
@@ -87,7 +81,6 @@ async def revise_recipe(
 ):
     return await recipe_revision_service.revise_recipe(db, recipe_id, user_id, req)
 
-
 @router.post("/recipes/{recipe_id}/revise/save")
 async def save_revised_recipe(
     recipe_id: int,
@@ -95,7 +88,6 @@ async def save_revised_recipe(
     db: Session = Depends(get_db),
 ):
     return await recipe_revision_service.save_revised_recipe(db, recipe_id, req.user_id, req.revised_recipe)
-
 
 @router.post("/users/{user_id}/custom-recipes")
 async def create_custom_recipe(
@@ -117,7 +109,6 @@ async def create_custom_recipe(
         ingredients=[ing.model_dump() for ing in req.ingredients],
         db=db,
     )
-
 
 @router.put("/users/{user_id}/custom-recipes/{recipe_id}")
 async def update_custom_recipe(
@@ -142,7 +133,6 @@ async def update_custom_recipe(
         db=db,
     )
 
-
 @router.delete("/users/{user_id}/custom-recipes/{recipe_id}")
 def delete_custom_recipe(
     user_id: int,
@@ -150,7 +140,6 @@ def delete_custom_recipe(
     db: Session = Depends(get_db),
 ):
     return recipe_service.delete_custom_recipe(user_id=user_id, recipe_id=recipe_id, db=db)
-
 
 @router.post("/recipes/{recipe_id}/image")
 async def upload_recipe_image(
@@ -160,7 +149,6 @@ async def upload_recipe_image(
     db: Session = Depends(get_db),
 ):
     return await recipe_service.upload_recipe_image(user_id=user_id, recipe_id=recipe_id, upload_file=image, db=db)
-
 
 @router.post("/recipes/custom")
 async def create_custom_recipe_compat(

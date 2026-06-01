@@ -10,7 +10,6 @@ try:
 except ImportError:
     _GENAI_AVAILABLE = False
 
-
 NUTRITION_SCHEMA = {
     "type": "object",
     "properties": {
@@ -25,7 +24,6 @@ NUTRITION_SCHEMA = {
     },
     "required": ["calories_per_100g", "protein_per_100g", "carbs_per_100g", "fat_per_100g"],
 }
-
 
 def estimate_nutrition_with_gemini(name: str) -> dict | None:
     api_key = (os.getenv("GEMINI_API_KEY") or "").strip()

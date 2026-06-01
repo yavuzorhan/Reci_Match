@@ -17,7 +17,6 @@ from sqlalchemy.orm import relationship
 
 from .database import Base
 
-
 class IngredientCategory(Base):
     __tablename__ = "ingredient_categories"
 
@@ -25,7 +24,6 @@ class IngredientCategory(Base):
     category_name = Column(String(50), unique=True, nullable=False)
 
     ingredients = relationship("Ingredient", back_populates="category_rel")
-
 
 class Ingredient(Base):
     __tablename__ = "ingredients"
@@ -71,7 +69,6 @@ class Ingredient(Base):
         ),
     )
 
-
 class IngredientAlias(Base):
     __tablename__ = "ingredient_aliases"
 
@@ -87,7 +84,6 @@ class IngredientAlias(Base):
         Index("ix_ingredient_aliases_normalized_alias_name", normalized_alias_name, unique=True),
         Index("ix_ingredient_aliases_ingredient_id", ingredient_id),
     )
-
 
 class Recipe(Base):
     __tablename__ = "recipes"
@@ -120,8 +116,6 @@ class Recipe(Base):
     daily_logs = relationship("DailyLog", back_populates="recipe", cascade="all, delete-orphan", passive_deletes=True)
     user = relationship("User", foreign_keys=[user_id])
 
-
-
 class HealthyRecipe(Base):
     __tablename__ = "healthy_recipes"
 
@@ -131,7 +125,6 @@ class HealthyRecipe(Base):
     synced_at = Column(DateTime, server_default=func.now(), nullable=True)
 
     recipe = relationship("Recipe", back_populates="healthy_entries")
-
 
 class RecipeIngredient(Base):
     __tablename__ = "recipe_ingredients"
@@ -148,7 +141,6 @@ class RecipeIngredient(Base):
 
     recipe = relationship("Recipe", back_populates="ingredients")
     ingredient = relationship("Ingredient", back_populates="recipes")
-
 
 class User(Base):
     __tablename__ = "users"
@@ -174,7 +166,6 @@ class User(Base):
     daily_logs = relationship("DailyLog", back_populates="user", cascade="all, delete-orphan", passive_deletes=True)
     verification_codes = relationship("EmailVerificationCode", back_populates="user", cascade="all, delete-orphan")
 
-
 class EmailVerificationCode(Base):
     __tablename__ = "email_verification_codes"
 
@@ -190,7 +181,6 @@ class EmailVerificationCode(Base):
 
     user = relationship("User", back_populates="verification_codes")
 
-
 class Favorite(Base):
     __tablename__ = "favorites"
 
@@ -200,7 +190,6 @@ class Favorite(Base):
 
     user = relationship("User", back_populates="favorites")
     recipe = relationship("Recipe", back_populates="favorites")
-
 
 class DislikedIngredient(Base):
     __tablename__ = "disliked_ingredients"
@@ -212,7 +201,6 @@ class DislikedIngredient(Base):
     user = relationship("User", back_populates="disliked_ingredients")
     ingredient = relationship("Ingredient", back_populates="disliked_by")
 
-
 class OwnedIngredient(Base):
     __tablename__ = "owned_ingredients"
 
@@ -223,7 +211,6 @@ class OwnedIngredient(Base):
 
     user = relationship("User", back_populates="owned_ingredients")
     ingredient = relationship("Ingredient", back_populates="owned_by")
-
 
 class DailyLog(Base):
     __tablename__ = "daily_logs"
@@ -244,7 +231,6 @@ class DailyLog(Base):
 
     user = relationship("User", back_populates="daily_logs")
     recipe = relationship("Recipe", back_populates="daily_logs")
-
 
 class RevisionCache(Base):
     __tablename__ = "revision_cache"

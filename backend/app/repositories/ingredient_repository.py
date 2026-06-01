@@ -10,10 +10,8 @@ from app.db.models import (
 )
 from app.utils.text_normalize import normalize_turkish_text
 
-
 def get_all_categories(db: Session) -> list[IngredientCategory]:
     return db.query(IngredientCategory).all()
-
 
 def find_global_ingredient_by_name(db: Session, ingredient_name: str) -> Ingredient | None:
     return (
@@ -25,7 +23,6 @@ def find_global_ingredient_by_name(db: Session, ingredient_name: str) -> Ingredi
         .first()
     )
 
-
 def find_user_ingredient_by_name(db: Session, user_id: int, ingredient_name: str) -> Ingredient | None:
     return (
         db.query(Ingredient)
@@ -35,7 +32,6 @@ def find_user_ingredient_by_name(db: Session, user_id: int, ingredient_name: str
         )
         .first()
     )
-
 
 def create_ingredient(db: Session, ingredient_name: str, category_id: int | None = None, user_id: int | None = None) -> Ingredient:
     ingredient = Ingredient(
@@ -47,7 +43,6 @@ def create_ingredient(db: Session, ingredient_name: str, category_id: int | None
     db.flush()
     return ingredient
 
-
 def find_accessible_ingredients_by_name(db: Session, user_id: int, ingredient_name: str) -> list[Ingredient]:
     return (
         db.query(Ingredient)
@@ -57,7 +52,6 @@ def find_accessible_ingredients_by_name(db: Session, user_id: int, ingredient_na
         )
         .all()
     )
-
 
 def find_accessible_ingredient_alias(db: Session, user_id: int, normalized_alias_name: str) -> IngredientAlias | None:
     return (
@@ -70,14 +64,12 @@ def find_accessible_ingredient_alias(db: Session, user_id: int, normalized_alias
         .first()
     )
 
-
 def list_accessible_ingredients(db: Session, user_id: int) -> list[Ingredient]:
     return (
         db.query(Ingredient)
         .filter((Ingredient.user_id == user_id) | Ingredient.user_id.is_(None))
         .all()
     )
-
 
 def find_local_nutrition_match(db: Session, user_id: int, normalized_name: str) -> Ingredient | None:
     normalized_key = normalize_turkish_text(normalized_name)
@@ -92,30 +84,22 @@ def find_local_nutrition_match(db: Session, user_id: int, normalized_name: str) 
     alias = find_accessible_ingredient_alias(db, user_id, normalized_name)
     return alias.ingredient if alias else None
 
-
-
 def find_owned_ingredients_by_user(db: Session, user_id: int) -> list[OwnedIngredient]:
     return db.query(OwnedIngredient).filter(OwnedIngredient.user_id == user_id).all()
 
-
 def delete_owned_ingredients_by_user(db: Session, user_id: int) -> None:
     db.query(OwnedIngredient).filter(OwnedIngredient.user_id == user_id).delete()
-
 
 def create_owned_ingredient(db: Session, user_id: int, ingredient_id: int) -> OwnedIngredient:
     owned = OwnedIngredient(user_id=user_id, ingredient_id=ingredient_id)
     db.add(owned)
     return owned
 
-
-
 def find_disliked_ingredients_by_user(db: Session, user_id: int) -> list[DislikedIngredient]:
     return db.query(DislikedIngredient).filter(DislikedIngredient.user_id == user_id).all()
 
-
 def delete_disliked_ingredients_by_user(db: Session, user_id: int) -> None:
     db.query(DislikedIngredient).filter(DislikedIngredient.user_id == user_id).delete()
-
 
 def create_disliked_ingredient(db: Session, user_id: int, ingredient_id: int) -> DislikedIngredient:
     disliked = DislikedIngredient(user_id=user_id, ingredient_id=ingredient_id)

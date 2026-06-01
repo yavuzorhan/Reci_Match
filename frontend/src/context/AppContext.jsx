@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+
 import React, { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import { API_BASE } from '../config';
 import { normalizeServingPortion } from '../utils/recipeInsights';
@@ -52,7 +52,7 @@ export const AppProvider = ({ children }) => {
     return false;
   });
 
-  // Sync user to localStorage
+  
   useEffect(() => {
     if (user) {
       localStorage.setItem('reciMatch_user', JSON.stringify(user));
@@ -63,9 +63,9 @@ export const AppProvider = ({ children }) => {
       document.body.classList.remove('dark-mode');
       window.setTimeout(() => setIsDarkMode(false), 0);
     }
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
-  // Sync theme to localStorage and body class
+  
   useEffect(() => {
     if (user?.id) {
       localStorage.setItem(`reciMatch_theme_${user.id}`, isDarkMode ? 'dark' : 'light');
@@ -109,7 +109,7 @@ export const AppProvider = ({ children }) => {
       setFavorites(favoriteIds);
       setDailyLogs(dailyLogData);
       
-      // Normalize profile fields to match frontend usage
+      
       if (profileData && Object.keys(profileData).length > 0) {
         const normalizedProfile = {
           ...profileData,
@@ -145,7 +145,7 @@ export const AppProvider = ({ children }) => {
   }, [fetchJson, user]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    
     fetchUserPreferences();
   }, [fetchUserPreferences]);
 
@@ -168,29 +168,21 @@ export const AppProvider = ({ children }) => {
   }, [fetchJson, user, selectedIngredients, dislikedIngredients]);
 
   const fetchRecipeById = useCallback(async (id) => {
-    const cachedRecipe = recipeCache[id];
-    if (cachedRecipe && Array.isArray(cachedRecipe.ingredients) && cachedRecipe.ingredients.length > 0) {
-      return cachedRecipe;
-    }
-
     const data = withProxiedImage(await fetchJson(`${API_BASE}/api/recipes/${id}`));
-    
-    // Normalize ingredients
     const rawIngs = data.ingredients || data.recipe_ingredients || [];
     const normalizedRecipe = {
-        ...data,
-        ingredients: rawIngs.map(ing => ({
-            id: ing.id || ing.ingredient?.id || ing.ingredient_id,
-            name: ing.name || ing.ingredient_name || ing.ingredient?.name || ing.ingredient?.ingredient_name || 'İsimsiz Malzeme',
-            amount: ing.amount,
-            unit: ing.unit,
-            nutrition_data_source: ing.nutrition?.nutrition_data_source || ing.nutrition_data_source
-        }))
+      ...data,
+      ingredients: rawIngs.map(ing => ({
+        id: ing.id || ing.ingredient?.id || ing.ingredient_id,
+        name: ing.name || ing.ingredient_name || ing.ingredient?.name || ing.ingredient?.ingredient_name || 'İsimsiz Malzeme',
+        amount: ing.amount,
+        unit: ing.unit,
+        nutrition_data_source: ing.nutrition?.nutrition_data_source || ing.nutrition_data_source,
+      })),
     };
-
     setRecipeCache(prev => ({ ...prev, [id]: normalizedRecipe }));
     return normalizedRecipe;
-  }, [fetchJson, recipeCache]);
+  }, [fetchJson]);
 
   const fetchRecipesByIds = useCallback(async (ids) => {
     const missingIds = ids.filter(id => !recipeCache[id]);

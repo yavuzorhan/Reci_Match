@@ -1,470 +1,317 @@
-# Veritabanı Tabloları ve İlişkileri
+# Veritabani Tablolari ve Iliskiler - Okunakli Detay
 
-ReciMatch uygulaması PostgreSQL veritabanı kullanmaktadır. Toplam **13 tablo** bulunmaktadır.
-Bu belge her tablonun ne işe yaradığını, sütunlarını ve tablolar arası ilişkileri açıklar.
+## Bu Dokuman Ne Ise Yarar?
 
----
+Bu dokuman projedeki veritabani tablolarini sade sekilde anlatir. Her tablonun ne tuttugunu, neden var oldugunu ve hangi tablolarla iliskili oldugunu gosterir.
 
-## İlişki Diyagramı (Genel Bakış)
+Sunumda hoca "bu tablo neden var?", "tarifler malzemelerle nasil bagli?", "favoriler nerede tutuluyor?" diye sorarsa bu dokuman cevap icindir.
 
-```
-users (1) ──────────────────────────────────────────┐
-   │                                                 │
-   ├── (N) email_verification_codes                  │
-   │                                                 │
-   ├── (N) favorites ─────────────── (N) recipes ────┤
-   │                                                 │
-   ├── (N) owned_ingredients ──────── (N) ingredients│
-   │         └─ ingredients (N) ──── ingredient_categories
-   │                                 ingredient_aliases
-   ├── (N) disliked_ingredients ──── (N) ingredients │
-   │                                                 │
-   ├── (N) daily_logs ─────────────── (N) recipes    │
-   │                                                 │
-   └── (N) [recipes (user_id = X)] ──────────────────┘
+## Genel Veritabani Mantigi
 
-recipes (1) ──── (N) recipe_ingredients ──── (N) ingredients
-recipes (1) ──── (0..1) healthy_recipes
-recipes (1) ──── (N) revision_cache
+Projede ana varliklar sunlardir:
+
+- Kullanici
+- Tarif
+- Malzeme
+- Tarif-malzame iliskisi
+- Favori tarifler
+- Dolap malzemeleri
+- Sevilmeyen malzemeler
+- Gunluk beslenme loglari
+- Gemini revizyon cache'i
+
+En temel iliski sudur:
+
+```text
+users -> recipes -> recipe_ingredients -> ingredients
 ```
 
----
+Yani kullanicilar tarif ekleyebilir, tariflerin malzemeleri vardir, malzemeler de ayri tabloda tutulur.
 
-## 1. `users` — Kullanıcılar
+## `users` Tablosu
 
-### Ne Zaman Oluşturulur?
-Kullanıcı kayıt işlemini tamamlayıp e-posta doğrulamasını geçtikten sonra oluşturulur. Doğrulama olmadan satır eklenmez.
+`users`, sisteme kayitli kullanicilari tutar.
 
-### Neden Gerekli?
-Tüm kişisel veriler (favoriler, günlük loglar, kişisel dolap, profil) bu tabloya bağlıdır. Kimlik doğrulama için şifrelenmiş parola saklar.
+Neden var?
 
-### Sütunlar
+Kullanicinin giris yapabilmesi, profil bilgilerinin tutulmasi, favorilerinin, dolap malzemelerinin ve gunluk loglarinin kendisine baglanmasi icin gerekir.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `user_id` | Integer (PK) | Her kullanıcının benzersiz kimliği. Otomatik artan. |
-| `name_surname` | String(100) | Ad ve soyad |
-| `email` | String(100) UNIQUE | Giriş için kullanılan e-posta. Tekil olmalı. |
-| `password_hash` | String(255) | bcrypt ile şifrelenmiş parola. Asla düz metin değil. |
-| `age` | Integer | Kullanıcı yaşı (kalori hesabı için) |
-| `gender` | String(20) | "Erkek", "Kadın", "Diğer" |
-| `height_cm` | Integer | Boy santimetre olarak |
-| `weight_kg` | Numeric(5,2) | Kilo — örn: 70.50 |
-| `objective` | String(50) | "Kilo Vermek", "Kilo Almak", "Kilo Korumak" |
-| `activity` | String(50) | Aktivite seviyesi (Sedanter, Hafif aktif, vb.) |
-| `meals` | Integer | Günlük öğün sayısı (2-5 arası) |
-| `daily_calorie` | Integer | Hesaplanan günlük kalori hedefi |
-| `created_at` | DateTime | Hesap oluşturulma zamanı |
-| `is_verified` | Boolean | E-posta doğrulaması tamamlandı mı? |
+Onemli kolonlar:
 
-### İlişkiler
-- `favorites` (1:N) → Kullanıcının favori tarifleri
-- `disliked_ingredients` (1:N) → Sevmediği malzemeler
-- `owned_ingredients` (1:N) → Dolabındaki malzemeler
-- `daily_logs` (1:N) → Yediği yemeklerin kaydı
-- `verification_codes` (1:N) → E-posta doğrulama kodları
-- `recipes` (1:N) → Kullanıcının eklediği kişisel tarifler (user_id = X)
-- `ingredients` (1:N) → Kullanıcının eklediği kişisel malzemeler (user_id = X)
+- `user_id`: Kullanici kimligi.
+- `name_surname`: Ad soyad.
+- `email`: Benzersiz e-posta.
+- `password_hash`: Hashlenmis sifre.
+- `daily_calorie`: Gunluk kalori hedefi.
+- `meals`: Gunluk ogun sayisi.
+- `is_verified`: E-posta dogrulandi mi.
 
-### Kritik Teknik Notlar
-- `password_hash` → bcrypt hash içerir, `$2b$` ile başlar
-- `daily_calorie` → Profil kurulumunda Harris-Benedict formülü ile hesaplanır
-- `is_verified = False` → Giriş yapılamaz bile kayıt varsa
+Iliskiler:
 
----
+- Bir kullanicinin birden fazla favorisi olabilir.
+- Bir kullanicinin birden fazla dolap malzemesi olabilir.
+- Bir kullanicinin birden fazla gunluk log kaydi olabilir.
+- Bir kullanicinin kendine ozel tarifleri olabilir.
 
-## 2. `email_verification_codes` — E-posta Doğrulama Kodları
+## `email_verification_codes` Tablosu
 
-### Ne Zaman Oluşturulur?
-- Kullanıcı kayıt formu doldurduğunda (purpose: "register")
-- "Şifremi unuttum" isteğinde (purpose: "reset_password")
-- Profilde şifre/e-posta değiştirmek istendiğinde (purpose: "security_update")
+Bu tablo e-posta dogrulama ve sifre sifirlama kodlarini tutar.
 
-### Neden Gerekli?
-Kullanıcının gerçekten o e-postaya sahip olduğunu kanıtlamak için 6 haneli geçici kod gönderilir. Kod 10 dakika sonra geçersizleşir.
+Neden var?
 
-### Sütunlar
+Kullaniciya gonderilen kodun dogru olup olmadigi ve suresinin gecip gecmedigi kontrol edilmelidir.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `id` | Integer (PK) | Kayıt kimliği |
-| `user_id` | Integer (FK → users, nullable) | Kayıtlı kullanıcı; kayıt sırasında NULL |
-| `email` | String(255) | Koda ait e-posta adresi |
-| `code` | String(6) | 6 haneli OTP kodu (örn: "483921") |
-| `purpose` | String(30) | "register", "reset_password", "security_update" |
-| `expires_at` | DateTime | Kodun son geçerlilik zamanı |
-| `created_at` | DateTime | Oluşturulma zamanı |
-| `temp_name` | String(100) | Kayıtta geçici ad soyad (doğrulama bekleniyor) |
-| `temp_password` | String(255) | Kayıtta geçici bcrypt hash (doğrulama bekleniyor) |
+Onemli kolonlar:
 
-### Önemli Tasarım Kararı
-Kayıt akışında kullanıcı `users` tablosuna doğrulama **sonrasında** eklenir. `temp_name` ve `temp_password`, onay gelene kadar bu tabloda bekler. Doğrulama tamamlanınca `User` satırı eklenir ve bu kod kaydı silinir.
+- `email`: Kodun gonderildigi e-posta.
+- `code`: 6 haneli dogrulama kodu.
+- `purpose`: Kodun amaci.
+- `expires_at`: Kodun gecerlilik suresi.
+- `temp_name`, `temp_password`: Kayit dogrulama sirasinda gecici bilgiler.
 
----
+## `ingredients` Tablosu
 
-## 3. `ingredient_categories` — Malzeme Kategorileri
+Bu tablo malzemeleri ve malzemelerin besin degerlerini tutar.
 
-### Ne Zaman Oluşturulur?
-Seed scripti ile önceden doldurulur. Değişmez sabit veriler.
+Neden var?
 
-### Neden Gerekli?
-Malzemeleri kategorilere ayırmak filtrele ve arama kolaylığı sağlar. Frontend'de kategori bazlı listeleme yapılır.
+Tarif onerisi ve kalori hesabinin temeli malzemelerdir. Bir tarifin toplam kalorisi, icindeki malzemelerin 100 gram basina besin degerlerinden hesaplanir.
 
-### Sütunlar
+Onemli kolonlar:
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `category_id` | Integer (PK) | Kategori kimliği |
-| `category_name` | String(50) UNIQUE | Kategori adı (Et, Sebze, Tahıl vb.) |
+- `ingredient_id`: Malzeme ID'si.
+- `ingredient_name`: Malzeme adi.
+- `user_id`: Malzeme global mi kullaniciya ozel mi.
+- `calorie_per_100g`: 100 gram basina kalori.
+- `protein_per_100g`: 100 gram basina protein.
+- `carbohydrate_per_100g`: 100 gram basina karbonhidrat.
+- `fat_per_100g`: 100 gram basina yag.
+- `nutrition_source`: Besin bilgisinin kaynagi.
 
-### İlişkiler
-- `ingredients` (1:N) → Bu kategoriye ait malzemeler
+`user_id` alani cok onemlidir:
 
----
+- `NULL` ise malzeme globaldir.
+- Doluysa malzeme sadece o kullaniciya aittir.
 
-## 4. `ingredients` — Malzemeler
+## `ingredient_categories` Tablosu
 
-### Ne Zaman Oluşturulur?
-- Yemek.com scraper verisi içe aktarımıyla (global, `user_id = NULL`)
-- Kullanıcı özel malzeme eklediğinde (`user_id = kullanıcı_id`)
-- Gemini AI yeni bir malzeme besin değeri hesapladığında
+Malzeme kategorilerini tutar.
 
-### Neden Gerekli?
-Hem global hem kişisel malzemelerin besin değerlerini saklar. Health score ve öneri algoritması bu verilere dayanır.
+Ornek kategoriler:
 
-### Sütunlar
+- Sebze
+- Meyve
+- Et
+- Sut urunleri
+- Bakliyat
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `ingredient_id` | Integer (PK) | Malzeme kimliği |
-| `ingredient_name` | String(100) | Malzeme adı |
-| `user_id` | Integer (FK → users, nullable) | NULL = global, değer varsa kişisel |
-| `category` | String(50) | Kategori adı (metin) |
-| `category_id` | Integer (FK → ingredient_categories) | Kategori referansı |
-| `calorie_per_100g` | Float | 100 gramda kalori |
-| `protein_per_100g` | Float | 100 gramda protein (gram) |
-| `carbohydrate_per_100g` | Float | 100 gramda karbonhidrat (gram) |
-| `fat_per_100g` | Float | 100 gramda yağ (gram) |
-| `saturated_fat_per_100g` | Float | 100 gramda doymuş yağ |
-| `fiber_per_100g` | Float | 100 gramda lif |
-| `sugar_per_100g` | Float | 100 gramda şeker |
-| `sodium_mg_per_100g` | Float | 100 gramda sodyum (miligram) |
-| `nutrition_source` | String(30) | "gemini", "manual", "db", "usda_legacy" |
-| `nutrition_confidence` | Float | Güven skoru 0-1 arası |
-| `is_verified` | Boolean | Admin doğrulaması |
-| `source` | String(50) | "manual", "gemini_auto", "admin" |
+Bu tablo malzemeleri daha duzenli listelemek icin vardir.
 
-### Kritik Tasarım: `user_id = NULL`
-- `user_id = NULL` → Global malzeme, tüm kullanıcılara görünür
-- `user_id = X` → Sadece kullanıcı X'e ait özel malzeme
+## `ingredient_aliases` Tablosu
 
-Bu pattern gereksiz veri kopyalamasını önler. Ortak bilgi paylaşılır.
+Malzemelerin alternatif adlarini tutar.
 
-### Unique Constraint Açıklaması
-```sql
--- Global malzemelerde sadece isim tekil:
-CREATE UNIQUE INDEX WHERE user_id IS NULL ON (ingredient_name)
+Ornek:
 
--- Kişisel malzemelerde kullanıcı + isim tekil:
-CREATE UNIQUE INDEX WHERE user_id IS NOT NULL ON (user_id, ingredient_name)
+```text
+domates -> tomato
+domates -> domates rendesi
 ```
 
-### İlişkiler
-- `ingredient_categories` (N:1) — Kategorisi
-- `ingredient_aliases` (1:N) — Takma adları
-- `recipe_ingredients` (1:N) — Hangi tariflerde kullanılıyor
-- `disliked_ingredients` (1:N) — Hangi kullanıcılar sevmiyor
-- `owned_ingredients` (1:N) — Hangi kullanıcıların dolabında var
-
----
-
-## 5. `ingredient_aliases` — Malzeme Takma Adları
-
-### Ne Zaman Oluşturulur?
-Bir malzemenin birden fazla yazılış şekli olduğunda. Hem otomatik (scraper) hem manuel olarak eklenir.
-
-### Neden Gerekli?
-Kullanıcı "tavuk" diye arama yaptığında "Tavuk Göğsü (Derisiz)" gibi varyantları da bulmasını sağlar. Fuzzy matching'e ek olarak kesin eşleme.
-
-### Sütunlar
-
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `id` | Integer (PK) | Kayıt kimliği |
-| `ingredient_id` | Integer (FK → ingredients, CASCADE) | Ana malzeme |
-| `alias_name` | String(150) | Takma ad (orijinal yazım) |
-| `normalized_alias_name` | String(150) UNIQUE | Türkçe normalleştirilmiş (ğ→g, ş→s vb.) |
-| `created_at` | DateTime | Oluşturulma tarihi |
-
----
-
-## 6. `recipes` — Tarifler
-
-### Ne Zaman Oluşturulur?
-- Scraper ile yemek.com'dan içe aktarımda (global, `user_id = NULL`)
-- Kullanıcı kendi tarifi eklediğinde (`user_id = kullanıcı_id`)
-- Revizyon kaydedildiğinde (yeni `source="revision"` satırı oluşturulur)
-
-### Neden Gerekli?
-Sistemin temel varlığı. Tüm tarif bilgileri, besin değerleri ve sağlık skoru burada saklanır.
-
-### Sütunlar
+Neden var?
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `recipe_id` | Integer (PK) | Tarif kimliği |
-| `recipe_name` | String(150) | Tarif adı |
-| `user_id` | Integer (FK → users, nullable) | NULL = global, değer = kişisel |
-| `source` | String(20) | "yemekcom", "custom", "revision" |
-| `source_url` | String(500) | Kaynak URL (scraper'dan) |
-| `recipe_category` | String(50) | "Çorba", "Ana Yemek", "Tatlı" vb. |
-| `explanation` | Text | Tarif açıklaması |
-| `preparation` | Text | Hazırlık adımları |
-| `cooking_type` | String(50) | "Fırında", "Tavada", "Tencerede" |
-| `cooking_method` | String(50) | Pişirme yöntemi |
-| `total_time_minutes` | Integer | Toplam süre (dakika) |
-| `serving` | Integer | Kaç kişilik |
-| `calorie` | Numeric(6,2) | Toplam kalori (TÜM porsiyonlar için) |
-| `protein` | Numeric(6,2) | Toplam protein (TÜM porsiyonlar) |
-| `carbohydrate` | Numeric(6,2) | Toplam karbonhidrat (TÜM porsiyonlar) |
-| `fat` | Numeric(6,2) | Toplam yağ (TÜM porsiyonlar) |
-| `health_score` | Integer | 0-100 arası sağlık skoru |
-| `health_grade` | String(1) | A/B/C/D |
-| `health_explanation` | Text | Skoru açıklayan metin |
-| `image_url` | String(255) | Tarif resmi URL'si |
-| `is_active` | Boolean | False = soft-delete (görünmez ama silinmez) |
+Tarif eslestirme sirasinda farkli yazilan ama ayni anlama gelen malzemeleri yakalamak icin kullanilir.
 
-### Önemli: Kalori Nasıl Saklanır?
-`calorie`, `protein`, `carbohydrate`, `fat` → **TÜM porsiyonların toplamı**
+## `recipes` Tablosu
 
-Frontend'de porsiyon başına gösterim: `calorie / serving`
+Tariflerin ana bilgilerinin tutuldugu tablodur.
 
-Neden böyle? Scraper yemek.com'dan toplam değerleri çekiyor. Porsiyon sayısı değişebilir; toplam üzerinden hesap daha güvenilir.
+Onemli kolonlar:
 
-### İlişkiler
-- `recipe_ingredients` (1:N) — Malzeme bağlantıları
-- `healthy_recipes` (1:0..1) — Sağlıklı tarif işareti
-- `favorites` (1:N) — Bu tarifi favorileyen kullanıcılar
-- `daily_logs` (1:N) — Bu tarifi yiyen kayıtlar
-- `revision_cache` (1:N) — Önbelleğe alınmış revizyonlar
+- `recipe_id`: Tarif ID'si.
+- `recipe_name`: Tarif adi.
+- `user_id`: Tarif global mi kullaniciya ozel mi.
+- `source`: Tarifin kaynagi.
+- `source_url`: Tarif dis kaynaktan geldiyse URL.
+- `recipe_category`: Tarif kategorisi.
+- `preparation`: Hazirlanis adimlari.
+- `serving`: Porsiyon sayisi.
+- `calorie`, `protein`, `carbohydrate`, `fat`: Besin degerleri.
+- `health_score`, `health_grade`: Saglik skoru.
+- `image_url`: Tarif resmi.
+- `is_active`: Tarif aktif mi.
 
----
+`user_id` burada da onemlidir:
 
-## 7. `recipe_ingredients` — Tarif-Malzeme Bağlantısı
+- `NULL`: Global tarif.
+- Dolu: Kullaniciya ozel tarif.
 
-### Ne Zaman Oluşturulur?
-Bir tarif oluşturulduğunda, her malzeme için bir satır eklenir.
+## `recipe_ingredients` Tablosu
 
-### Neden Gerekli?
-Tarif ve malzeme arasındaki çoktan-çoğa (N:N) ilişkiyi çözer. Bir tarif birçok malzeme içerebilir; bir malzeme birçok tarifte kullanılabilir.
+Bu tablo tarifler ile malzemeler arasindaki baglantiyi tutar.
 
-### Sütunlar
+Neden var?
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `recipe_ingredient_id` | Integer (PK) | Bağlantı kimliği |
-| `recipe_id` | Integer (FK → recipes, CASCADE) | Hangi tarif |
-| `ingredient_id` | Integer (FK → ingredients, CASCADE) | Hangi malzeme |
-| `amount` | Numeric(6,2) | Miktar (ör: 2.00) |
-| `unit` | String(50) | Birim (ör: "su bardağı", "gram") |
-| `miktar_gram` | Numeric(10,2) | Gram cinsinden miktar (dönüştürülmüş) |
-| `donusum_kaynagi` | String(100) | Dönüşüm kaynağı (ör: "yemekcom") |
-| `donusum_guveni` | String(20) | "high", "medium", "low" |
-| `donusum_notu` | Text | Dönüşüm notları |
+Bir tarifte birden fazla malzeme olabilir. Bir malzeme de birden fazla tarifte kullanilabilir. Bu coktan-coga iliskiyi ayri tabloyla tutmak gerekir.
 
-### Neden `miktar_gram` Ayrı Saklanıyor?
-Health score hesaplamak için tüm malzemelerin gram cinsinden ağırlığı gerekir.
-"2 su bardağı pirinç" → 400 gram dönüşümü karmaşıktır ve her seferinde hesaplamak yavaşlatır.
-Bu dönüşüm bir kez yapılır ve saklanır.
+Onemli kolonlar:
 
----
+- `recipe_id`: Hangi tarif.
+- `ingredient_id`: Hangi malzeme.
+- `amount`: Miktar.
+- `unit`: Birim.
+- `miktar_gram`: Gram karsiligi.
 
-## 8. `healthy_recipes` — Sağlıklı Tarif İşaretleri
+Bu tablo olmadan tarifin hangi malzemelerden olustugunu duzenli takip etmek zor olurdu.
 
-### Ne Zaman Oluşturulur?
-Health grade B veya üstü olan tarifler senkronizasyon scripti ile bu tabloya eklenir.
+## `healthy_recipes` Tablosu
 
-### Neden Gerekli?
-"Sağlıklı Tarif" filtresinin hızlı çalışmasını sağlar. Her seferinde health score hesaplamak yerine bu tabloda hazır liste var.
+Saglikli tarif olarak secilen tarifleri tutar.
 
-### Sütunlar
+Neden var?
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `healthy_recipe_id` | Integer (PK) | Kayıt kimliği |
-| `recipe_id` | Integer (FK → recipes, UNIQUE, CASCADE) | Tarif — bir tarif bir kez olabilir |
-| `source` | String(20) | Kaynak |
-| `synced_at` | DateTime | Senkronizasyon zamanı |
+Saglikli menu ekraninda sadece saglikli tarifler filtrelenebilsin diye.
 
----
+Bu tablo `recipes` tablosuna baglanir. Yani burada tarifin tamamı tekrar yazilmaz, sadece hangi tarifin saglikli listede oldugu tutulur.
 
-## 9. `owned_ingredients` — Kullanıcı Dolabı
+## `favorites` Tablosu
 
-### Ne Zaman Oluşturulur?
-Kullanıcı "Malzeme Seçimi" sayfasında dolabına malzeme eklediğinde.
+Kullanicilarin favori tariflerini tutar.
 
-### Neden Gerekli?
-"Dolabımdaki malzemelere göre tarif öner" özelliği için. Öneri algoritması dolap malzemelerini bonus olarak değerlendirir.
+Onemli kolonlar:
 
-### Sütunlar
+- `user_id`: Favoriyi ekleyen kullanici.
+- `recipe_id`: Favorilenen tarif.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `owned_id` | Integer (PK) | Kayıt kimliği |
-| `user_id` | Integer (FK → users, CASCADE) | Kullanıcı |
-| `ingredient_id` | Integer (FK → ingredients, CASCADE) | Malzeme |
-| `added_at` | DateTime | Eklenme tarihi |
+Neden var?
 
----
+Her kullanicinin favori listesi farkli oldugu icin favoriler ayri tabloyla tutulur.
 
-## 10. `disliked_ingredients` — Sevilmeyen Malzemeler
+## `disliked_ingredients` Tablosu
 
-### Ne Zaman Oluşturulur?
-Kullanıcı "Sevilmeyen Malzemeler" sayfasında bir malzemeyi listeye eklediğinde.
+Kullanicinin sevmedigi malzemeleri tutar.
 
-### Neden Gerekli?
-Tarif önerisinde sevilmeyen malzeme içeren tariflere her biri için -35 ceza puanı verilir. "Sevilmeyenleri çıkar" seçeneğiyle bu tarifler tamamen hariç tutulur.
+Neden var?
 
-### Sütunlar
+Tarif onerisi yaparken kullanici istemedigi malzemeleri iceren tarifleri gormeyebilir veya bu tariflerin skoru dusurulebilir.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `disliked_id` | Integer (PK) | Kayıt kimliği |
-| `user_id` | Integer (FK → users, CASCADE) | Kullanıcı |
-| `ingredient_id` | Integer (FK → ingredients, CASCADE) | Sevilmeyen malzeme |
+## `owned_ingredients` Tablosu
 
----
+Kullanicinin dolabinda bulunan malzemeleri tutar.
 
-## 11. `favorites` — Favori Tarifler
+Neden var?
 
-### Ne Zaman Oluşturulur?
-Kullanıcı tarif detay sayfasında kalp ikonuna bastığında.
+Tarif onerisi sadece secili malzemelere degil, kullanicinin dolabindaki malzemelere de bakabilir.
 
-### Neden Gerekli?
-Kullanıcının beğendiği tarifleri "Favorilerim" sayfasında listelemek için. Toggle işlemi (ekle/çıkar) ile çalışır.
+Ornek:
 
-### Sütunlar
+Kullanici "yumurta" secer ama dolabinda "sut" ve "un" varsa sistem pankek gibi tarifleri daha uygun gorebilir.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `favorite_id` | Integer (PK) | Kayıt kimliği |
-| `user_id` | Integer (FK → users, CASCADE) | Kullanıcı |
-| `recipe_id` | Integer (FK → recipes, CASCADE) | Favori tarif |
+## `daily_logs` Tablosu
 
----
+Kullanicinin gunluk yedigi tarifleri ve aldigi besin degerlerini tutar.
 
-## 12. `daily_logs` — Günlük Öğün Kayıtları
+Onemli kolonlar:
 
-### Ne Zaman Oluşturulur?
-- Kullanıcı tarif detay sayfasında "Yedim" butonuna bastığında
-- Tarifi haftalık plana eklediğinde
+- `user_id`: Hangi kullanici.
+- `recipe_id`: Hangi tarif.
+- `log_date`: Hangi gun.
+- `meal_type`: Hangi ogun.
+- `calorie_intake`: Alinan kalori.
+- `protein_intake`, `carbohydrate_intake`, `fat_intake`: Makro besinler.
+- `serving_count`: Kac porsiyon.
 
-### Neden Gerekli?
-Kullanıcının günlük kalori alımını takip etmek için. Dashboard'daki kalori çubuğu ve haftalık grafikler bu tablodan hesaplanır.
+Neden var?
 
-### Sütunlar
+Kullanici gunluk/haftalik kalori ve makro takibi yapabilsin diye.
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `log_id` | Integer (PK) | Kayıt kimliği |
-| `user_id` | Integer (FK → users, CASCADE) | Kullanıcı |
-| `recipe_id` | Integer (FK → recipes, CASCADE) | Yenen tarif |
-| `log_date` | Date | Hangi gün (ör: 2026-05-31) |
-| `logged_at` | DateTime | Tam kayıt zamanı |
-| `meal_type` | String(30) | "Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün" |
-| `entry_source` | String(20) | "daily" veya "weekly" |
-| `calorie_intake` | Numeric(6,2) | O öğünde tüketilen kalori |
-| `protein_intake` | Numeric(6,2) | Tüketilen protein |
-| `carbohydrate_intake` | Numeric(6,2) | Tüketilen karbonhidrat |
-| `fat_intake` | Numeric(6,2) | Tüketilen yağ |
-| `serving_count` | Integer | Kaç porsiyon |
-| `serving_multiplier` | Numeric(6,2) | Porsiyon çarpanı |
+## `revision_cache` Tablosu
 
-### Hesaplama Mantığı
-`calorie_intake = recipe.calorie_per_serving × serving_count`
+Gemini tarif revizyon cevaplarini tutar.
 
-Kaydedilirken hesaplanır ve saklanır. Tarif sonradan değişse bile log değerleri korunur (tarihsel doğruluk).
+Neden var?
 
----
+Ayni tarif icin ayni revizyon istegi tekrar gelirse Gemini'ye tekrar istek atmak yerine eski cevap kullanilir.
 
-## 13. `revision_cache` — Tarif Revizyon Önbelleği
+Onemli kolonlar:
 
-### Ne Zaman Oluşturulur?
-Kullanıcı bir tarifte Gemini AI ile revizyon yaptığında. Her tarif+değişiklik kombinasyonu bir kez saklanır.
+- `recipe_id`: Revize edilen tarif.
+- `modifications_hash`: Revizyon isteginin hash'i.
+- `response_json`: Gemini cevabi.
 
-### Neden Gerekli?
-Gemini API çağrısı hem maliyetli hem yavaş. Aynı revizyon talebi önbellekten saniyeler içinde yanıtlanabilir.
+## En Onemli Iliski Haritasi
 
-### Sütunlar
+```text
+users
+  -> recipes
+  -> favorites
+  -> owned_ingredients
+  -> disliked_ingredients
+  -> daily_logs
 
-| Sütun | Tip | Açıklama |
-|-------|-----|----------|
-| `cache_id` | Integer (PK) | Kayıt kimliği |
-| `recipe_id` | Integer (FK → recipes, CASCADE) | Hangi tarif |
-| `modifications_hash` | String(64) | SHA-256 hash (değişiklik listesinin özeti) |
-| `response_json` | Text | Gemini'den gelen tam JSON yanıt |
-| `created_at` | DateTime | Önbellek oluşturulma zamanı |
+recipes
+  -> recipe_ingredients
+  -> favorites
+  -> daily_logs
+  -> revision_cache
 
-### Nasıl Çalışır?
-1. Kullanıcı "Tarifi şekersiz yap + az yağlı" ister
-2. Bu talep SHA-256 hash'e çevrilir
-3. `recipe_id + hash` veritabanında aranır
-4. Varsa → önbellekten döner (Gemini çağrısı yapılmaz)
-5. Yoksa → Gemini'ye sorulur → yanıt DB'ye kaydedilir → döner
+ingredients
+  -> recipe_ingredients
+  -> owned_ingredients
+  -> disliked_ingredients
+  -> ingredient_aliases
+```
 
----
+## Senaryolarla Anlatim
 
-## CASCADE Silme Davranışı
+### Kullanici kayit olunca
 
-Tüm yabancı anahtar (FK) ilişkileri `ondelete="CASCADE"` ile tanımlanmıştır.
+1. Dogrulama kodu `email_verification_codes` tablosuna yazilir.
+2. Kod dogrulaninca kullanici `users` tablosuna eklenir veya dogrulanir.
 
-### Ne Anlama Gelir?
+### Kullanici tarif ekleyince
 
-Üst satır silinince alt satırlar **otomatik** silinir:
+1. Tarif ana bilgileri `recipes` tablosuna yazilir.
+2. Malzemeler `ingredients` tablosundan bulunur.
+3. Tarif-malzame baglantilari `recipe_ingredients` tablosuna yazilir.
+4. Tarifin kalori ve makro degerleri hesaplanip `recipes` tablosuna kaydedilir.
 
-| Silinirse | Otomatik Silinen |
-|---|---|
-| Kullanıcı | favorites, disliked_ingredients, owned_ingredients, daily_logs, verification_codes |
-| Tarif | recipe_ingredients, favorites, daily_logs, revision_cache |
-| Malzeme | recipe_ingredients, disliked_ingredients, owned_ingredients, aliases |
+### Kullanici favoriye ekleyince
 
-Bu veri tutarlılığını sağlar. Silinen bir tarife ait "ölü" favoriler kalmaz.
+1. `favorites` tablosuna `user_id` ve `recipe_id` yazilir.
+2. Favoriler sayfasinda bu tablo okunur.
 
----
+### Kullanici tarif onerisi isteyince
 
-## Önemli Teknik Kararlar
+1. Kullanici malzemeleri ve dolap malzemeleri alinir.
+2. Tariflerin malzemeleri `recipe_ingredients` uzerinden okunur.
+3. Sevilmeyen malzemeler `disliked_ingredients` uzerinden kontrol edilir.
+4. Tarif skoru hesaplanir.
 
-### 1. `user_id = NULL` = Global Kayıt
+### Gemini revizyonu yapilinca
 
-Hem `ingredients` hem `recipes` tablosunda `user_id = NULL` olan satırlar tüm kullanıcılara görünür. Kişisel veriler `user_id = X` ile izole edilir.
+1. Orijinal tarif `recipes` ve `recipe_ingredients` uzerinden okunur.
+2. Revizyon istegi hashlenir.
+3. `revision_cache` tablosunda ayni cevap var mi bakilir.
+4. Yoksa Gemini'ye gidilir.
+5. Cevap cache'e yazilir.
+6. Kullanici kaydederse yeni tarif olarak `recipes` ve `recipe_ingredients` tablolarina yazilir.
 
-Bu pattern gereksiz veri kopyalamasını önler. 1000 kullanıcı aynı global tarifi kullanıyorsa tek bir satır yeterli.
+## Hocaya Kisa Cevaplar
 
-### 2. `is_active = False` = Soft Delete
+**Soru: Tarif ile malzeme nasil bagli?**  
+Cevap: `recipe_ingredients` ara tablosu ile bagli. Bir tarifin birden fazla malzemesi, bir malzemenin de birden fazla tarifte kullanimi olabilir.
 
-`recipes` tablosunda `is_active = False` yaparak tarifleri "gizleyebiliriz". Satır silinmez. Bu sayede:
-- Silinen tariflere ait loglar bozulmaz
-- Kullanıcı istatistikleri korunur
-- Gerektiğinde tarif geri alınabilir
+**Soru: Kullaniciya ozel tarif nasil ayriliyor?**  
+Cevap: `recipes.user_id` doluysa tarif kullaniciya ozeldir. `NULL` ise global tariftir.
 
-### 3. Kalori Toplam mı, Porsiyon mu?
+**Soru: Favoriler nerede tutuluyor?**  
+Cevap: `favorites` tablosunda `user_id` ve `recipe_id` ile tutuluyor.
 
-`recipes.calorie` → Toplam (TÜM porsiyonlar)
-Frontend → `calorie / serving` ile porsiyon hesaplar
-`daily_logs.calorie_intake` → Zaten porsiyon × serving_count değeri (hesaplanmış)
+**Soru: Gunluk kalori takibi nerede tutuluyor?**  
+Cevap: `daily_logs` tablosunda tutuluyor.
 
-### 4. `revision_cache` Neden Ayrı Tablo?
+## 30 Saniyelik Ozet
 
-`revision_cache` başlangıçta recipe kolonuna JSON olarak yazılabilirdi. Ancak:
-- Önbellek verisinin tarif verisiyle karışmaması için ayrı tablo
-- Farklı değişiklik kombinasyonları aynı tarif için farklı satırlar
-- Temizleme/geçerliliği süresi aşılmış kayıt silme kolaylaşır
+Veritabaninda kullanicilar, tarifler ve malzemeler ana tablolardir. Tarif-malzame baglantisi `recipe_ingredients` ile kurulur. Favoriler, dolap malzemeleri, sevilmeyen malzemeler ve gunluk loglar kullaniciya baglidir. Gemini revizyon cevaplari `revision_cache` tablosunda tutulur.
 
-### 5. `nutrition_source` ve `nutrition_confidence`
-
-Her malzemenin besin değerinin nereden geldiği ve ne kadar güvenilir olduğu saklanır:
-- `"db"` + confidence=1.0 → Doğrulanmış veri
-- `"gemini"` + confidence=0.7 → AI tahmini, güvenilir ama mükemmel değil
-- `"manual"` + confidence=0.4 → Kullanıcı girişi, doğrulanmamış
-
-Bu sayede health score'un güvenilirlik düzeyi kullanıcıya gösterilebilir.

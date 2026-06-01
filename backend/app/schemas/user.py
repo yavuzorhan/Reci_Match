@@ -1,6 +1,5 @@
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
-
 class ProfileUpdateRequest(BaseModel):
     age: int
     gender: str
@@ -10,10 +9,8 @@ class ProfileUpdateRequest(BaseModel):
     meals: int
     activity: str
 
-
 class FavoriteCreateRequest(BaseModel):
     recipe_id: int
-
 
 class DailyLogCreateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -46,7 +43,6 @@ class DailyLogCreateRequest(BaseModel):
         default=None,
         validation_alias=AliasChoices("fat_intake", "fatIntake", "fat"),
     )
-
 
 class DailyLogUpdateRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

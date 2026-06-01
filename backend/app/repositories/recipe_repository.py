@@ -12,10 +12,8 @@ from app.db.models import (
     User,
 )
 
-
 def find_recipe_by_source_url(db: Session, source_url: str) -> Recipe | None:
     return db.query(Recipe).filter(Recipe.source_url == source_url, Recipe.is_active.is_(True)).first()
-
 
 def find_recipe_by_name(db: Session, recipe_name: str) -> Recipe | None:
     return (
@@ -23,7 +21,6 @@ def find_recipe_by_name(db: Session, recipe_name: str) -> Recipe | None:
         .filter(func.lower(Recipe.recipe_name) == recipe_name.lower(), Recipe.is_active.is_(True))
         .first()
     )
-
 
 def find_active_recipe_by_name_for_health_validation(db: Session, search_term: str) -> Recipe | None:
     return (
@@ -37,10 +34,8 @@ def find_active_recipe_by_name_for_health_validation(db: Session, search_term: s
         .first()
     )
 
-
 def find_recipe_by_id(db: Session, recipe_id: int) -> Recipe | None:
     return db.query(Recipe).filter(Recipe.recipe_id == recipe_id, Recipe.is_active.is_(True)).first()
-
 
 def find_recipe_by_id_with_relations(db: Session, recipe_id: int) -> Recipe | None:
     return (
@@ -50,13 +45,11 @@ def find_recipe_by_id_with_relations(db: Session, recipe_id: int) -> Recipe | No
         .first()
     )
 
-
 def create_recipe(db: Session, **recipe_fields) -> Recipe:
     recipe = Recipe(**recipe_fields)
     db.add(recipe)
     db.flush()
     return recipe
-
 
 def delete_recipe(db: Session, recipe: Recipe) -> None:
     db.query(RecipeIngredient).filter(RecipeIngredient.recipe_id == recipe.recipe_id).delete()
@@ -64,7 +57,6 @@ def delete_recipe(db: Session, recipe: Recipe) -> None:
     db.query(DailyLog).filter(DailyLog.recipe_id == recipe.recipe_id).delete()
     db.query(HealthyRecipe).filter(HealthyRecipe.recipe_id == recipe.recipe_id).delete()
     recipe.is_active = False
-
 
 def replace_recipe_ingredients(
     db: Session,
@@ -87,10 +79,8 @@ def replace_recipe_ingredients(
             )
         )
 
-
 def find_user_by_id(db: Session, user_id: int) -> User | None:
     return db.query(User).filter(User.user_id == user_id).first()
-
 
 def get_all_recipes(
     db: Session,
@@ -118,7 +108,6 @@ def get_all_recipes(
 
     return query.order_by(Recipe.recipe_name.asc()).all()
 
-
 def find_ingredient_by_id(db: Session, ingredient_id: int, user_id: int) -> Ingredient | None:
     return (
         db.query(Ingredient)
@@ -129,12 +118,10 @@ def find_ingredient_by_id(db: Session, ingredient_id: int, user_id: int) -> Ingr
         .first()
     )
 
-
 def get_ingredients_by_ids(db: Session, ingredient_ids: list[int]) -> list[Ingredient]:
     if not ingredient_ids:
         return []
     return db.query(Ingredient).filter(Ingredient.ingredient_id.in_(ingredient_ids)).all()
-
 
 def get_yemekcom_recipes_for_audit(db: Session) -> list[Recipe]:
     return (
@@ -143,7 +130,6 @@ def get_yemekcom_recipes_for_audit(db: Session) -> list[Recipe]:
         .filter(Recipe.source.in_(["yemekcom", "yemek.com"]))
         .all()
     )
-
 
 def deactivate_recipes(db: Session, recipe_ids: list[int]) -> int:
     if not recipe_ids:
@@ -154,7 +140,6 @@ def deactivate_recipes(db: Session, recipe_ids: list[int]) -> int:
         .update({"is_active": False}, synchronize_session=False)
     )
 
-
 def find_revision_cache(db: Session, recipe_id: int, modifications_hash: str) -> RevisionCache | None:
     return (
         db.query(RevisionCache)
@@ -164,7 +149,6 @@ def find_revision_cache(db: Session, recipe_id: int, modifications_hash: str) ->
         )
         .first()
     )
-
 
 def create_revision_cache(db: Session, recipe_id: int, modifications_hash: str, response_json: str) -> RevisionCache:
     record = RevisionCache(recipe_id=recipe_id, modifications_hash=modifications_hash, response_json=response_json)

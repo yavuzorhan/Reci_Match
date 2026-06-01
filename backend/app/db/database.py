@@ -12,13 +12,8 @@ Base = declarative_base()
 _ingredient_inline_nutrition_ready = False
 _daily_log_macros_ready = False
 
-
 def ensure_ingredient_inline_nutrition_columns(db):
-    """
-    Keeps older databases readable after the Ingredient model gained inline
-    nutrition columns. The project currently relies on these runtime guards
-    instead of a migration folder because it is deployed on a single local DB.
-    """
+
     global _ingredient_inline_nutrition_ready
     if _ingredient_inline_nutrition_ready:
         return
@@ -36,8 +31,7 @@ def ensure_ingredient_inline_nutrition_columns(db):
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))
     db.execute(text("ALTER TABLE ingredients ADD COLUMN IF NOT EXISTS source VARCHAR(50) NOT NULL DEFAULT 'manual'"))
     db.execute(text("ALTER TABLE ingredients DROP CONSTRAINT IF EXISTS ck_ingredients_source"))
-    db.execute(text("UPDATE ingredients SET nutrition_source = 'usda_legacy' WHERE source = 'usda_auto'"))
-    db.execute(text("UPDATE ingredients SET source = 'manual' WHERE source = 'usda_auto'"))
+    db.execute(text("ALTER TABLE ingredients DROP CONSTRAINT IF EXISTS ck_ingredients_nutrition_source"))
     db.execute(text("""
         DO $$
         BEGIN
@@ -57,14 +51,13 @@ def ensure_ingredient_inline_nutrition_columns(db):
             ) THEN
                 ALTER TABLE ingredients
                 ADD CONSTRAINT ck_ingredients_nutrition_source
-                CHECK (nutrition_source IN ('gemini', 'usda_legacy', 'manual', 'db'));
+                CHECK (nutrition_source IN ('gemini', 'manual', 'db'));
             END IF;
         END
         $$;
     """))
     db.commit()
     _ingredient_inline_nutrition_ready = True
-
 
 def ensure_daily_log_macro_columns(db):
     global _daily_log_macros_ready

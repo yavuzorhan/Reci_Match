@@ -16,13 +16,11 @@ NORMALIZATION_DATA_FILE = os.path.join(
 
 _ALIASES_CACHE: dict[str, str] | None = None
 
-
 def _ascii_fold(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value or "")
     normalized = "".join(char for char in normalized if not unicodedata.combining(char))
     normalized = normalized.replace("ı", "i").replace("İ", "i")
     return " ".join(normalized.lower().split())
-
 
 @lru_cache(maxsize=1)
 def _normalization_data() -> dict:
@@ -32,16 +30,13 @@ def _normalization_data() -> dict:
     except Exception:
         return {}
 
-
 def _data_dict(key: str) -> dict:
     value = _normalization_data().get(key, {})
     return value if isinstance(value, dict) else {}
 
-
 def _data_list(key: str) -> list:
     value = _normalization_data().get(key, [])
     return value if isinstance(value, list) else []
-
 
 def get_aliases() -> dict[str, str]:
     global _ALIASES_CACHE
@@ -60,10 +55,8 @@ def get_aliases() -> dict[str, str]:
     _ALIASES_CACHE = aliases
     return aliases
 
-
 def _display_name(canonical_key: str) -> str:
     return _data_dict("canonical_display").get(canonical_key, canonical_key)
-
 
 def _clean_ingredient_text(name: str) -> str:
     text = _ascii_fold(name)
@@ -74,7 +67,6 @@ def _clean_ingredient_text(name: str) -> str:
     text = re.sub(r"\b\d+[a-z]+\b", " ", text)
     return re.sub(r"\s+", " ", text).strip()
 
-
 def _ingredient_tokens(text: str) -> list[str]:
     stop_words = set(_data_list("generic_stop_words"))
     return [
@@ -82,7 +74,6 @@ def _ingredient_tokens(text: str) -> list[str]:
         for token in re.split(r"[^a-z0-9]+", text)
         if token and token not in stop_words
     ]
-
 
 def _match_meat_and_poultry(token_set: set[str]) -> str | None:
     if "tavuk" in token_set:
@@ -149,7 +140,6 @@ def _match_meat_and_poultry(token_set: set[str]) -> str | None:
         return "et suyu" if "suyu" in token_set else "dana eti"
     return None
 
-
 def canonicalize_ingredient_name(name: str) -> str:
     if not name:
         return ""
@@ -184,10 +174,8 @@ def canonicalize_ingredient_name(name: str) -> str:
 
     return compact_text or text
 
-
 def normalize_ingredient_name(name: str) -> str:
     return canonicalize_ingredient_name(name)
-
 
 def infer_ingredient_category(ingredient_name: str) -> tuple[str, int]:
     category_ids = _data_dict("category_name_to_id")

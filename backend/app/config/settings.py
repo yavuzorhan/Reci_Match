@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-# .env dosyasını yüklemeye çalışalım
+
 env_path = Path(__file__).resolve().parent.parent.parent / '.env'
 load_dotenv(dotenv_path=env_path)
 
@@ -13,14 +13,14 @@ class Settings:
     POSTGRES_PORT: str = os.getenv("POSTGRES_PORT", "5432")
     POSTGRES_DB: str = os.getenv("POSTGRES_DB", "recipe_db")
 
-    # Email Settings
+    
     SMTP_SERVER: str = os.getenv("SMTP_SERVER", "smtp.gmail.com")
     SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
     FROM_EMAIL: str = os.getenv("FROM_EMAIL", "")
 
-    # Application Settings
+    
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
     @property

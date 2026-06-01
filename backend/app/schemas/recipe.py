@@ -1,12 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 
-
 class CustomRecipeIngredientCreate(BaseModel):
     ingredient_id: int | None = None
     ingredient_name: str | None = None
     amount: float | None = None
     unit: str | None = None
-
 
 class CustomRecipeCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
@@ -39,7 +37,6 @@ class CustomRecipeCreate(BaseModel):
 
     def resolved_serving(self) -> int | None:
         return self.serving_count or self.serving
-
 
 class RecipeRecommendationRequest(BaseModel):
     selected_ingredient_ids: list[int] = []

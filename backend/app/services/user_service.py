@@ -9,7 +9,6 @@ from app.db.models import Recipe
 from app.repositories import user_repository
 from app.utils.recipe_health import recipe_macro_values_per_serving
 
-
 TURKEY_TZ = timezone(timedelta(hours=3))
 
 ACTIVITY_MULTIPLIERS = {
@@ -20,7 +19,6 @@ ACTIVITY_MULTIPLIERS = {
     "Cok": 1.725,
     "Ekstra": 1.9,
 }
-
 
 def _calculate_daily_calorie(
     gender: str,
@@ -50,7 +48,6 @@ def _calculate_daily_calorie(
 
     return daily_calorie
 
-
 def get_profile(user_id: int, db: Session) -> dict:
     user = _ensure_user_exists(user_id, db)
 
@@ -65,7 +62,6 @@ def get_profile(user_id: int, db: Session) -> dict:
         "activity": user.activity or "Hareketsiz (Az veya hiç egzersiz)",
         "daily_calorie": user.daily_calorie,
     }
-
 
 def update_profile(
     user_id: int,
@@ -99,12 +95,10 @@ def update_profile(
         logging.error("Update profile error: %s", exc)
         raise HTTPException(status_code=500, detail="Profil güncellenirken bir hata oluştu.")
 
-
 def get_favorites(user_id: int, db: Session) -> list[int]:
     _ensure_user_exists(user_id, db)
     favorites = user_repository.find_favorites_by_user(db, user_id)
     return [favorite.recipe_id for favorite in favorites]
-
 
 def add_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
     _ensure_user_exists(user_id, db)
@@ -118,7 +112,6 @@ def add_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
     db.commit()
     return {"message": "Favorilere eklendi.", "recipe_id": recipe_id}
 
-
 def remove_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
     favorite = user_repository.find_favorite(db, user_id, recipe_id)
     if not favorite:
@@ -127,7 +120,6 @@ def remove_favorite(user_id: int, recipe_id: int, db: Session) -> dict:
     db.delete(favorite)
     db.commit()
     return {"message": "Favorilerden kaldırıldı.", "recipe_id": recipe_id}
-
 
 def get_daily_logs(user_id: int, db: Session) -> list[dict]:
     _ensure_user_exists(user_id, db)
@@ -176,7 +168,6 @@ def get_daily_logs(user_id: int, db: Session) -> list[dict]:
         })
     return result
 
-
 def get_daily_log_totals(user_id: int, log_date: str | None, db: Session) -> dict:
     logs = get_daily_logs(user_id, db)
     if log_date:
@@ -213,7 +204,6 @@ def get_daily_log_totals(user_id: int, log_date: str | None, db: Session) -> dic
         "carbohydrate": round(totals["carbohydrate"], 2),
         "fat": round(totals["fat"], 2),
     }
-
 
 def add_daily_log(
     user_id: int,
@@ -319,7 +309,6 @@ def add_daily_log(
         },
     }
 
-
 def remove_daily_log(user_id: int, log_id: int, db: Session) -> dict:
     log = user_repository.find_daily_log(db, user_id, log_id)
     if not log:
@@ -328,7 +317,6 @@ def remove_daily_log(user_id: int, log_id: int, db: Session) -> dict:
     db.delete(log)
     db.commit()
     return {"message": "Günlük kayıt silindi.", "log_id": log_id}
-
 
 def update_daily_log(
     user_id: int,
@@ -397,8 +385,6 @@ def update_daily_log(
         }
     }
 
-
-
 def _normalize_serving_count(value) -> int:
     if value is None:
         return 1
@@ -417,7 +403,6 @@ def _normalize_serving_count(value) -> int:
 
     return normalized
 
-
 def _recipe_macros_per_serving(recipe: Recipe) -> dict:
     macros = recipe_macro_values_per_serving(recipe) or {}
     return {
@@ -427,20 +412,17 @@ def _recipe_macros_per_serving(recipe: Recipe) -> dict:
         "fat": float(macros.get("fat_per_100g") or 0),
     }
 
-
 def _ensure_user_exists(user_id: int, db: Session):
     user = user_repository.find_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
     return user
 
-
 def _ensure_recipe_exists(recipe_id: int, db: Session) -> Recipe:
     recipe = user_repository.find_recipe_by_id(db, recipe_id)
     if not recipe:
         raise HTTPException(status_code=404, detail="Tarif bulunamadı.")
     return recipe
-
 
 def _normalize_meal_type(meal_type: str | None) -> str:
     value = (meal_type or "").strip().lower()
@@ -457,7 +439,6 @@ def _normalize_meal_type(meal_type: str | None) -> str:
         "akşam yemeği": "Akşam Yemeği",
     }
     return mapping.get(value, "Akşam Yemeği")
-
 
 def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, db: Session) -> str:
     meal_order = ["Kahvaltı", "Öğle Yemeği", "Akşam Yemeği", "Ara Öğün"]
@@ -476,7 +457,6 @@ def _resolve_daily_meal_slot(user_id: int, requested_meal_type: str, log_date, d
         if candidate not in used_meal_types:
             return candidate
         counter += 1
-
 
 def _local_now() -> datetime:
     return datetime.now(TURKEY_TZ).replace(tzinfo=None)

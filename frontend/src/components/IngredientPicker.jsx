@@ -18,7 +18,7 @@ const IngredientPicker = ({
   const [categories, setCategories] = useState([]);
   const [selectedIds, setSelectedIds] = useState(initialSelection);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState(null); // null means "All" or first category
+  const [activeCategory, setActiveCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [addingCustom, setAddingCustom] = useState(false);
   const [customError, setCustomError] = useState('');
@@ -83,8 +83,8 @@ const IngredientPicker = ({
       setCustomError('');
       const data = await addCustomIngredient(searchTerm, parseInt(selectedCategoryToAdd));
       if (data.ingredient) {
-         await fetchCategorizedIngredients(); // Refresh list to get new ingredient
-         toggleIngredient(data.ingredient.id); // Automatically select it
+         await fetchCategorizedIngredients();
+         toggleIngredient(data.ingredient.id);
          setSearchTerm('');
       } else {
          setCustomError('Eklenemedi.');

@@ -3,9 +3,7 @@ from __future__ import annotations
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-
 HEALTHY_SOURCES = ("yemekcom_diet",)
-
 
 HEALTHY_COMPLETENESS_CONDITION = """
     r.recipe_name IS NOT NULL
@@ -30,7 +28,6 @@ HEALTHY_COMPLETENESS_CONDITION = """
     )
 """
 
-
 def ensure_healthy_recipe_table(db: Session) -> None:
     db.execute(
         text(
@@ -53,7 +50,6 @@ def ensure_healthy_recipe_table(db: Session) -> None:
         )
     )
     db.commit()
-
 
 def sync_healthy_recipes(db: Session) -> dict:
     ensure_healthy_recipe_table(db)

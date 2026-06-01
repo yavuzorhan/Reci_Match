@@ -34,7 +34,7 @@ const FavoritesDb = () => {
   const filteredRecipes = useMemo(() => {
     let result = favoriteRecipes;
     
-    // Search
+    
     const query = searchTerm.trim().toLocaleLowerCase('tr-TR');
     if (query) {
       result = result.filter((recipe) => {
@@ -44,7 +44,7 @@ const FavoritesDb = () => {
       });
     }
 
-    // Filter
+    
     if (activeFilter !== 'Tümü') {
       if (activeFilter === 'Yüksek Protein') {
         result = result.filter(r => (r.protein || 0) >= 20);
@@ -56,7 +56,7 @@ const FavoritesDb = () => {
           return time > 0 && time <= 30;
         });
       } else {
-        // match cooking_type like Tavada, Fırında, vs.
+        
         result = result.filter(r => (r.cooking_type || '').toLowerCase().includes(activeFilter.toLowerCase().replace('da', '').replace('de', '')));
       }
     }
@@ -83,7 +83,7 @@ const FavoritesDb = () => {
     if (lower.includes('tava')) return <Utensils size={14} />;
     if (lower.includes('fırın')) return <ChefHat size={14} />;
     if (lower.includes('çiğ') || lower.includes('ateş')) return <Flame size={14} />;
-    return <ChefHat size={14} />; // Default / Tencere
+    return <ChefHat size={14} />;
   };
 
   return (

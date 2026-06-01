@@ -22,7 +22,6 @@ from app.utils.recipe_helpers import (
     unit_to_grams,
 )
 
-
 def serialize_recipe_summary(
     recipe: Recipe,
     calorie_target: float | None = None,
@@ -61,7 +60,6 @@ def serialize_recipe_summary(
         **health_profile,
     }
 
-
 def serialize_recipe_detail(
     recipe: Recipe,
     calorie_target: float | None = None,
@@ -94,7 +92,6 @@ def serialize_recipe_detail(
         ],
     }
 
-
 def _normalize_recipe_serving(serving: int | None) -> int | None:
     if serving is None:
         return None
@@ -105,7 +102,6 @@ def _normalize_recipe_serving(serving: int | None) -> int | None:
     if value < 1 or value > 99:
         raise HTTPException(status_code=400, detail="Porsiyon 1 ile 99 arasında olmalıdır.")
     return value
-
 
 def get_recipes(
     user_id: int | None,
@@ -139,7 +135,6 @@ def get_recipes(
         for recipe in recipes
     ]
 
-
 def get_recipe_detail(recipe_id: int, db: Session) -> dict:
     ensure_ingredient_columns(db)
     recipe = recipe_repository.find_recipe_by_id_with_relations(db, recipe_id)
@@ -153,11 +148,9 @@ def get_recipe_detail(recipe_id: int, db: Session) -> dict:
         meal_count=user_profile["meals"],
     )
 
-
 class _ManualRequired(Exception):
     def __init__(self, name: str):
         self.name = name
-
 
 async def _resolve_ingredients(db: Session, user_id: int, ingredients: list[dict]) -> list[dict]:
     resolved_items = []
@@ -180,7 +173,6 @@ async def _resolve_ingredients(db: Session, user_id: int, ingredients: list[dict
         grams = unit_to_grams(ing.get("amount"), ing.get("unit"), ingredient.ingredient_name)
         resolved_items.append({"ingredient": ingredient, "amount": ing.get("amount"), "unit": ing.get("unit"), "grams": grams})
     return resolved_items
-
 
 async def create_custom_recipe(
     user_id: int,
@@ -268,7 +260,6 @@ async def create_custom_recipe(
         logging.error(f"Create recipe error: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Tarif kaydedilirken hata: {str(exc)}") from exc
 
-
 async def update_custom_recipe(
     user_id: int,
     recipe_id: int,
@@ -336,7 +327,6 @@ async def update_custom_recipe(
         db.rollback()
         raise HTTPException(status_code=500, detail="Tarif guncellenirken bir hata olustu.") from exc
 
-
 def delete_custom_recipe(user_id: int, recipe_id: int, db: Session) -> dict:
     recipe = recipe_repository.find_recipe_by_id(db, recipe_id)
     if not recipe or recipe.user_id != user_id:
@@ -345,7 +335,6 @@ def delete_custom_recipe(user_id: int, recipe_id: int, db: Session) -> dict:
     recipe_repository.delete_recipe(db, recipe)
     db.commit()
     return {"status": "success", "message": "Tarif silindi."}
-
 
 async def upload_recipe_image(user_id: int, recipe_id: int, upload_file, db: Session) -> dict:
     recipe = recipe_repository.find_recipe_by_id(db, recipe_id)
@@ -380,7 +369,6 @@ async def upload_recipe_image(user_id: int, recipe_id: int, upload_file, db: Ses
     recipe.image_url = f"/uploads/recipe_images/{filename}"
     db.commit()
     return {"status": "success", "image_url": recipe.image_url}
-
 
 def get_recommendations(
     selected_ingredient_ids: list[int],
@@ -540,7 +528,6 @@ def get_recommendations(
         reverse=True,
     )
     return results
-
 
 def _get_user_profile(user_id: int | None, db: Session) -> dict:
     if not user_id:

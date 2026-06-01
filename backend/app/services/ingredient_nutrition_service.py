@@ -6,10 +6,8 @@ from app.db.database import ensure_ingredient_inline_nutrition_columns
 from app.db.models import Ingredient
 from app.services.nutrition_resolver_service import NUTRITION_FIELDS
 
-
 def ensure_ingredient_columns(db: Session) -> None:
     ensure_ingredient_inline_nutrition_columns(db)
-
 
 def get_ingredient_nutrition(ingredient_id: int, db: Session) -> dict | None:
     ensure_ingredient_columns(db)
@@ -20,7 +18,6 @@ def get_ingredient_nutrition(ingredient_id: int, db: Session) -> dict | None:
         "mapping": None,
         "nutrition": serialize_ingredient_nutrition(ingredient),
     }
-
 
 async def sync_ingredient_nutrition_from_gemini(ingredient_id: int, db: Session) -> dict:
     ensure_ingredient_columns(db)
@@ -46,7 +43,6 @@ async def sync_ingredient_nutrition_from_gemini(ingredient_id: int, db: Session)
         "mapping": None,
         "nutrition": serialize_ingredient_nutrition(ingredient),
     }
-
 
 async def complete_missing_ingredient_nutrition(
     limit: int,
@@ -114,7 +110,6 @@ async def complete_missing_ingredient_nutrition(
     }
     return report
 
-
 def serialize_ingredient_nutrition(ingredient: Ingredient) -> dict:
     nutrition = {field: _as_float(getattr(ingredient, field, None)) for field in NUTRITION_FIELDS}
     nutrition.update(
@@ -127,7 +122,6 @@ def serialize_ingredient_nutrition(ingredient: Ingredient) -> dict:
         }
     )
     return nutrition
-
 
 def _as_float(value) -> float | None:
     return float(value) if value is not None else None

@@ -14,16 +14,14 @@ from app.utils.text_normalize import normalize_turkish_text
 
 try:
     from rapidfuzz import fuzz
-except ImportError:  # pragma: no cover
+except ImportError:
     fuzz = None
-
 
 @dataclass
 class ResolveResult:
     status: str
     ingredient: Ingredient | None = None
     ingredient_name: str | None = None
-
 
 async def resolve_ingredient_for_user(
     db: Session,
@@ -49,7 +47,6 @@ async def resolve_ingredient_for_user(
 
     nutrition_result = await resolve_ingredient_nutrition(db, user_id, clean_name)
     if nutrition_result:
-        # "db_auto" is not in the source CHECK constraint — map to allowed values only.
         source_tag = "gemini_auto" if nutrition_result.source == "gemini" else "manual"
         ingredient = create_or_get_user_ingredient(
             db=db,
@@ -68,7 +65,6 @@ async def resolve_ingredient_for_user(
         return ResolveResult(status="resolved", ingredient=ingredient)
 
     return ResolveResult(status="manual_required", ingredient_name=ingredient_name)
-
 
 async def ensure_nutrition_for_ingredient(
     db: Session,
@@ -93,9 +89,7 @@ async def ensure_nutrition_for_ingredient(
         )
         return ResolveResult(status="resolved", ingredient=ingredient)
 
-    # Ingredient is known in DB (calorie just unpopulated) — resolve without blocking
     return ResolveResult(status="resolved", ingredient=ingredient)
-
 
 def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) -> Ingredient | None:
     normalized_key = normalize_turkish_text(normalized_name)
@@ -113,8 +107,6 @@ def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) ->
 
     best_match: Ingredient | None = None
     best_score = 0.0
-    # SQL lower() doesn't normalize Turkish chars (ğ→g, ş→s, etc.).
-    # Collect Python-level exact matches here as fallback for what step 1 missed.
     python_exact: list[Ingredient] = []
     for ingredient in ingredient_repository.list_accessible_ingredients(db, user_id):
         candidate_key = normalize_turkish_text(ingredient.ingredient_name)
@@ -142,7 +134,6 @@ def find_matching_ingredient(db: Session, user_id: int, normalized_name: str) ->
         return best_match
 
     return None
-
 
 def create_manual_ingredient(
     db: Session,
@@ -186,7 +177,6 @@ def create_manual_ingredient(
     db.refresh(ingredient)
     return ingredient
 
-
 def create_or_get_user_ingredient(
     db: Session,
     user_id: int,
@@ -216,7 +206,6 @@ def create_or_get_user_ingredient(
         db.flush()
     return ingredient
 
-
 def upsert_ingredient_nutrition(
     db: Session,
     ingredient: Ingredient,
@@ -236,7 +225,6 @@ def upsert_ingredient_nutrition(
     db.flush()
     return ingredient
 
-
 def serialize_ingredient(ingredient: Ingredient) -> dict:
     return {
         "id": ingredient.ingredient_id,
@@ -254,7 +242,6 @@ def serialize_ingredient(ingredient: Ingredient) -> dict:
         "is_verified": bool(ingredient.is_verified),
         "source": ingredient.source,
     }
-
 
 def _pick_best_match(matches: list[Ingredient], user_id: int, target: str) -> Ingredient:
     def sort_key(ingredient: Ingredient) -> tuple[int, int, int, str]:

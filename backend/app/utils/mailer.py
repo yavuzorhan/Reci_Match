@@ -20,7 +20,7 @@ def _write_email_log(content):
         with open(log_path, "a", encoding="utf-8") as f:
             f.write(content + "\n")
     except Exception:
-        pass  # Dosya yazılamazsa sunucu çökmemeli
+        pass
 
 def send_email(subject: str, recipient: str, body: str):
     """
@@ -86,4 +86,3 @@ def send_password_reset_email(email: str, code: str):
     </html>
     """
     return send_email(subject, email, body)
-

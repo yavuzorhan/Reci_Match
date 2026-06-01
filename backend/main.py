@@ -11,8 +11,6 @@ from starlette.requests import Request
 
 from app.routers import auth, ingredients, recipes, users
 
-# ─── Uygulama Oluşturma ─────────────────────────────────────────────────────
-
 app = FastAPI(
     title="Akıllı Tarif ve Beslenme Sistemi API",
     description="Malzeme bazlı tarif öneri, kişisel beslenme profili ve günlük kalori takibi.",
@@ -30,8 +28,6 @@ class UTF8Middleware(BaseHTTPMiddleware):
 
 app.add_middleware(UTF8Middleware)
 
-# ─── CORS Middleware ─────────────────────────────────────────────────────────
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,17 +36,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Router'ları Dahil Et ───────────────────────────────────────────────────
-
 app.include_router(auth.router)
 app.include_router(ingredients.router)
 app.include_router(recipes.router)
 app.include_router(users.router)
 
 app.mount("/uploads", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "uploads")), name="uploads")
-
-
-# ─── Root Endpoint ──────────────────────────────────────────────────────────
 
 @app.get("/")
 def read_root():

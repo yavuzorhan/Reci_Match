@@ -121,7 +121,7 @@ const AddRecipeForm = ({ onSuccess, onCancel, initialRecipe = null }) => {
       const data = await addCustomIngredient(customIngName, parseInt(customIngCategory));
       if (data.ingredient) {
         handleAddIngredient({ id: data.ingredient.id, name: data.ingredient.name });
-        // update local list
+        
         setFlatItems([...flatItems, {id: data.ingredient.id, name: data.ingredient.name}]);
       }
       setCustomIngName('');

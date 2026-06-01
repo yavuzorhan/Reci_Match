@@ -1,57 +1,150 @@
-# settings.py — Ortam Değişkenleri ve Uygulama Ayarları
+# settings.py - Okunakli Detay
 
-## Bu Dosya Ne İçin Var?
+## Bu Dosya Ne Ise Yarar?
 
-Uygulamanın çalışmak için ihtiyaç duyduğu hassas bilgileri (veritabanı bağlantısı, e-posta şifresi, API anahtarları) yönetir. Bu bilgiler kaynak kodda değil, `.env` dosyasında saklanır ve Pydantic `BaseSettings` ile otomatik yüklenir.
+`settings.py`, backend'in ortam ayarlarini merkezi olarak toplar. Veritabani bilgileri, SMTP e-posta ayarlari ve frontend adresi bu dosyada okunur.
 
-## Mimarideki Yeri
+Bu dosyanin ana amaci sifre, veritabani kullanici adi veya mail bilgisi gibi degisebilen ayarlari kodun icine sabit yazmamaktir. Bu bilgiler `.env` dosyasindan okunur.
 
-**Katman:** Konfigürasyon
+## Projedeki Yeri
 
-- `database.py` → `DATABASE_URL` için bu dosyayı kullanır
-- `mailer.py` → SMTP ayarları için kullanır
-- `gemini_client.py` → `GEMINI_API_KEY` için kullanır
+- Katman: Config / ayar katmani
+- `database.py`, veritabani baglanti adresi icin bu dosyayi kullanir.
+- E-posta gonderen kodlar SMTP ayarlarini buradan kullanabilir.
+- Backend, frontend linki uretmesi gerekirse `FRONTEND_URL` degerini buradan alir.
 
-## Nasıl Çalışır?
+## Bilmen Gereken Kavramlar
 
-`pydantic-settings` kütüphanesi `.env` dosyasından değişkenleri okuyarak Python nesnelerine dönüştürür.
+**`.env`:** Gizli veya ortama gore degisen ayarlarin tutuldugu dosyadir.
 
-### Tipik `.env` içeriği:
+**Ortam degiskeni:** Uygulamanin disaridan okudugu ayar degeridir.
+
+**SMTP:** E-posta gondermek icin kullanilan protokoldur.
+
+**DATABASE_URL:** Veritabani baglantisi icin gerekli bilgilerin tek metin halidir.
+
+## Dosyanin Calisma Mantigi
+
+### 1. `.env` dosyasinin yeri bulunur
+
+Kod, `settings.py` dosyasinin konumundan yola cikarak backend klasorundeki `.env` dosyasini bulur.
+
+Bu yaklasim kullanilir cunku uygulama farkli klasorden calistirilsa bile `.env` dosyasinin dogru bulunmasi gerekir.
+
+### 2. `.env` dosyasi yuklenir
+
+`load_dotenv(...)` ile `.env` dosyasindaki degerler Python tarafindan okunabilir hale gelir.
+
+Bu yapilmazsa `os.getenv(...)` `.env` icindeki degerleri okuyamaz.
+
+### 3. `Settings` sinifi ayarlari toplar
+
+`Settings` sinifi veritabani, SMTP ve frontend ayarlarini tek yerde toplar.
+
+Bu sayede projenin baska yerlerinde ayarlara su sekilde ulasilabilir:
+
+```python
+settings.DATABASE_URL
+settings.SMTP_SERVER
+settings.FRONTEND_URL
 ```
-DATABASE_URL=postgresql://user:password@localhost:5432/recimatch
-SECRET_KEY=gizli-anahtar-buraya
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=no-reply@example.com
-SMTP_PASSWORD=uygulama-sifresi
-GEMINI_API_KEY=AIza...
+
+## Veritabani Ayarlari
+
+Bu alanlar PostgreSQL baglantisi icin kullanilir:
+
+- `POSTGRES_USER`: Veritabani kullanici adi.
+- `POSTGRES_PASSWORD`: Veritabani sifresi.
+- `POSTGRES_HOST`: Veritabaninin calistigi adres.
+- `POSTGRES_PORT`: PostgreSQL portu.
+- `POSTGRES_DB`: Baglanilacak veritabani adi.
+
+Varsayilan degerler vardir. Ornegin `.env` icinde `POSTGRES_USER` yoksa `"postgres"` kullanilir. Bu gelistirme ortaminda kolaylik saglar.
+
+## SMTP Ayarlari
+
+Bu alanlar e-posta gonderimi icin kullanilir:
+
+- `SMTP_SERVER`: Mail sunucusu.
+- `SMTP_PORT`: Mail sunucusu portu.
+- `SMTP_USERNAME`: Mail hesabi kullanici adi.
+- `SMTP_PASSWORD`: Mail hesabi sifresi.
+- `FROM_EMAIL`: Gonderen e-posta adresi.
+
+SMTP ayarlari sifre sifirlama veya dogrulama maili gondermek icin gereklidir.
+
+`SMTP_PORT` icin `int(...)` kullanilir cunku `os.getenv` degeri metin olarak dondurur, port ise sayi olarak kullanilir.
+
+## Frontend Ayari
+
+`FRONTEND_URL`, frontend uygulamasinin adresini tutar.
+
+Varsayilan:
+
+```text
+http://localhost:5173
 ```
 
-## Neden `.env` Dosyası Kullanılıyor?
+Bu adres Vite React gelistirme sunucusunda sik kullanilir.
 
-1. **Güvenlik:** Şifreler kaynak kodda olursa GitHub'a yüklenebilir. `.env` dosyası `.gitignore`'a eklenir.
-2. **Taşınabilirlik:** Geliştirme, test ve production ortamları farklı değerler kullanabilir. Sadece `.env` değişir, kod değişmez.
-3. **Konfigürasyon değişimi için kod değiştirmek gerekmez.**
+Backend sifre sifirlama gibi linkler uretirse frontend adresini bilmek zorundadir.
 
-## Kritik Ayarlar
+## `DATABASE_URL` Property'si
 
-| Değişken | Açıklama |
-|---|---|
-| `DATABASE_URL` | PostgreSQL bağlantı adresi |
-| `SECRET_KEY` | JWT token imzalama anahtarı |
-| `SMTP_HOST/PORT/USER/PASSWORD` | E-posta gönderim ayarları |
-| `GEMINI_API_KEY` | Google Gemini AI API anahtarı |
+Bu dosyanin en onemli kismi `DATABASE_URL` property'dir.
 
-## Sıkça Sorulabilecek Hoca Soruları
+Ayri ayri duran veritabani bilgilerini su formata cevirir:
 
-- **S: `.env` dosyası nerede?**
-  C: `backend/.env` konumunda, `.gitignore`'a eklenmiş olduğu için GitHub'da görünmez. Sadece `backend/.env.example` şablonu repoda var.
+```text
+postgresql://kullanici:sifre@host:port/veritabani
+```
 
-- **S: Gemini API anahtarı güvenli mi?**
-  C: `.env` dosyasında saklanır ve kaynak kodda asla yazılmaz. `os.getenv("GEMINI_API_KEY")` ile okunur.
+Ornek:
 
-- **S: Pydantic BaseSettings ne işe yarar?**
-  C: Ortam değişkenlerini otomatik okur ve tip kontrolü yapar. Eksik zorunlu değişken olursa uygulama başlamadan hata verir.
+```text
+postgresql://postgres:password@localhost:5432/recipe_db
+```
 
-- **S: `.env.example` dosyası ne işe yarıyor?**
-  C: Diğer geliştiricilere hangi değişkenlerin gerektiğini gösterir. Gerçek değerleri içermez, sadece şablon.
+Neden property kullanilmis?
+
+`DATABASE_URL`, ayri alanlardan hesaplanan bir degerdir. `@property` sayesinde fonksiyon gibi degil, ayar alani gibi kullanilir:
+
+```python
+settings.DATABASE_URL
+```
+
+Bu daha okunakli olur.
+
+## `settings = Settings()` Ne Ise Yarar?
+
+Dosyanin sonunda `Settings` sinifindan tek bir nesne olusturulur.
+
+Projenin diger dosyalari bu nesneyi import eder:
+
+```python
+from app.config.settings import settings
+```
+
+Boylece ayarlar tek merkezden kullanilir.
+
+## Veritabani Iliskisi
+
+Bu dosya veritabanina dogrudan baglanmaz. Tablo okumaz, tabloya kayit yazmaz.
+
+Ama veritabani baglantisi icin gerekli `DATABASE_URL` degerini hazirlar. Bu yuzden DB baglantisinin ilk adimidir.
+
+## Hocaya Kisa Cevaplar
+
+**Soru: `.env` neden kullanildi?**  
+Cevap: Sifre ve API key gibi gizli bilgileri koda yazmamak icin. Ayrica farkli bilgisayarlarda kod degismeden ayar yapmayi saglar.
+
+**Soru: `DATABASE_URL` ne ise yariyor?**  
+Cevap: PostgreSQL'e baglanmak icin kullanici adi, sifre, host, port ve DB adini tek metinde toplar.
+
+**Soru: `@property` neden kullanilmis?**  
+Cevap: `DATABASE_URL` bir fonksiyon gibi hesaplanir ama ayar alani gibi `settings.DATABASE_URL` seklinde okunur.
+
+## 30 Saniyelik Ozet
+
+`settings.py`, backend ayarlarinin merkezidir. `.env` dosyasini yukler, veritabani ve SMTP bilgilerini okur, `DATABASE_URL` olusturur. Kendisi DB'ye baglanmaz ama DB baglantisi icin gerekli adresi hazirlar.
+

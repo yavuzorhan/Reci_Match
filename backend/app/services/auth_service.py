@@ -6,8 +6,6 @@ from fastapi import HTTPException, status
 from app.db.models import User, EmailVerificationCode
 from app.utils.mailer import send_verification_email, send_password_reset_email, generate_otp
 
-
-
 def _create_otp_record(
     db: Session,
     purpose: str,
@@ -30,7 +28,6 @@ def _create_otp_record(
     db.commit()
     return code
 
-
 def _validate_otp(db: Session, user_id: int, code: str, purpose: str) -> EmailVerificationCode:
     record = (
         db.query(EmailVerificationCode)
@@ -46,8 +43,6 @@ def _validate_otp(db: Session, user_id: int, code: str, purpose: str) -> EmailVe
         raise HTTPException(status_code=400, detail="Geçersiz veya süresi dolmuş kod.")
     return record
 
-
-
 def register_user(name: str, email: str, password: str, db: Session) -> dict:
     if db.query(User).filter(User.email == email).first():
         raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı.")
@@ -58,8 +53,6 @@ def register_user(name: str, email: str, password: str, db: Session) -> dict:
     return {
         "message": "Doğrulama kodu mail adresinize gönderildi. Hesabınız ancak kodu doğruladıktan sonra oluşturulacaktır."
     }
-
-
 
 def verify_email(email: str, code: str, db: Session) -> dict:
     record = (
@@ -107,8 +100,6 @@ def verify_email(email: str, code: str, db: Session) -> dict:
             "daily_calorie": None,
         },
     }
-
-
 
 def login_user(email: str, password: str, db: Session) -> dict:
     user = db.query(User).filter(User.email == email).first()
@@ -160,18 +151,14 @@ def login_user(email: str, password: str, db: Session) -> dict:
         },
     }
 
-
-
 def forgot_password(email: str, db: Session) -> dict:
     user = db.query(User).filter(User.email == email).first()
     if not user:
-        # Güvenlik için kullanıcı yoksa bile "gönderildi" mesajı veriyoruz
         return {"message": "Eğer bu e-posta adresi sistemde kayıtlıysa, şifre sıfırlama kodu gönderildi."}
 
     code = _create_otp_record(db, purpose="reset_password", email=user.email, user_id=user.user_id)
     send_password_reset_email(user.email, code)
     return {"message": "Şifre sıfırlama kodu e-postanıza gönderildi."}
-
 
 def reset_password(email: str, code: str, new_password: str, db: Session) -> dict:
     record = (
@@ -199,8 +186,6 @@ def reset_password(email: str, code: str, new_password: str, db: Session) -> dic
     db.commit()
     return {"message": "Şifreniz başarıyla güncellendi. Artık yeni şifrenizle giriş yapabilirsiniz."}
 
-
-
 def request_otp_for_update(user_id: int, email: str, db: Session) -> dict:
     user = db.query(User).filter(User.user_id == user_id).first()
     if not user:
@@ -210,7 +195,6 @@ def request_otp_for_update(user_id: int, email: str, db: Session) -> dict:
     send_verification_email(user.email, code)
     return {"message": "Güvenlik kodu e-posta adresinize gönderildi."}
 
-
 def security_update_password(user_id: int, code: str, new_password: str, db: Session) -> dict:
     record = _validate_otp(db, user_id, code, "security_update")
     user = db.query(User).filter(User.user_id == user_id).first()
@@ -218,7 +202,6 @@ def security_update_password(user_id: int, code: str, new_password: str, db: Ses
     db.delete(record)
     db.commit()
     return {"message": "Şifreniz başarıyla güncellendi."}
-
 
 def security_update_email(user_id: int, code: str, new_email: str, db: Session) -> dict:
     record = _validate_otp(db, user_id, code, "security_update")

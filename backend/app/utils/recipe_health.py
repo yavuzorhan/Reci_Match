@@ -3,8 +3,6 @@ from __future__ import annotations
 import unicodedata
 from app.utils.text_normalize import contains_any_word
 
-
-
 UNIT_TO_GRAMS = {
     "g": (1.0, 1.0),
     "gr": (1.0, 1.0),
@@ -52,7 +50,6 @@ REQUIRED_HEALTH_FIELDS = (
     "sodium_mg_per_100g",
 )
 
-# Şeker kaynakları: (terimler, ağırlık faktörü) — öncelik sırasıyla
 _SUGAR_SOURCE_FACTORS: list[tuple[frozenset, float]] = [
     (frozenset({"bal"}), 0.82),
     (frozenset({"pekmez"}), 0.60),
@@ -63,7 +60,6 @@ _SUGAR_SOURCE_FACTORS: list[tuple[frozenset, float]] = [
         "glikoz", "fruktoz", "misir surubu", "agave", "maple syrup",
     }), 1.0),
 ]
-# Bal/pekmez/reçel/şurup ailesi — _sugar_source_grams'ta farklı dönüşüm katsayısı uygulanır
 _HONEY_LIKE_TERMS: frozenset = frozenset({t for terms, _ in _SUGAR_SOURCE_FACTORS[:-1] for t in terms})
 
 REFINED_CARB_TERMS = {
@@ -87,23 +83,17 @@ _GRADE_BASES = {
     "D": "Agir bir tarif.",
 }
 
-
-
 def _clamp(value: float) -> int:
     return max(0, min(100, round(value)))
-
 
 def _safe_float(value) -> float:
     return float(value) if value is not None else 0.0
 
-
 def _optional_float(value) -> float | None:
     return float(value) if value is not None else None
 
-
 def _divide_optional(value: float | None, divisor: int) -> float | None:
     return round(value / divisor, 2) if value is not None else None
-
 
 def _fold_text(value: str) -> str:
     if not value:
@@ -122,19 +112,15 @@ def _fold_text(value: str) -> str:
     normalized = "".join(char for char in normalized if not unicodedata.combining(char))
     return " ".join(normalized.split())
 
-
 def _contains_any(text: str, terms: set[str]) -> bool:
     folded_terms = {_fold_text(term) for term in terms}
     return any(term and term in text for term in folded_terms)
 
-
 def _contains_any_health_word(text: str, terms: set[str]) -> bool:
     return contains_any_word(text, terms)
 
-
 def _has_negated_health_term(text: str) -> bool:
     return contains_any_word(text, {"sekersiz", "şekersiz", "tuzsuz", "yagsiz", "yağsız"})
-
 
 def _dedupe(values: list[str]) -> list[str]:
     seen: set[str] = set()
@@ -145,7 +131,6 @@ def _dedupe(values: list[str]) -> list[str]:
         seen.add(value)
         result.append(value)
     return result
-
 
 def _normalize_unit(value: str | None) -> str:
     if not value:
@@ -162,7 +147,6 @@ def _normalize_unit(value: str | None) -> str:
     })
     return " ".join(normalized.translate(translation).lower().split())
 
-
 def _ingredient_inline_nutrition(ingredient, field: str):
     if field == "calories_per_100g":
         return getattr(ingredient, "calorie_per_100g", None)
@@ -170,11 +154,9 @@ def _ingredient_inline_nutrition(ingredient, field: str):
         return getattr(ingredient, "carbohydrate_per_100g", None)
     return getattr(ingredient, field, None)
 
-
 def _is_light_sweet_or_snack(category: str | None) -> bool:
     normalized = _fold_text(category or "")
     return _contains_any(normalized, {"dessert", "snack", "tatli", "tatlı", "atistirmalik", "atıştırmalık"})
-
 
 def _is_refined_carb(name: str) -> bool:
     """Malzeme adı rafine karbonhidrat mı? "un" içerenlerde tam tahıl kontrolü yapılır."""
@@ -187,7 +169,6 @@ def _is_refined_carb(name: str) -> bool:
                 return False
     return True
 
-
 def _added_sugar_factor(normalized_name: str) -> float:
     """Malzeme için eklenmiş şeker ağırlık faktörünü döner (0.0 = şeker değil, 1.0 = saf şeker)."""
     if _has_negated_health_term(normalized_name):
@@ -197,13 +178,10 @@ def _added_sugar_factor(normalized_name: str) -> float:
             return factor
     return 0.0
 
-
 def _ingredient_bonus_points(normalized_name: str) -> int:
     if _contains_any(normalized_name, POSITIVE_INGREDIENT_TERMS):
         return 3
     return 0
-
-
 
 def _calorie_subscore(calories: float) -> int:
     """Porsiyon başı kalori miktarına göre 25–90 aralığında skor üretir."""
@@ -223,7 +201,6 @@ def _calorie_subscore(calories: float) -> int:
         return 35
     return 25
 
-
 def _protein_subscore(protein_per_100_kcal: float, calories: float, category: str | None) -> int:
     """Her 100 kcal başına düşen protein gramına göre 20–100 arasında skor üretir."""
     if protein_per_100_kcal >= 8:
@@ -241,7 +218,6 @@ def _protein_subscore(protein_per_100_kcal: float, calories: float, category: st
     if calories <= 180 and _is_light_sweet_or_snack(category):
         score = max(score, 35)
     return score
-
 
 def _fat_subscore(fat_pct: float, fat: float) -> int:
     """Yağ oranı (%) ve mutlak yağ gramına göre 0–95 arasında skor üretir."""
@@ -267,7 +243,6 @@ def _fat_subscore(fat_pct: float, fat: float) -> int:
         score -= 3
     return max(0, score)
 
-
 def _carb_subscore(carb_pct: float, calories: float, fat: float, category: str | None) -> int:
     """Karbonhidrat oranına göre 35–90 arasında skor üretir; düşük kalorili tatlılara tolerans tanır."""
     if 25 <= carb_pct <= 55:
@@ -285,7 +260,6 @@ def _carb_subscore(carb_pct: float, calories: float, fat: float, category: str |
     if calories <= 180 and _is_light_sweet_or_snack(category) and fat <= 2:
         score = max(score, 65)
     return score
-
 
 def _balance_subscore(
     calories: float,
@@ -315,7 +289,6 @@ def _balance_subscore(
         score -= 10
     return _clamp(score)
 
-
 def _health_grade(score: int) -> str:
     if score >= 80:
         return "A"
@@ -324,8 +297,6 @@ def _health_grade(score: int) -> str:
     if score >= 50:
         return "C"
     return "D"
-
-
 
 def _weighted_name_category_adjustment(
     recipe_name: str | None,
@@ -347,7 +318,6 @@ def _weighted_name_category_adjustment(
     if _contains_any(text, {"salata", "sebze", "haslama", "haşlama", "izgara", "firin", "fırın"}):
         adjustment += 4
     return adjustment
-
 
 def _weighted_calibration(
     raw_score: float,
@@ -375,7 +345,6 @@ def _weighted_calibration(
         raw_score = max(raw_score, 54)
     return raw_score
 
-
 def _hard_caps(calories: float, fat: float, fat_pct: float, category: str | None) -> list[dict]:
     if calories <= 180 and fat <= 2 and _is_light_sweet_or_snack(category):
         return []
@@ -393,7 +362,6 @@ def _hard_caps(calories: float, fat: float, fat_pct: float, category: str | None
     if calories >= 850 and fat >= 50:
         caps.append({"max_score": 65, "reason": "yuksek kalori ve yag"})
     return caps
-
 
 def _build_weighted_explanation(
     score: int,
@@ -415,7 +383,6 @@ def _build_weighted_explanation(
     )
     return base + detail
 
-
 def _macro_health_flags(
     calories: float,
     protein: float,
@@ -433,7 +400,6 @@ def _macro_health_flags(
         flags.append("Makro dengesi iyi")
     flags.append(f"{grade} kalite")
     return _dedupe(flags)
-
 
 def calculate_health_score(
     calories,
@@ -539,8 +505,6 @@ def calculate_health_score(
         "explanation": explanation,
     }
 
-
-
 def _risk_unit_key(unit: str | None) -> str | None:
     normalized = _fold_text(unit or "")
     if not normalized:
@@ -563,7 +527,6 @@ def _risk_unit_key(unit: str | None) -> str | None:
         return "teaspoon"
     return None
 
-
 def _sugar_source_grams(amount: float, unit_key: str | None, normalized_name: str) -> float | None:
     is_honey_like = _contains_any(normalized_name, _HONEY_LIKE_TERMS)
     if unit_key == "cup":
@@ -579,7 +542,6 @@ def _sugar_source_grams(amount: float, unit_key: str | None, normalized_name: st
     if unit_key == "kilogram":
         return amount * 1000
     return None
-
 
 def _risk_amount_grams(link, normalized_name: str) -> float | None:
     amount_gram = getattr(link, "miktar_gram", None)
@@ -613,7 +575,6 @@ def _risk_amount_grams(link, normalized_name: str) -> float | None:
         return amount * 1000
     return None
 
-
 def _ingredient_penalty(added_sugar_per_serving: float, refined_carb_per_serving: float) -> int:
     penalty = 0
     if added_sugar_per_serving >= 50:
@@ -639,7 +600,6 @@ def _ingredient_penalty(added_sugar_per_serving: float, refined_carb_per_serving
     if added_sugar_per_serving >= 15 and refined_carb_per_serving >= 30:
         penalty += 6
     return penalty
-
 
 def _ingredient_hard_caps(
     added_sugar_per_serving: float,
@@ -670,7 +630,6 @@ def _ingredient_hard_caps(
         caps.append({"max_score": 59, "reason": "porsiyon basina 1000 kcal ve uzeri"})
     return caps
 
-
 def _ingredient_adjusted_explanation(
     base_explanation: str | None,
     risk: dict,
@@ -689,7 +648,6 @@ def _ingredient_adjusted_explanation(
     if risk["ingredient_bonus"]:
         return f"{_GRADE_BASES.get(grade, '')} Olumlu malzemeler skoru destekledi."
     return base_explanation or _GRADE_BASES.get(grade, f"{grade} kalite ({score}/100).")
-
 
 def apply_ingredient_health_adjustments(
     recipe,
@@ -739,7 +697,6 @@ def apply_ingredient_health_adjustments(
         "applied_caps": existing_caps + [cap["reason"] for cap in ingredient_caps],
     }
 
-
 def analyze_recipe_ingredient_risks(recipe) -> dict:
     servings = max(1, int(getattr(recipe, "serving", 1) or 1))
     added_sugar_total = 0.0
@@ -774,8 +731,6 @@ def analyze_recipe_ingredient_risks(recipe) -> dict:
         "ingredient_bonus": ingredient_bonus,
     }
 
-
-
 def estimate_amount_in_grams(amount, unit) -> tuple[float | None, float]:
     if amount is None:
         return None, 0.0
@@ -790,7 +745,6 @@ def estimate_amount_in_grams(amount, unit) -> tuple[float | None, float]:
             return amount_value * factor, confidence
     return amount_value, 0.2
 
-
 def resolve_link_amount_grams(link) -> tuple[float | None, float]:
     amount_gram = getattr(link, "miktar_gram", None)
     if amount_gram is not None:
@@ -798,7 +752,6 @@ def resolve_link_amount_grams(link) -> tuple[float | None, float]:
         confidence_score = {"high": 1.0, "medium": 0.75, "low": 0.4}.get(confidence_label, 0.85)
         return float(amount_gram), confidence_score
     return estimate_amount_in_grams(link.amount, link.unit)
-
 
 def aggregate_recipe_nutrition(recipe) -> dict:
     ingredient_links = list(getattr(recipe, "ingredients", []) or [])
@@ -856,7 +809,6 @@ def aggregate_recipe_nutrition(recipe) -> dict:
         "is_estimated": fallback_used or confidence < 0.85,
     }
 
-
 def recalculate_recipe_macros_from_grams(recipe, min_confidence: float = 0.75) -> dict:
     """Calculate recipe totals from recipe_ingredients.miktar_gram without mutating recipe rows."""
     nutrition = aggregate_recipe_nutrition(recipe)
@@ -880,8 +832,6 @@ def recalculate_recipe_macros_from_grams(recipe, min_confidence: float = 0.75) -
         ),
     }
 
-
-
 def _resolve_general_macro_source(recipe, nutrition_rollup: dict) -> dict:
     recipe_macros = recipe_macro_values_per_serving(recipe)
     if recipe_macros:
@@ -890,7 +840,6 @@ def _resolve_general_macro_source(recipe, nutrition_rollup: dict) -> dict:
     nutrition = dict(nutrition_rollup["per_serving"])
     nutrition["source"] = "ingredient_rollup"
     return nutrition
-
 
 def recipe_macro_values_per_serving(recipe) -> dict | None:
     if recipe is None:
@@ -912,7 +861,6 @@ def recipe_macro_values_per_serving(recipe) -> dict | None:
         "sugar_per_100g": None,
         "sodium_mg_per_100g": None,
     }
-
 
 def build_recipe_health_profile(recipe, calorie_target: float | None = None, meal_count: int | None = None) -> dict:
     nutrition = aggregate_recipe_nutrition(recipe)

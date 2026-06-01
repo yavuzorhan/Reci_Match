@@ -5,7 +5,6 @@ from app.repositories import ingredient_repository
 from app.services.ingredient_resolver_service import ensure_nutrition_for_ingredient
 from app.utils.helpers import normalize_ingredient_name
 
-
 CATEGORY_PRIORITY = {
     "Beyaz Et": 1,
     "Kırmızı Et": 2,
@@ -22,7 +21,6 @@ CATEGORY_PRIORITY = {
     "Soslar ve Yağlar": 13,
     "Diğer": 14,
 }
-
 
 def get_categorized_ingredients(user_id: int | None, db: Session) -> list[dict]:
     categories = ingredient_repository.get_all_categories(db)
@@ -51,7 +49,6 @@ def get_categorized_ingredients(user_id: int | None, db: Session) -> list[dict]:
         )
 
     return result
-
 
 async def create_custom_ingredient(user_id: int, name: str, category_id: int | None, db: Session) -> dict:
     clean_name = normalize_ingredient_name(name)
@@ -94,11 +91,9 @@ async def create_custom_ingredient(user_id: int, name: str, category_id: int | N
         "nutrition_status": nutrition_result.status,
     }
 
-
 def get_user_ingredients(user_id: int, db: Session) -> list[dict]:
     owned = ingredient_repository.find_owned_ingredients_by_user(db, user_id)
     return [{"id": item.ingredient_id, "name": item.ingredient.ingredient_name} for item in owned]
-
 
 def update_user_ingredients(user_id: int, ingredient_ids: list[int], db: Session) -> dict:
     ingredient_repository.delete_owned_ingredients_by_user(db, user_id)
@@ -107,11 +102,9 @@ def update_user_ingredients(user_id: int, ingredient_ids: list[int], db: Session
     db.commit()
     return {"message": "Malzemeler güncellendi."}
 
-
 def get_disliked_ingredients(user_id: int, db: Session) -> list[int]:
     disliked = ingredient_repository.find_disliked_ingredients_by_user(db, user_id)
     return [item.ingredient_id for item in disliked]
-
 
 def update_disliked_ingredients(user_id: int, ingredient_ids: list[int], db: Session) -> dict:
     ingredient_repository.delete_disliked_ingredients_by_user(db, user_id)

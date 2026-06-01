@@ -8,7 +8,6 @@ from app.repositories import ingredient_repository
 from app.services.gemini_client import estimate_nutrition_with_gemini
 from app.utils.text_normalize import normalize_turkish_text
 
-
 NUTRITION_FIELDS = (
     "calorie_per_100g",
     "protein_per_100g",
@@ -20,13 +19,11 @@ NUTRITION_FIELDS = (
     "sodium_mg_per_100g",
 )
 
-
 @dataclass
 class NutritionResult:
     source: str
     confidence_score: float
     nutrition: dict
-
 
 async def resolve_ingredient_nutrition(db: Session, user_id: int, ingredient_name: str) -> NutritionResult | None:
     normalized_name = normalize_turkish_text(ingredient_name)
